@@ -106,10 +106,10 @@ while True:
     for e in meanTime:
         time.sleep(e/1000)
         pygame.draw.rect(screen, (0,0,0), (0, 0, Width, Height+1))
-        pygame.draw.rect(screen, (0,255,0), (0, Height, pastTime*timelineStep, 1))
         pygame.draw.rect(screen, (0,0,255), (WidthMiddle, 0, 1, Height))
         pygame.draw.circle(screen, (255,0,0), (WidthMiddle+ail[i], Height-ele[i]), Pixelsize)
         pygame.draw.circle(screen, (255,0,0), (rud[i], Height-thr[i]), Pixelsize)
+        pygame.draw.rect(screen, (0,255,0), (0, Height, pastTime*timelineStep, 1))
         pygame.display.flip()
         pastTime+=e
         i+=1
