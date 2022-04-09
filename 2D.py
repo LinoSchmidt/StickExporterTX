@@ -101,7 +101,7 @@ timelineStep = Width/totalTime
 while True:
     i = 0
     lastTime = 0
-    while i <= len(meanTime):
+    while i < len(meanTime):
         if(i == 0):
             pygame.draw.circle(screen, (255,0,0), (WidthMiddle+ail[0], Height-ele[0]), Pixelsize)
             pygame.draw.circle(screen, (255,0,0), (rud[0], Height-thr[0]), Pixelsize)
@@ -124,7 +124,8 @@ while True:
                 pygame.draw.rect(screen, (0,255,0), (0, Height, (int(time.time()*1000)-startTime)*timelineStep, 1))
                 pygame.display.flip()
             i+=1
-            lastTime += meanTime[i]
+            if i < len(meanTime):
+                lastTime += meanTime[i]
             
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
