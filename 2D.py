@@ -97,23 +97,35 @@ for e in meanTime:
     totalTime+=e
     
 timelineStep = Width/totalTime
-
-pygame.draw.circle(screen, (255, 0, 0), (rud[0], ele[0]), Pixelsize)
-
+                
 while True:
     i = 0
-    pastTime = 0
-    for e in meanTime:
-        time.sleep(e/1000)
-        pygame.draw.rect(screen, (0,0,0), (0, 0, Width, Height+1))
-        pygame.draw.rect(screen, (0,0,255), (WidthMiddle, 0, 1, Height))
-        pygame.draw.circle(screen, (255,0,0), (WidthMiddle+ail[i], Height-ele[i]), Pixelsize)
-        pygame.draw.circle(screen, (255,0,0), (rud[i], Height-thr[i]), Pixelsize)
-        pygame.draw.rect(screen, (0,255,0), (0, Height, pastTime*timelineStep, 1))
-        pygame.display.flip()
-        pastTime+=e
-        i+=1
-        
+    lastTime = 0
+    while i <= len(meanTime):
+        if(i == 0):
+            pygame.draw.circle(screen, (255,0,0), (WidthMiddle+ail[0], Height-ele[0]), Pixelsize)
+            pygame.draw.circle(screen, (255,0,0), (rud[0], Height-thr[0]), Pixelsize)
+            pygame.display.flip()
+            startTime = int(time.time()*1000)
+            i+=1
+        else:
+            while(startTime+lastTime+meanTime[i-1] >= int(time.time()*1000)):
+                multiplier = (int(time.time()*1000)-(startTime+lastTime))/meanTime[i-1]
+                
+                ailP = (WidthMiddle+ail[i-1])+((WidthMiddle+ail[i])-(WidthMiddle+ail[i-1]))*multiplier
+                eleP = (Height-ele[i-1])+((Height-ele[i])-(Height-ele[i-1]))*multiplier
+                rudP = (rud[i-1])+((rud[i])-(rud[i-1]))*multiplier
+                thrP = (Height-thr[i-1])+((Height-thr[i])-(Height-thr[i-1]))*multiplier
+                
+                pygame.draw.rect(screen, (0,0,0), (0, 0, Width, Height+1))
+                pygame.draw.rect(screen, (0,0,255), (WidthMiddle, 0, 1, Height))
+                pygame.draw.circle(screen, (255,0,0), (ailP, eleP), Pixelsize)
+                pygame.draw.circle(screen, (255,0,0), (rudP, thrP), Pixelsize)
+                pygame.draw.rect(screen, (0,255,0), (0, Height, (int(time.time()*1000)-startTime)*timelineStep, 1))
+                pygame.display.flip()
+            i+=1
+            lastTime += meanTime[i]
+            
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 pygame.quit()
