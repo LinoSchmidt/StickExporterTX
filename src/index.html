@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    
+    <title>OpenTX StickExporter3D</title>
+    
+    <link rel="stylesheet" href="./style.css"/>
+  </head>
+  <body>
+    <button onclick="startRender()">Start Render</button>
+    <p id="logNumber">Log 0/0</p>
+    <p id="status">Idle</p>
+    <hr>
+    <p id="fps">FPS: </p>
+    <p id="width">Width: </p>
+    <p id="stickDistance">Stick Distance: </p>
+    <p id="stickMode">Stick Mode: </p>
+    <div class="dataDiv">
+      <p id="log">Logs:<br/></p>
+      <button onclick="openLog();">Open Log</button>
+    </div>
+    <div class="dataDiv">
+      <p id="output">Output Folder: </p>
+      <button onclick="openVid();">Open Video</button>
+    </div>
+    <script src="./js/render.js"></script>
+  </body>
+</html>

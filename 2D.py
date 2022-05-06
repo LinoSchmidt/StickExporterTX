@@ -1,17 +1,10 @@
-from ast import While
 import csv
-from math import fabs
-from msilib import make_id
-from posixpath import split
 from tkinter.filedialog import askopenfilename
-from turtle import width
 import pygame
 import time
 
 Pixelsize = 10
 Size = 500
-
-
 
 Height = Size/2
 Width = Size
@@ -34,15 +27,18 @@ ele = []
 thr = []
 ail = []
 
-with open(log, newline='') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        ltime.append(row['Time'])
-        rud.append(row['Rud'])
-        ele.append(row['Ele'])
-        thr.append(row['Thr'])
-        ail.append(row['Ail'])
-    
+try:
+    with open(log, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            ltime.append(row['Time'])
+            rud.append(row['Rud'])
+            ele.append(row['Ele'])
+            thr.append(row['Thr'])
+            ail.append(row['Ail'])
+except:
+    print("Can't read Log File!")
+    exit()
 
 i = 0
 while i != len(rud):
@@ -72,7 +68,6 @@ while i != len(rud):
         ail[i] = (1024 - abs(iAil))*(joystickScaleWidth/2)
         
     i+=1
-
     
 splitTime = []
 for e in ltime:
