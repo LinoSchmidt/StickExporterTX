@@ -11,13 +11,15 @@ var log = " "
 var output = " "
 
 const statusDisplay = document.getElementById("status");
-const fpsDisplay = document.getElementById("fps");
-const widthDistplay = document.getElementById("width");
-const stickDistanceDisplay = document.getElementById("stickDistance");
-const stickModeDisplay = document.getElementById("stickMode");
+const fpsDisplay = document.getElementById("fpsInput");
+const widthDistplay = document.getElementById("widthInput");
+const stickDistanceDisplay = document.getElementById("stickDistanceInput");
+const stickModeDisplay = document.getElementById("stickMode2");
 const logDisplay = document.getElementById("log");
 const outputDisplay = document.getElementById("output");
 const logNumberDisplay = document.getElementById("logNumber");
+
+//('input[type="number"]').niceNumber();
 
 const log4js = require("log4js");
 const fs = require("fs");
@@ -96,14 +98,10 @@ function getXMLChild(doc, child) {
 }
 
 function updateSettingDisplay() {
-    fpsDisplay.innerHTML = "FPS: " + String(fps);
-    widthDistplay.innerHTML = "Width: " + String(width);
-    stickDistanceDisplay.innerHTML = "Stick Distance: " + String(stickDistance);
-    if(stickMode2 == true) {
-        stickModeDisplay.innerHTML = "Stick Mode: 2";
-    } else {
-        stickModeDisplay.innerHTML = "Stick Mode: 1";
-    }
+    fpsDisplay.value = String(fps);
+    widthDistplay.value = String(width);
+    stickDistanceDisplay.value = String(stickDistance);
+    stickModeDisplay.checked = stickMode2;
     logDisplay.innerHTML = "Logs:<br/>" + log.substring(1).slice(0, -1).replaceAll("\"\"", "<br/>");
     outputDisplay.innerHTML = "Output Folder: " + output;
     logCount = log.split("\"\"").length;
@@ -194,4 +192,24 @@ function openVid() {
         statusDisplay.style.color = "red";
         logger.error(err);
     });
+}
+
+function setFPS() {
+    fps = parseInt(fpsDisplay.value);
+    updateSettings();
+}
+
+function setWidth() {
+    width = parseInt(widthDistplay.value);
+    updateSettings();
+}
+
+function setStickDistance() {
+    stickDistance = parseInt(stickDistanceDisplay.value);
+    updateSettings();
+}
+
+function setStickMode() {
+    stickMode2 = stickModeDisplay.checked;
+    updateSettings();
 }

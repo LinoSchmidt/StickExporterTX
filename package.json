@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "bootstrap-input-spinner": "^3.1.10",
     "electron-squirrel-startup": "^1.0.0",
     "log4js": "^6.4.6",
     "xml-formatter": "^2.6.1"
