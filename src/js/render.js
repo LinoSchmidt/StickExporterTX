@@ -7,8 +7,8 @@ var fps = 25
 var width = 540
 var stickDistance = 5
 var stickMode2 = true
-var log = " "
-var output = " "
+var log = "C:\\"
+var output = "C:\\"
 
 const statusDisplay = document.getElementById("status");
 const fpsDisplay = document.getElementById("fpsInput");
@@ -210,4 +210,8 @@ function setStickDistance() {
 function setStickMode() {
     stickMode2 = stickModeDisplay.checked;
     updateSettings();
+}
+
+function openOutputFolder() {
+    require("child_process").exec('start "" "' + output + '"');
 }
