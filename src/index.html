@@ -5,12 +5,8 @@
     
     <title>OpenTX StickExporter3D</title>
     
-    <!-- <link rel="stylesheet" href="./assets/bootstrap/bootstrap.min.css"/> -->
-    <link rel="stylesheet" href="./style.css"/>
-    
-    <!-- <script src="./assets/jquery.min.js"></script>
-    <script src="./assets/bootstrap/bootstrap.min.js"></script>
-    <script src="bootstrap-input-spinner.js"></script> -->
+    <link rel="stylesheet" href="./css/style.css"/>
+    <link rel="stylesheet" href="./css/toggle-switchy.css"/>
   </head>
   <body>
     <button onclick="startRender()">Start Render</button>
@@ -30,8 +26,13 @@
       <input id="stickDistanceInput" type="number" value="540" min="0" step="1" onchange="setStickDistance();">
     </div>
     <div class="dataDiv">
-      <p>Stick Mode: </p>
-      <input type="checkbox" id="stickMode2" onchange="setStickMode();">
+      <p>Stick Mode:</p>
+      <label for="stickMode" class="toggle-switchy" data-style="rounded" data-text="12">
+        <input checked type="checkbox" id="stickMode" onchange="setStickMode();">
+        <span class="toggle">
+          <span class="switch"></span>
+        </span>
+      </label>
     </div>
     <div class="dataDiv">
       <p id="log">Logs:<br/></p>

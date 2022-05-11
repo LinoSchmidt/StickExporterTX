@@ -9,3 +9,6 @@ body {
 .dataDiv {
     display: flex;
 }
+.dataDiv p {
+    margin-right: 10px;
+}

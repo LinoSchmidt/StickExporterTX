@@ -14,12 +14,10 @@ const statusDisplay = document.getElementById("status");
 const fpsDisplay = document.getElementById("fpsInput");
 const widthDistplay = document.getElementById("widthInput");
 const stickDistanceDisplay = document.getElementById("stickDistanceInput");
-const stickModeDisplay = document.getElementById("stickMode2");
+const stickModeDisplay = document.getElementById("stickMode");
 const logDisplay = document.getElementById("log");
 const outputDisplay = document.getElementById("output");
 const logNumberDisplay = document.getElementById("logNumber");
-
-//('input[type="number"]').niceNumber();
 
 const log4js = require("log4js");
 const fs = require("fs");
