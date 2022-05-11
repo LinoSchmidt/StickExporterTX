@@ -1,8 +1,8 @@
 {
-  "name": "opentx-stickexporter3d",
-  "productName": "opentx-stickexporter3d",
+  "name": "stickexportertx",
+  "productName": "stickexportertx",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "A 3D Sticks Exporter for EdgeTX/OpenTX logs.",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
@@ -24,7 +24,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "opentx_stickexporter3d"
+            "name": "stickexportertx"
           }
         },
         {
@@ -46,7 +46,6 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
-    "bootstrap-input-spinner": "^3.1.10",
     "electron-squirrel-startup": "^1.0.0",
     "log4js": "^6.4.6",
     "xml-formatter": "^2.6.1"
