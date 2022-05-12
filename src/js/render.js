@@ -19,34 +19,14 @@ const logDisplay = document.getElementById("log");
 const outputDisplay = document.getElementById("output");
 const logNumberDisplay = document.getElementById("logNumber");
 
-const log4js = require("log4js");
+const logger = require('electron-log');
 const fs = require("fs");
 const formatXml = require("xml-formatter");
 const {dialog} = require("@electron/remote");
 
-log4js.configure({
-    appenders: {
-        render: {
-            type: "dateFile",
-            filename: "./logs/render",
-            layout: {
-                type: "pattern",
-                pattern: "%d-[%p]: %m"
-            },
-            flags: "w",
-            pattern: "yyyy-MM-dd.log",
-            alwaysIncludePattern: true,
-            numToKeep: 10
-        }
-    },
-    categories: {
-        default: {
-            appenders: ["render"],
-            level: "info"
-        }
-    }
-});
-const logger = log4js.getLogger("render");
+logger.transports.console.format = "{h}:{i}:{s} {text}";
+logger.transports.file.getFile();
+logger.transports.file.resolvePath = () => 'logs/main.log';
 
 function startRender() {
     const {exec} = require("child_process");

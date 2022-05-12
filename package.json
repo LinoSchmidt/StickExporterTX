@@ -1,7 +1,7 @@
 {
   "name": "stickexportertx",
   "productName": "stickexportertx",
-  "version": "1.0.0",
+  "version": "0.5",
   "description": "A 3D Sticks Exporter for EdgeTX/OpenTX logs.",
   "main": "src/index.js",
   "scripts": {
@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "electron-log": "^4.4.7",
     "electron-squirrel-startup": "^1.0.0",
-    "log4js": "^6.4.6",
     "xml-formatter": "^2.6.1"
   },
   "devDependencies": {
