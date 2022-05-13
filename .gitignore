@@ -261,6 +261,8 @@ typings/
 # Electron-Forge
 out/
 
+output/
+
 blender/
 
 logs/
