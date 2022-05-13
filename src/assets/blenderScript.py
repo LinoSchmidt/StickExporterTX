@@ -1,11 +1,13 @@
 import csv
+from importlib.resources import path
 import logging
 import math
 import sys
 import bpy
 import xml.etree.ElementTree as ET
+import os
 
-settings = ET.parse("./src/settings.xml")
+settings = ET.parse(os.path.join(os.getenv('APPDATA'), "StickExporterTX", "settings.xml"))
 
 logger = logging.getLogger('simple_example')
 logger.setLevel(logging.INFO)

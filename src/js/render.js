@@ -7,7 +7,7 @@ var fps = 25
 var width = 540
 var stickDistance = 5
 var stickMode2 = true
-var log = "C:\\"
+var log = '"C:\\"'
 var output = "C:\\"
 
 const statusDisplay = document.getElementById("status");
@@ -23,14 +23,19 @@ const logger = require('electron-log');
 const fs = require("fs");
 const formatXml = require("xml-formatter");
 const {dialog} = require("@electron/remote");
+const path = require('path');
+
+var appName = "stickexportertx";
+var dataFolder = path.join(process.env.APPDATA, appName);
+var SettingFolder = path.join(dataFolder, "settings.xml");
 
 logger.transports.console.format = "{h}:{i}:{s} {text}";
 logger.transports.file.getFile();
-logger.transports.file.resolvePath = () => 'logs/main.log';
+logger.transports.file.resolvePath = () => path.join(dataFolder, "logs", "main.log");
 
 function startRender() {
     const {exec} = require("child_process");
-    var blenderCons = exec("\"blender/blender\" src\\assets\\template.blend --background --python src\\assets\\blenderScript.py", {maxBuffer: Infinity});
+    var blenderCons = exec('"' + dataFolder + '\\assets\\blender\\blender" "' + dataFolder + '\\assets\\template.blend" --background --python "' + dataFolder + '\\assets\\blenderScript.py"', {maxBuffer: Infinity});
     
     frames = "0";
     lastFrame = "0";
@@ -95,16 +100,16 @@ function updateSettings() {
         '</log><output>' + output +
         '</output></settings>';
     
-    fs.writeFile("src/settings.xml", formatXml(xmlStr, {collapseContent: true}), function(err) {
+    fs.writeFile(SettingFolder, formatXml(xmlStr, {collapseContent: true}), function(err) {
         if(err) {
             statusDisplay.innerHTML = "Couldn't write Log! Check Logs.";
             statusDisplay.style.color = "red";
-            logger.error(error);
+            logger.error(err);
         }
     });
 }
 
-fetch("settings.xml").then(function(response){
+fetch(SettingFolder).then(function(response){
     return response.text();
 }).then(function(data){
     let parser = new DOMParser();
