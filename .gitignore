@@ -265,6 +265,4 @@ output/
 
 blender/
 
-logs/
-
-src/settings.xml
+release-builds/
