@@ -19,6 +19,8 @@ const createWindow = () => {
     }
   });
   
+  mainWindow.setMenu(null);
+  
   require('@electron/remote/main').initialize();
   require("@electron/remote/main").enable(mainWindow.webContents);
 

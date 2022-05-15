@@ -1,7 +1,7 @@
 {
   "name": "stickexportertx",
   "productName": "StickExporterTX",
-  "version": "0.6",
+  "version": "0.6.1",
   "description": "A 3D Stick Exporter for EdgeTX/OpenTX Logs.",
   "main": "src/index.js",
   "scripts": {
