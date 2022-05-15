@@ -35,7 +35,7 @@ logger.transports.file.resolvePath = () => path.join(dataFolder, "logs", "main.l
 
 function startRender() {
     const {exec} = require("child_process");
-    var blenderCons = exec('"' + dataFolder + '\\assets\\blender\\blender" "' + dataFolder + '\\assets\\template.blend" --background --python "' + dataFolder + '\\assets\\blenderScript.py"', {maxBuffer: Infinity});
+    var blenderCons = exec('"assets\\blender\\blender" "assets\\template.blend" --background --python "assets\\blenderScript.py"', {maxBuffer: Infinity});
     
     frames = "0";
     lastFrame = "0";

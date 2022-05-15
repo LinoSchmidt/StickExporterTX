@@ -1,15 +1,16 @@
 {
   "name": "stickexportertx",
-  "productName": "stickexportertx",
-  "version": "0.5",
-  "description": "A 3D Sticks Exporter for EdgeTX/OpenTX logs.",
+  "productName": "StickExporterTX",
+  "version": "0.6",
+  "description": "A 3D Stick Exporter for EdgeTX/OpenTX Logs.",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "package-win": "electron-packager . stickexportertx --overwrite --asar=true --platform=win32 --arch=ia32 --icon=icon.ico --prune=true --out=release-builds --version-string.CompanyName=\"Lino Schmidt\" --version-string.FileDescription=\"3D Stick Exporter for EdgeTX/OpenTX Logs\" --version-string.ProductName=StickExporterTX"
   },
   "keywords": [],
   "author": {
@@ -56,6 +57,7 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.63",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
     "@electron-forge/maker-zip": "^6.0.0-beta.63",
-    "electron": "18.1.0"
+    "electron": "18.1.0",
+    "electron-packager": "^15.5.1"
   }
 }

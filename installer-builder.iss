@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "StickExporterTX"
-#define MyAppVersion "0.5"
+#define MyAppVersion "0.6"
 #define MyAppPublisher "Lino Schmidt"
 #define MyAppURL "https://stickexportertx.lino3d.de"
 #define MyAppExeName "stickexportertx.exe"
@@ -22,9 +22,9 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=D:\Git\stickexportertx\output
+OutputDir=output
 OutputBaseFilename=stickexportertx-setup
-SetupIconFile=D:\Git\stickexportertx\icon.ico
+SetupIconFile=icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -37,16 +37,8 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\locales\*"; DestDir: "{app}\locales"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\swiftshader\*"; DestDir: "{app}\swiftshader"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\resources\app\package.json"; DestDir: "{app}\resources\app"; Flags: ignoreversion
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\resources\app\src\*"; DestDir: "{app}\resources\app\src"; Flags: ignoreversion
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\resources\app\src\js\*"; DestDir: "{app}\resources\app\src\js"; Flags: ignoreversion
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\resources\app\src\css\*"; DestDir: "{app}\resources\app\src\css"; Flags: ignoreversion
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\resources\app\node_modules\*"; DestDir: "{app}\resources\app\node_modules"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Git\stickexportertx\out\stickexportertx-win32-x64\resources\app\src\assets\*"; DestDir: "{userappdata}\stickexportertx\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "release-builds\stickexportertx-win32-ia32\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -55,4 +47,3 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
