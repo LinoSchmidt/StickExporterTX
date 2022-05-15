@@ -5,7 +5,6 @@ A 3D Sticks Exporter for EdgeTX/OpenTX logs.
 Setup:
 ------
 - Lade [Blender Portable](https://www.blender.org/download) Version herunter und Entpacke es mit dem Namen `blender` in den Ordner `<Projektordner>/assets`.
-Wenn dieser nicht existiert, erstellen sie den Ordner.
 - Starte eine Console in dem Projektordner und führe den Befehl `npm install` aus um alle notwendingen packages zu installieren.
 
 Start:
