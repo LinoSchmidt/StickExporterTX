@@ -1,7 +1,7 @@
 {
   "name": "stickexportertx",
   "productName": "StickExporterTX",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A 3D Stick Exporter for EdgeTX/OpenTX Logs.",
   "main": "src/index.js",
   "scripts": {
@@ -10,7 +10,9 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "package-win": "electron-packager . stickexportertx --overwrite --asar=true --platform=win32 --arch=ia32 --icon=icon.ico --prune=true --out=release-builds --version-string.CompanyName=\"Lino Schmidt\" --version-string.FileDescription=\"3D Stick Exporter for EdgeTX/OpenTX Logs\" --version-string.ProductName=StickExporterTX"
+    "package-win": "electron-packager . stickexportertx --overwrite --asar=true --platform=win32 --arch=ia32 --icon=icon.ico --prune=true --out=release-builds --version-string.CompanyName=\"Lino Schmidt\" --version-string.FileDescription=\"3D Stick Exporter for EdgeTX/OpenTX Logs\" --version-string.ProductName=StickExporterTX",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=icon.icns --prune=true --out=release-builds",
+    "package-lx": "electron-packager . stickexportertx --overwrite --asar=true --platform=linux --arch=x64 --icon=icon.png --prune=true --out=release-builds"
   },
   "keywords": [],
   "author": {
@@ -49,7 +51,6 @@
     "@electron/remote": "^2.0.8",
     "electron-log": "^4.4.7",
     "electron-squirrel-startup": "^1.0.0",
-    "line-replace": "^2.0.1",
     "xml-formatter": "^2.6.1"
   },
   "devDependencies": {

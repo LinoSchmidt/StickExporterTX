@@ -6,7 +6,10 @@ import sys
 import bpy
 import xml.etree.ElementTree as ET
 
-settings = ET.parse("")
+argv = sys.argv
+argv = argv[argv.index("--") + 1:]
+
+settings = ET.parse(argv[0])
 
 logger = logging.getLogger('simple_example')
 logger.setLevel(logging.INFO)

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "StickExporterTX"
-#define MyAppVersion "0.6.1"
+#define MyAppVersion "0.6.2"
 #define MyAppPublisher "Lino Schmidt"
 #define MyAppURL "https://stickexportertx.lino3d.de"
 #define MyAppExeName "stickexportertx.exe"

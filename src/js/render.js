@@ -24,7 +24,6 @@ const fs = require("fs");
 const formatXml = require("xml-formatter");
 const {dialog, app} = require("@electron/remote");
 const path = require('path');
-const lineReplace = require('line-replace');
 
 const dataFolder = app.getPath('userData');
 const SettingFolder = path.join(dataFolder, "settings.xml");
@@ -33,27 +32,13 @@ const blenderPath = path.join("assets", "blender", "blender");
 const templatePath = path.join("assets", "template.blend");
 const blenderScriptPath = path.join("assets", "blenderScript.py");
 
-lineReplace({
-    file: blenderScriptPath,
-    line: 9,
-    text: 'settings = ET.parse("' + SettingFolder.replaceAll('\\', '/') + '")',
-    addNewLine: true,
-    callback: ({error}) => {
-        if(error != null) {
-            statusDisplay.innerHTML = "Something went wrong! Check Logs.";
-            statusDisplay.style.color = "red";
-            logger.error(error);
-        }
-    }
-});
-
 logger.transports.console.format = "{h}:{i}:{s} {text}";
 logger.transports.file.getFile();
 logger.transports.file.resolvePath = () => path.join(dataFolder, "logs", "main.log");
 
 function startRender() {
     const {exec} = require("child_process");
-    var blenderCons = exec('"' + blenderPath + '" "' + templatePath + '" --background --python "' + blenderScriptPath + '"', {maxBuffer: Infinity});
+    var blenderCons = exec('"' + blenderPath + '" "' + templatePath + '" --background --python "' + blenderScriptPath + '" -- "' + SettingFolder.replaceAll('\\', '/') + '"', {maxBuffer: Infinity});
     
     frames = "0";
     lastFrame = "0";
