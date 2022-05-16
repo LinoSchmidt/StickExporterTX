@@ -4,18 +4,18 @@ A 3D Sticks Exporter for EdgeTX/OpenTX logs.
 
 Setup:
 ------
-- Lade [Blender Portable](https://www.blender.org/download) Version herunter und Entpacke es mit dem Namen `blender` in den Ordner `<Projektordner>/assets`.
-- Starte eine Console in dem Projektordner und führe den Befehl `npm install` aus um alle notwendingen packages zu installieren.
+- Download [Blender (Portable)](https://www.blender.org/download) and unpack it with the name `blender` in the folder `<Project folder>/assets`.
+- Start a console in the project folder and execute the command `npm install` to install the necessary packages.
 
-Start:
+Test:
 ------
-Um das Programm zu starten, führe den Befehl `npm start` im Projektordner aus.
+To test the program, execute the command `npm start` in the project folder.
 
-Build Windows:
+Build (Windows):
 ------
-Um das Programm zu Builden, führe den Befehl `npm run package-win` im Projektordner aus.
-Öffne die Datei `installer-builder.iss` mit dem Programm [Inno Setup Compiler](https://jrsoftware.org/isdl.php#stable) und Compile das Programm.
-Der Fertige installer sollte nach dem Compilen in `<Projektordner>/output` landen.
+To build the program, execute the command `npm run package-win` in the project folder.
+After that, open the file `installer-builder.iss` with the program [Inno Setup Compiler](https://jrsoftware.org/isdl.php#stable) and compile it.
+The finished installer should be inside `<Project Folder>/output`.
 
 
 Copyright © 2022 Lino Schmidt. All rights reserved.
