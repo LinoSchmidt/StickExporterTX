@@ -5,9 +5,8 @@ import math
 import sys
 import bpy
 import xml.etree.ElementTree as ET
-import os
 
-settings = ET.parse(os.path.join(os.getenv('APPDATA'), "StickExporterTX", "settings.xml"))
+settings = ET.parse("")
 
 logger = logging.getLogger('simple_example')
 logger.setLevel(logging.INFO)

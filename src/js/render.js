@@ -7,8 +7,8 @@ var fps = 25
 var width = 540
 var stickDistance = 5
 var stickMode2 = true
-var log = '"C:\\"'
-var output = "C:\\"
+var log = '"None"'
+var output = "None"
 
 const statusDisplay = document.getElementById("status");
 const fpsDisplay = document.getElementById("fpsInput");
@@ -22,12 +22,30 @@ const logNumberDisplay = document.getElementById("logNumber");
 const logger = require('electron-log');
 const fs = require("fs");
 const formatXml = require("xml-formatter");
-const {dialog} = require("@electron/remote");
+const {dialog, app} = require("@electron/remote");
 const path = require('path');
+const lineReplace = require('line-replace');
 
-var appName = "stickexportertx";
-var dataFolder = path.join(process.env.APPDATA, appName);
-var SettingFolder = path.join(dataFolder, "settings.xml");
+const dataFolder = app.getPath('userData');
+const SettingFolder = path.join(dataFolder, "settings.xml");
+
+const blenderPath = path.join("assets", "blender", "blender");
+const templatePath = path.join("assets", "template.blend");
+const blenderScriptPath = path.join("assets", "blenderScript.py");
+
+lineReplace({
+    file: blenderScriptPath,
+    line: 9,
+    text: 'settings = ET.parse("' + SettingFolder.replaceAll('\\', '/') + '")',
+    addNewLine: true,
+    callback: ({error}) => {
+        if(error != null) {
+            statusDisplay.innerHTML = "Something went wrong! Check Logs.";
+            statusDisplay.style.color = "red";
+            logger.error(error);
+        }
+    }
+});
 
 logger.transports.console.format = "{h}:{i}:{s} {text}";
 logger.transports.file.getFile();
@@ -35,7 +53,7 @@ logger.transports.file.resolvePath = () => path.join(dataFolder, "logs", "main.l
 
 function startRender() {
     const {exec} = require("child_process");
-    var blenderCons = exec('"assets\\blender\\blender" "assets\\template.blend" --background --python "assets\\blenderScript.py"', {maxBuffer: Infinity});
+    var blenderCons = exec('"' + blenderPath + '" "' + templatePath + '" --background --python "' + blenderScriptPath + '"', {maxBuffer: Infinity});
     
     frames = "0";
     lastFrame = "0";
