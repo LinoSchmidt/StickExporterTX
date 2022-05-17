@@ -17,4 +17,4 @@ After that, open the file `installer-builder.iss` with the program [Inno Setup C
 The finished installer should be inside `<Project Folder>/output`.
 
 ## Licence:
-his project is released under the MIT license, for more information, check the [LICENSE](LICENSE.md) file.
+This project is released under the MIT license, for more information, check the [LICENSE](LICENSE.md) file.
