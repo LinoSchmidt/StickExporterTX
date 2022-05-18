@@ -1,18 +1,23 @@
 # StickExporterTX
 
-A 3D Sticks Exporter for EdgeTX/OpenTX logs.
+StickExporterTX is a 3D Stick Exporter for EdgeTX/OpenTX logs.
 
-## Setup:
-- Download [Blender (Portable)](https://www.blender.org/download) and unpack it with the name `blender` in the folder `<Project folder>/assets`.
-- Start a console in the project folder and execute the command `npm install` to install the necessary packages.
+## Quick Start Guide
 
-## Test:
-To test the program, execute the command `npm start` in the project folder.
+To log your sticks on every model, go to `settings -> global functions` in your RC Controller.
 
-## Build:
-### Windows:
-To build the program, execute the command `npm run build` in the project folder.
-The finished installer should be inside `<Project Folder>/dist`.
+![global-functions](readme/pictures/global-functions.bmp)
+
+There you can choose one of the free fields and edit it.
+For `Switch` you choose the one, wo should activate the logging. For example, you can set it to the arm switch of your drone so that it is logging as long as the drone is armed.
+`Func` must be set to `SD Logs` and with `Value` you should take the lowest in order to create a smoother animation.
+
+![function-edit](readme/pictures/function-edit.bmp)
+
+If you want to set up logging for one model, go to `model -> special functions` in your RC Controller and repeat the previous step.
+
+![special-functions](readme/pictures/special-functions.bmp)
 
 ## Licence:
+
 This project is released under the MIT license, for more information, check the [LICENSE](LICENSE.md) file.
