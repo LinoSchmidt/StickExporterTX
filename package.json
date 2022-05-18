@@ -6,12 +6,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\"",
-    "build": "electron-builder",
-    "package-lx": "electron-packager . stickexportertx --overwrite --asar=true --platform=linux --arch=x64 --icon=icon.png --prune=true --out=release-builds"
+    "publish": "electron-builder build --publish always",
+    "build": "electron-builder build"
   },
   "keywords": [],
   "author": {
@@ -47,6 +43,81 @@
       ]
     }
   },
+  "build": {
+    "appId": "de.lino3d.stickexportertx",
+    "productName": "StickExporterTX",
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraFiles": [
+      "assets/template.blend"
+    ],
+    "win": {
+      "icon": "icon.png",
+      "target": [
+        "nsis"
+      ],
+      "extraFiles": [
+        {
+          "from": "assets/blender-win/",
+          "to": "assets/blender/",
+          "filter": [
+            "**/*"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "license": "LICENSE"
+    },
+    "linux": {
+      "icon": "icon.png",
+      "category": "graphics",
+      "target": [
+        "zip",
+        "deb",
+        "rpm"
+      ],
+      "extraFiles": [
+        {
+          "from": "assets/blender-linux/",
+          "to": "assets/blender/",
+          "filter": [
+            "**/*"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "icon": "icon.icns",
+      "category": "public.app-category.graphics-design",
+      "target": [
+        "dmg"
+      ],
+      "extraFiles": [
+        {
+          "from": "assets/blender-mac/",
+          "to": "assets/blender/",
+          "filter": [
+            "**/*"
+          ]
+        }
+      ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "LinoSchmidt",
+      "repo": "StickExporterTX"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinoSchmidt/StickExporterTX"
+  },
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "electron-log": "^4.4.7",
@@ -61,28 +132,5 @@
     "@electron-forge/maker-zip": "^6.0.0-beta.63",
     "electron": "18.1.0",
     "electron-builder": "^23.0.3"
-  },
-  "build": {
-    "appId": "de.lino3d.stickexportertx",
-    "productName": "StickExporterTX",
-    "files": [
-      "src/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ],
-    "extraFiles": [
-      "assets/**/*"
-    ],
-    "win": {
-      "icon": "icon.png",
-      "target": [
-        "nsis"
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "license": "LICENSE"
-    }
   }
 }
