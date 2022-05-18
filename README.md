@@ -14,7 +14,7 @@ For `Switch` you choose the one, wo should activate the logging. For example, yo
 
 ![function-edit](readme/pictures/function-edit.bmp)
 
-If you want to set up logging for one model, go to `model -> special functions` in your RC Controller and repeat the previous step.
+If you want to set up logging for one model alone, go to `model -> special functions` in your RC Controller and repeat the previous step.
 
 ![special-functions](readme/pictures/special-functions.bmp)
 
