@@ -20,4 +20,4 @@ If you want to set up logging for one model alone, go to `model -> special funct
 
 ## Licence:
 
-This project is released under the MIT license, for more information, check the [LICENSE](LICENSE.md) file.
+This project is released under the MIT license, for more information, check the [LICENSE](LICENSE) file.
