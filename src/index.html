@@ -1,50 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8"/>
-    
+    <meta charset="UTF-8" />
     <title>StickExporterTX</title>
-    
-    <link rel="stylesheet" href="./css/style.css"/>
-    <link rel="stylesheet" href="./css/toggle-switchy.css"/>
   </head>
-  <body>
-    <button onclick="startRender()">Start Render</button>
-    <p id="logNumber">Log 0/0</p>
-    <div class="dataDiv">
-      <p id="status">Idle</p>
-      <button onclick="openOutputFolder()">Open Output Folder</button>
-    </div>
-    <hr>
-    <div class="dataDiv">
-      <p>FPS: </p>
-      <input id="fpsInput" type="number" value="25" min="1" step="1" onchange="setFPS();">
-    </div>
-    <div class="dataDiv">
-      <p>Width: </p>
-      <input id="widthInput" type="number" value="540" min="1" step="1" onchange="setWidth();">
-    </div>
-    <div class="dataDiv">
-      <p>Stick Distance: </p>
-      <input id="stickDistanceInput" type="number" value="540" min="0" step="1" onchange="setStickDistance();">
-    </div>
-    <div class="dataDiv">
-      <p>Stick Mode:</p>
-      <label for="stickMode" class="toggle-switchy" data-style="rounded" data-text="12">
-        <input checked type="checkbox" id="stickMode" onchange="setStickMode();">
-        <span class="toggle">
-          <span class="switch"></span>
-        </span>
-      </label>
-    </div>
-    <div class="dataDiv">
-      <p id="log">Logs:<br/></p>
-      <button onclick="openLog();">Open Log</button>
-    </div>
-    <div class="dataDiv">
-      <p id="output">Output Folder: </p>
-      <button onclick="openVid();">Open Video</button>
-    </div>
-    <script src="./js/render.js"></script>
+  <body style="background-color: #172336;margin:0;padding:0;color:white;font-family:sans-serif;">
+    <div id="root"></div>
+    
+    <script src="./.webpack/renderer.js"></script>
   </body>
 </html>
