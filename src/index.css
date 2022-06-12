@@ -36,6 +36,8 @@ header {
 }
 header h1 {
     margin-right: auto;
+    display: flex;
+    width: auto;
 }
 
 #settings-back {
@@ -90,7 +92,6 @@ header h1 {
     border: none;
     outline: none;
     margin-right: 15px;
-    display: none;
 }
 #update-available svg {
     width: 35px;
@@ -101,4 +102,91 @@ header h1 {
 }
 #update-available:hover {
     transform: scale(1.05);
+}
+
+#blender-info {
+    margin-right: auto;
+}
+#blender-info p {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+#blender-icon {
+    width: 25px;
+    height: 25px;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+#blender-icon svg {
+    width: 25px;
+    height: 25px;
+    fill: white;
+}
+#blender-loading-icon {
+    animation: rotate-icon 1.2s linear infinite;
+}
+#blender-loading-icon path {
+    fill: #2196F3;
+}
+#blender-ready-icon path {
+    fill: #00c24a;
+}
+
+#renderLoadingDiv {
+    position: absolute;
+    background-color: rgba(0,0,0,0.9);
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+#renderLoadingDiv svg {
+    height: 50%;
+    fill: #2196F3;
+    animation: rotate-icon 1.2s linear infinite;
+}
+
+@keyframes rotate-icon {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+#start-render {
+    cursor: pointer;
+    background-color: #00c24a;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    align-items: center;
+    border: none;
+    outline: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+#start-render svg {
+    width: 50px;
+    height: 50px;
+    fill: white;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+#start-render:hover {
+    transform: scale(1.05);
+}
+
+#render-ex {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+}
+#renderImgDiv {
+    position: relative;
+    margin-top: 15px;
+    width: 100%;
 }

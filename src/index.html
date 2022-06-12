@@ -7,6 +7,13 @@
   <body style="background-color: #172336;margin:0;padding:0;color:white;font-family:sans-serif;">
     <div id="root"></div>
     
-    <script src="./.webpack/renderer.js"></script>
+    <script>
+      if(process.env.NODE_ENV === 'development') {
+        const port = process.env.PORT || 3000;
+        document.write('<script src="http://localhost:'+port+'/renderer.js"><\/script>');
+      } else {
+        document.write('<script src="./.webpack/renderer.js"><\/script>');
+      }
+    </script>
   </body>
 </html>

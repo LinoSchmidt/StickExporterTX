@@ -1,5 +1,6 @@
 import {app, BrowserWindow} from 'electron';
 import {initialize as remoteInitialize, enable as remoteEnable} from '@electron/remote/main';
+import path from 'path';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -14,20 +15,21 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
     }
   });
   
-  if(app.isPackaged) mainWindow.setMenu(null);
+  // remove the menu bar when in production.
+  if(process.env.NODE_ENV === 'production') mainWindow.setMenu(null);
   
   remoteInitialize();
   remoteEnable(mainWindow.webContents);
 
-  // and load the index.html of the app.
-  mainWindow.loadFile("src/index.html");
+  // load the index.html of the app.
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
-  // Open the DevTools.
-  if(!app.isPackaged) mainWindow.webContents.openDevTools();
+  // Open the DevTools when in development mode.
+  if(process.env.NODE_ENV === 'development') mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished

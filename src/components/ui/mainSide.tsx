@@ -3,11 +3,16 @@ import { dialog } from "@electron/remote";
 import { settingList, updateSettings } from "../settings";
 import logger from "../logger";
 import {exec} from "child_process";
-import Render from "../render";
+import {blender, blenderCmd} from "../blender-controller";
+
+let setStatus:React.Dispatch<React.SetStateAction<string>>;
+let setLogNumber:React.Dispatch<React.SetStateAction<string>>;
 
 function MainSide() {
-    const [status, setStatus] = useState("Idle");
-    const [logNumber, setLogNumber] = useState("0");
+    const [status, setStatusInner] = useState("Idle");
+    setStatus = setStatusInner;
+    const [logNumber, setLogNumberInner] = useState("0");
+    setLogNumber = setLogNumberInner;
     const [logs, setLogs] = useState(settingList.log);
     const [output, setOutput] = useState(settingList.output);
     const [logTable, setLogTable] = useState(logs.substring(1).slice(0, -1).split('""').map((log, index) => {
@@ -25,7 +30,12 @@ function MainSide() {
     
     return (
         <div id="content">
-            <button onClick={() => Render(setStatus, setLogNumber)}>Start Render</button>
+            <button id="start-render" onClick={() => blender(blenderCmd.startRendering)}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                    {/* <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                    <path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z"/>
+                </svg>
+            </button>
             <p>{"Log " + logNumber + "/" + String(settingList.log.split("\"\"").length)}</p>
             <div className="dataDiv">
                 <p>{status}</p>
@@ -96,3 +106,7 @@ function openOutputFolder() {
 }
 
 export default MainSide;
+export {
+    setStatus,
+    setLogNumber
+}

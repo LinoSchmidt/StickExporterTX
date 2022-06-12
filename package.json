@@ -3,13 +3,15 @@
   "name": "stickexportertx",
   "productName": "StickExporterTX",
   "description": "3D stick exporter for EdgeTX/OpenTX logs",
-  "main": "src/.webpack/index.js",
+  "main": "src/index.build.js",
   "scripts": {
-    "build:main": "webpack --config configs/webpack.main.config.babel.js",
-    "build:renderer": "webpack --config configs/webpack.renderer.config.babel.js",
-    "build": "npm run build:main && npm run build:renderer",
-    "start": "npm run build && electron .",
-    "build:app": "npm run build && electron-builder build"
+    "build:main": "cross-env NODE_ENV=production webpack --config configs/webpack.main.prod.config.babel.js",
+    "build:renderer": "cross-env NODE_ENV=production webpack --config configs/webpack.renderer.prod.config.babel.js",
+    "build": "cross-env npm run build:main && cross-env npm run build:renderer",
+    "bundle": "cross-env npm run build && electron-builder build",
+    "start:renderer": "cross-env NODE_ENV=development webpack serve --config configs/webpack.renderer.dev.config.babel.js",
+    "start:main": "cross-env NODE_ENV=development webpack --config configs/webpack.main.dev.config.babel.js && cross-env NODE_ENV=development electron .",
+    "start": "cross-env npm run start:renderer"
   },
   "keywords": [],
   "author": {
@@ -18,33 +20,6 @@
     "url": "https://link.lino3d.de"
   },
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "stickexportertx"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
-  },
   "build": {
     "appId": "de.lino3d.stickexportertx",
     "productName": "StickExporterTX",
@@ -54,7 +29,8 @@
       "package.json"
     ],
     "extraFiles": [
-      "assets/template.blend"
+      "assets/template.blend",
+      "assets/blenderScript.py"
     ],
     "win": {
       "icon": "icon.png",
@@ -63,7 +39,7 @@
       ],
       "extraFiles": [
         {
-          "from": "assets/blender-win/",
+          "from": "assets/blender/",
           "to": "assets/blender/",
           "filter": [
             "**/*"
@@ -86,7 +62,7 @@
       ],
       "extraFiles": [
         {
-          "from": "assets/blender-linux/",
+          "from": "assets/blender/",
           "to": "assets/blender/",
           "filter": [
             "**/*"
@@ -102,7 +78,7 @@
       ],
       "extraFiles": [
         {
-          "from": "assets/blender-mac/",
+          "from": "assets/blender/",
           "to": "assets/blender/",
           "filter": [
             "**/*"
@@ -124,6 +100,7 @@
     "@electron/remote": "^2.0.8",
     "electron-log": "^4.4.7",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^5.0.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "xml-formatter": "^2.6.1"
@@ -144,6 +121,7 @@
     "@typescript-eslint/parser": "^5.27.0",
     "@vercel/webpack-asset-relocator-loader": "^1.7.2",
     "babel-loader": "^8.2.5",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
     "electron": "18.1.0",
     "electron-builder": "^23.0.3",
@@ -153,7 +131,6 @@
     "eslint-plugin-react-hooks": "^4.5.0",
     "eslint-webpack-plugin": "^3.1.1",
     "fork-ts-checker-webpack-plugin": "^7.2.11",
-    "html-webpack-plugin": "^5.5.0",
     "node-loader": "^2.0.0",
     "sass": "^1.52.1",
     "sass-loader": "^13.0.0",

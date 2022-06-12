@@ -3,7 +3,6 @@ import ESLintPlugin from "eslint-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
 export default {
-    mode: 'production',
     module: {
         rules: [
             {

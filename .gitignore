@@ -265,3 +265,6 @@ output/
 
 blender-win/
 blender-linux/
+blender/
+
+index.build.js
