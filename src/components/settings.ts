@@ -7,6 +7,16 @@ function getXMLChild(doc:Document, child:string) {
     return String(doc.getElementsByTagName(child)[0].childNodes[0].nodeValue);
 }
 
+const defaultSettings = {
+    fps: 30,
+    width: 540,
+    stickDistance: 5,
+    stickMode2: true,
+    log: '"None"',
+    output: "None"
+}
+
+let loadedSuccessfully = true;
 const settingList = await fetch(SettingPath).then(function(response){
     return response.text();
 }).then(function(data){
@@ -23,24 +33,18 @@ const settingList = await fetch(SettingPath).then(function(response){
     }
     
 }).catch(function(error) {
-    logger.errorMSG(error);
-    
-    return {
-        fps: 30,
-        width: 540,
-        stickDistance: 5,
-        stickMode2: true,
-        log: '"None"',
-        output: "None"
-    }
+    logger.warning("Could not load settings: " + error.toString() + "\n Creating new settings file...");
+    loadedSuccessfully = false;
+    return defaultSettings;
 });
+if(!loadedSuccessfully) updateSettings({});
 
 function settingListLoadDefault() {
     updateSettings({
-        fps: 30,
-        width: 540,
-        stickDistance: 5,
-        stickMode2: true
+        fps:defaultSettings.fps,
+        width:defaultSettings.width,
+        stickDistance:defaultSettings.stickDistance,
+        stickMode2:defaultSettings.stickMode2
     });
 }
 
@@ -94,5 +98,5 @@ function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:num
 export {
     updateSettings,
     settingListLoadDefault,
-    settingList
+    settingList,
 }
