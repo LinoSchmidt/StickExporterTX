@@ -190,3 +190,23 @@ header h1 {
     margin-top: 15px;
     width: 100%;
 }
+
+.noMarginBottom {
+    margin-bottom: 0;
+}
+
+#outputDiv {
+    display: flex;
+    align-items: center;
+}
+#output {
+    margin-left: 5px;
+}
+
+#openLogButton {
+    margin-top: 5px;
+}
+#deleteLogsButton {
+    margin-top: 5px;
+    margin-left: 5px;
+}

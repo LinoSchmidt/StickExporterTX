@@ -30,7 +30,12 @@ function MainSide() {
         
         setLogTable(logListName.map((log, index) => {
             return <tr key={index}>
-                <td title={logList[index]}>{log}</td>
+                <td title={logList[index]}>{index+1}. {log}</td>
+                <td><button onClick={() => {
+                    const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
+                    updateSettings({log:newLogs});
+                    setLogs(newLogs);
+                }}>Delete</button></td>
             </tr>
         }));
     }, [logs]);
@@ -49,24 +54,29 @@ function MainSide() {
                 <button onClick={() => openOutputFolder()}>Open Output Folder</button>
             </div>
             <hr/>
+            <h4 className="noMarginBottom">Logs:</h4>
+            <table>
+                <tbody>
+                    {logTable}
+                </tbody>
+            </table>
             <div className="dataDiv">
-                <p>Logs:</p>
-                <table>
-                    <tbody>
-                        {logTable}
-                    </tbody>
-                </table>
-                <button onClick={() => openLog(setLogs)}>Open Log</button>
+                <button id="openLogButton" onClick={() => addLog(setLogs)}>Add Log(s)</button>
+                <button id="deleteLogsButton" onClick={() => {
+                    updateSettings({log:""});
+                    setLogs("");
+                }}>Delete All</button>
             </div>
-            <div className="dataDiv">
-                <p id="output">{"Output Folder: " + output}</p>
+            <div className="dataDiv" id="outputDiv">
+                <h4>Output Folder:</h4>
+                <p id="output">{output}</p>
                 <button onClick={() => openVid(setOutput)}>Open Video</button>
             </div>
         </div>
     )
 }
 
-function openLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
+function addLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
     dialog.showOpenDialog({
         properties: [
             "multiSelections"
@@ -82,10 +92,16 @@ function openLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
     }).then(result => {
         let logStr = "";
         result.filePaths.forEach(value => {
-            logStr += "\"" + String(value) + "\"";
+            const logToAdd = "\"" + value + "\"";
+            if(settingList.log.includes(logToAdd)) {
+                logger.warningMSG("Log already added!");
+            } else {
+                logStr += "\"" + String(value) + "\"";
+            }
         });
-        updateSettings({log:logStr});
-        updateHook(logStr);
+        const newLogs = settingList.log + logStr;
+        updateSettings({log:newLogs});
+        updateHook(newLogs);
     }).catch(err => {
         logger.errorMSG(err);
     });
