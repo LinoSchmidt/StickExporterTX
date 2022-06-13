@@ -21,7 +21,14 @@ function MainSide() {
         </tr>
     }));
     useEffect(() => {
-        setLogTable(logs.substring(1).slice(0, -1).split('""').map((log, index) => {
+        const logList = settingList.log.substring(1).slice(0, -1).split('""');
+        
+        const logListName:string[] = [];
+        logList.forEach(log => {
+            logListName.push(log.split('\\')[log.split('\\').length - 1]);
+        });
+        
+        setLogTable(logListName.map((log, index) => {
             return <tr key={index}>
                 <td>{log}</td>
             </tr>
