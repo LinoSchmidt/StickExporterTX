@@ -30,7 +30,7 @@ function MainSide() {
         
         setLogTable(logListName.map((log, index) => {
             return <tr key={index}>
-                <td>{log}</td>
+                <td title={logList[index]}>{log}</td>
             </tr>
         }));
     }, [logs]);
