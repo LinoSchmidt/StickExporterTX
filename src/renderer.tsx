@@ -26,7 +26,7 @@ function openSide(side:Side) {
     
     root.render(
         <React.StrictMode>
-            <Menu updateAvailable={false} side={side}/>
+            <Menu side={side}/>
             {(side === Side.Main)? <MainSide/> : null}
             {(side === Side.Settings)? <SettingsSite/> : null}
             {(side === Side.Rendering)? <RenderingSide/> : null}
