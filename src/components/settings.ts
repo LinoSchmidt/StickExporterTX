@@ -1,5 +1,5 @@
 import formatXML from "xml-formatter";
-import {SettingPath} from './paths';
+import {SettingPath, defaultOutputPath} from './paths';
 import fs from "fs";
 import logger from "./logger";
 
@@ -12,8 +12,8 @@ const defaultSettings = {
     width: 540,
     stickDistance: 5,
     stickMode2: true,
-    log: '"None"',
-    output: "None"
+    log: '',
+    output: defaultOutputPath
 }
 
 let loadedSuccessfully = true;
