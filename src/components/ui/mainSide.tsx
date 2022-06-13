@@ -21,23 +21,28 @@ function MainSide() {
         </tr>
     }));
     useEffect(() => {
-        const logList = settingList.log.substring(1).slice(0, -1).split('""');
+        if(settingList.log == "") {
+            setLogTable([]);
+        } else {
         
-        const logListName:string[] = [];
-        logList.forEach(log => {
-            logListName.push(log.split('\\')[log.split('\\').length - 1]);
-        });
-        
-        setLogTable(logListName.map((log, index) => {
-            return <tr key={index}>
-                <td title={logList[index]}>{index+1}. {log}</td>
-                <td><button onClick={() => {
-                    const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
-                    updateSettings({log:newLogs});
-                    setLogs(newLogs);
-                }}>Delete</button></td>
-            </tr>
-        }));
+            const logList = settingList.log.substring(1).slice(0, -1).split('""');
+            
+            const logListName:string[] = [];
+            logList.forEach(log => {
+                logListName.push(log.split('\\')[log.split('\\').length - 1]);
+            });
+            
+            setLogTable(logListName.map((log, index) => {
+                return <tr key={index}>
+                    <td title={logList[index]}>{index+1}. {log}</td>
+                    <td><button onClick={() => {
+                        const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
+                        updateSettings({log:newLogs});
+                        setLogs(newLogs);
+                    }}>Delete</button></td>
+                </tr>
+            }));
+        }
     }, [logs]);
     
     return (
@@ -70,7 +75,7 @@ function MainSide() {
             <div className="dataDiv" id="outputDiv">
                 <h4>Output Folder:</h4>
                 <p id="output">{output}</p>
-                <button onClick={() => openVid(setOutput)}>Open Video</button>
+                <button onClick={() => openVid(setOutput)}>Select Output Folder</button>
             </div>
         </div>
     )
