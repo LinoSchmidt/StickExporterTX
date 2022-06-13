@@ -4,6 +4,8 @@ import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
 import { setLogNumber, setStatus } from "./ui/mainSide";
 import {imageLoading, imageLoaded} from "./ui/settingsSide";
+import { settingList } from "./settings";
+import isValid from "is-valid-path";
 
 const blenderStartString = [
     templatePath,
@@ -125,9 +127,15 @@ function blender(command:blenderCmd) {
         }
     } else if(command === blenderCmd.startRendering) {
         if(readyToAcceptCommand) {
-            readyToAcceptCommand = false;
-            renderingVideo = true;
-            blenderConsole.stdin.write("startRendering\n");
+            if(settingList.log == "") {
+                logger.errorMSG("No log selected!");
+            } else if(!isValid(settingList.log)) {
+                logger.errorMSG("Output path is invalid!");
+            } else {
+                readyToAcceptCommand = false;
+                renderingVideo = true;
+                blenderConsole.stdin.write("startRendering\n");
+            }
         }
     } else if(command === blenderCmd.stopRendering) {
         restartBlender();
