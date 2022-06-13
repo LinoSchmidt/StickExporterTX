@@ -3,6 +3,7 @@ import { settingList, updateSettings, settingListLoadDefault } from "../settings
 import {blender, blenderCmd, renderingPicture} from "../blender-controller";
 import {dataPath} from "../paths";
 import path from "path";
+import {openSide, Side} from "../../renderer";
 
 let setRenderImg:React.Dispatch<React.SetStateAction<string>>;
 let setRenderLoading:React.Dispatch<React.SetStateAction<boolean>>;
@@ -47,26 +48,26 @@ function SettingsSide() {
         <div id="content">
             <div className="dataDiv">
                 <p>FPS: </p>
-                <input id="fpsInput" type="number" defaultValue={fps.toString()} min="1" step="1" onChange={e => {
+                <input id="fpsInput" type="number" value={fps.toString()} min="1" step="1" onChange={e => {
                     if(e.target.value.trim().length !== 0) setFps(parseInt(e.target.value));
                 }}/>
             </div>
             <div className="dataDiv">
                 <p>Width: </p>
-                <input id="widthInput" type="number" defaultValue={width.toString()} min="1" step="1" onChange={e => {
+                <input id="widthInput" type="number" value={width.toString()} min="1" step="1" onChange={e => {
                     if(e.target.value.trim().length !== 0) setWidth(parseInt(e.target.value));
                 }}/>
             </div>
             <div className="dataDiv">
                 <p>Stick Distance: </p>
-                <input id="stickDistanceInput" type="number" defaultValue={stickDistance.toString()} min="0" step="1" onChange={e => {
+                <input id="stickDistanceInput" type="number" value={stickDistance.toString()} min="0" step="1" onChange={e => {
                     if(e.target.value.trim().length !== 0) setStickDistance(parseInt(e.target.value));
                 }}/>
             </div>
             <div className="dataDiv">
                 <p>Stick Mode:</p>
                 <label htmlFor="stickMode" className="toggle-switchy" data-style="rounded" data-text="12">
-                    <input defaultChecked={stickMode2} type="checkbox" id="stickMode" onChange={e => {
+                    <input checked={stickMode2} type="checkbox" id="stickMode" onChange={e => {
                         setStickMode2(e.target.checked);
                     }}/>
                     <span className="toggle">
@@ -81,6 +82,8 @@ function SettingsSide() {
                 setWidth(settingList.width);
                 setStickDistance(settingList.stickDistance);
                 setStickMode2(settingList.stickMode2);
+                
+                openSide(Side.Settings);
             }}>Reset Settings</button>
             <div id="renderImgDiv">
                 <img id="render-ex" src={renderImg}></img>
