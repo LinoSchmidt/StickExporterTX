@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import { openSide, Side } from "../../renderer";
+import {blender, blenderCmd} from "../blender-controller";
 
 const UpdateButton = () => (
     <div id="update-available">
@@ -21,8 +22,11 @@ const MainSideButtons = () => (
     </div>
 )
 
-const OtherSideButtons = () => (
-    <button id="settings-back" onClick={() => openSide(Side.Main)}>Back</button>
+const SettingsSideButtons = () => (
+    <button className="back-button" onClick={() => openSide(Side.Main)}>Back</button>
+)
+const RenderingSideButton = () => (
+    <button className="back-button" id="stopRender" onClick={() => blender(blenderCmd.stopRendering)}>Stop</button>
 )
 
 const BlenderLoadingSVG = () => (
@@ -58,7 +62,9 @@ function Menu({updateAvailable, side}:{updateAvailable:boolean, side:Side}) {
                 <p>{blenderStatus}</p>
             </div>
             {updateAvailable? <UpdateButton/> : null}
-            {(side == Side.Main)? <MainSideButtons/> : <OtherSideButtons/>}
+            {(side == Side.Main)? <MainSideButtons/> : null}
+            {(side == Side.Settings)? <SettingsSideButtons/> : null}
+            {(side == Side.Rendering)? <RenderingSideButton/> : null}
         </header>
     )
 }

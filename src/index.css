@@ -40,7 +40,7 @@ header h1 {
     width: auto;
 }
 
-#settings-back {
+.back-button {
     cursor: pointer;
     padding: 10px;
     background-color: #2196F3;
@@ -51,9 +51,13 @@ header h1 {
     font-size: large;
 }
 
-#settings-back:hover {
+.back-button:hover {
     transform: scale(1.05);
     text-decoration: none;
+}
+
+#stopRender {
+    background-color: #e1334e;
 }
 
 #content {
@@ -207,6 +211,31 @@ header h1 {
     margin-top: 5px;
 }
 #deleteLogsButton {
+    background-color: #e1334e;
     margin-top: 5px;
     margin-left: 5px;
+}
+
+#openOutputMain {
+    margin-top: 15px;
+    display: block;
+}
+
+.listButton {
+    background-color: #e1334e;
+    padding: 5px;
+    border-radius: 12px;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: bolder;
+}
+button:hover {
+    transform: scale(1.05);
 }

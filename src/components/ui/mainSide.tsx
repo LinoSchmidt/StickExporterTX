@@ -5,14 +5,7 @@ import logger from "../logger";
 import {exec} from "child_process";
 import {blender, blenderCmd} from "../blender-controller";
 
-let setStatus:React.Dispatch<React.SetStateAction<string>>;
-let setLogNumber:React.Dispatch<React.SetStateAction<string>>;
-
 function MainSide() {
-    const [status, setStatusInner] = useState("Idle");
-    setStatus = setStatusInner;
-    const [logNumber, setLogNumberInner] = useState("0");
-    setLogNumber = setLogNumberInner;
     const [logs, setLogs] = useState(settingList.log);
     const [output, setOutput] = useState(settingList.output);
     const [logTable, setLogTable] = useState(logs.substring(1).slice(0, -1).split('""').map((log, index) => {
@@ -35,7 +28,7 @@ function MainSide() {
             setLogTable(logListName.map((log, index) => {
                 return <tr key={index}>
                     <td title={logList[index]}>{index+1}. {log}</td>
-                    <td><button onClick={() => {
+                    <td><button className="listButton" onClick={() => {
                         const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
                         updateSettings({log:newLogs});
                         setLogs(newLogs);
@@ -53,12 +46,7 @@ function MainSide() {
                     <path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z"/>
                 </svg>
             </button>
-            <p>{"Log " + logNumber + "/" + String(settingList.log.split("\"\"").length)}</p>
-            <div className="dataDiv">
-                <p>{status}</p>
-                <button onClick={() => openOutputFolder()}>Open Output Folder</button>
-            </div>
-            <hr/>
+            <button id="openOutputMain" onClick={() => openOutputFolder()}>Open Output Folder</button>
             <h4 className="noMarginBottom">Logs:</h4>
             <table>
                 <tbody>
@@ -99,7 +87,7 @@ function addLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
         result.filePaths.forEach(value => {
             const logToAdd = "\"" + value + "\"";
             if(settingList.log.includes(logToAdd)) {
-                logger.warningMSG("Log already added!");
+                logger.warningMSG("Log already added: " + logToAdd);
             } else {
                 logStr += "\"" + String(value) + "\"";
             }
@@ -135,6 +123,5 @@ function openOutputFolder() {
 
 export default MainSide;
 export {
-    setStatus,
-    setLogNumber
+    openOutputFolder
 }

@@ -2,10 +2,11 @@ import { blenderPath, blenderScriptPath, dataPath, templatePath } from "./paths"
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
-import { setLogNumber, setStatus } from "./ui/mainSide";
+import { setLogNumber, setStatus } from "./ui/renderingSide";
 import {imageLoading, imageLoaded} from "./ui/settingsSide";
 import { settingList } from "./settings";
 import isValid from "is-valid-path";
+import { sideSetRendering } from "../renderer";
 
 const blenderStartString = [
     templatePath,
@@ -63,6 +64,7 @@ function startBlender() {
             setStatus("Rendering Frame " + lastFrame + "/" + frames);
         }
         if(dataStr.includes("Finished") && renderingVideo) {
+            sideSetRendering(false);
             if(lastFrame == frames) {
                 setStatus("Finished Render Successfully!");
             } else {
@@ -77,6 +79,8 @@ function startBlender() {
         }
         
         if(dataStr.includes("Waiting for command")) {
+            sideSetRendering(false);
+            
             if(renderingPicture) {
                 imageLoaded();
             }
@@ -104,6 +108,7 @@ function startBlender() {
 }
 
 function restartBlender() {
+    sideSetRendering(false);
     blenderConsole.kill();
     blenderConsole = spawn(blenderPath, blenderStartString);
     startBlender();
@@ -134,14 +139,15 @@ function blender(command:blenderCmd) {
             } else {
                 readyToAcceptCommand = false;
                 renderingVideo = true;
+                sideSetRendering(true);
                 blenderConsole.stdin.write("startRendering\n");
             }
         }
     } else if(command === blenderCmd.stopRendering) {
-        restartBlender();
         readyToAcceptCommand = false;
         renderingPicture = false;
         renderingVideo = false;
+        restartBlender();
     }
 }
 
