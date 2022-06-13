@@ -58,10 +58,11 @@ while True:
     fps = int(settingsRoot[0].text)
     width = int(settingsRoot[1].text)
     StickDistance = _map(int(settingsRoot[2].text), 0, 100, 5, 105)
-    logs = settingsRoot[4].text[1:][:-1].split("\"\"")
-    output = settingsRoot[5].text
     
     if(command == "startRendering"):
+        
+        logs = settingsRoot[4].text[1:][:-1].split("\"\"")
+        output = settingsRoot[5].text
         
         logCount = len(logs)
         logNumber = 1
