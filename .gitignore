@@ -263,8 +263,9 @@ out/
 
 output/
 
-blender-win/
-blender-linux/
-blender/
+dependencies/windows/
+dependencies/darwin/
+dependencies/linux/
 
 index.build.js
+index.build.js.LICENSE.txt

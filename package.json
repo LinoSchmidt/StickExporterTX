@@ -1,10 +1,11 @@
 {
-  "version": "0.6.2",
+  "version": "0.8.1",
   "name": "stickexportertx",
   "productName": "StickExporterTX",
   "description": "3D stick exporter for EdgeTX/OpenTX logs",
   "main": "src/index.build.js",
   "scripts": {
+    "install:deps": "python ./scripts/download-blender.py",
     "build:main": "cross-env NODE_ENV=production webpack --config configs/webpack.main.prod.config.babel.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --config configs/webpack.renderer.prod.config.babel.js",
     "build": "cross-env npm run build:main && cross-env npm run build:renderer",
@@ -29,8 +30,8 @@
       "package.json"
     ],
     "extraFiles": [
-      "assets/template.blend",
-      "assets/blenderScript.py"
+      "dependencies/template.blend",
+      "dependencies/blenderScript.py"
     ],
     "win": {
       "icon": "icon.png",
@@ -39,8 +40,8 @@
       ],
       "extraFiles": [
         {
-          "from": "assets/blender/",
-          "to": "assets/blender/",
+          "from": "dependencies/windows/",
+          "to": "dependencies/windows/",
           "filter": [
             "**/*"
           ]
@@ -62,8 +63,8 @@
       ],
       "extraFiles": [
         {
-          "from": "assets/blender/",
-          "to": "assets/blender/",
+          "from": "dependencies/linux/",
+          "to": "dependencies/linux/",
           "filter": [
             "**/*"
           ]
@@ -78,8 +79,8 @@
       ],
       "extraFiles": [
         {
-          "from": "assets/blender/",
-          "to": "assets/blender/",
+          "from": "dependencies/darwin/",
+          "to": "dependencies/darwin/",
           "filter": [
             "**/*"
           ]
