@@ -35,7 +35,7 @@
       "dependencies/blenderScript.py"
     ],
     "win": {
-      "icon": "icon.png",
+      "icon": "assets/icon.png",
       "target": [
         "nsis"
       ],
@@ -55,7 +55,7 @@
       "license": "LICENSE"
     },
     "linux": {
-      "icon": "icon.png",
+      "icon": "assets/icon.png",
       "category": "graphics",
       "target": [
         "zip",
@@ -73,7 +73,7 @@
       ]
     },
     "mac": {
-      "icon": "icon.icns",
+      "icon": "assets/icon.icns",
       "category": "public.app-category.graphics-design",
       "target": [
         "dmg"
