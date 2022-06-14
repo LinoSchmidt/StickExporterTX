@@ -28,7 +28,7 @@ const settingList = await fetch(SettingPath).then(function(response){
         width: parseInt(getXMLChild(xmlDoc, "width")),
         stickDistance: parseInt(getXMLChild(xmlDoc, "stickDistance")),
         stickMode2: (getXMLChild(xmlDoc, "stickMode2") === "true"),
-        log: getXMLChild(xmlDoc, "log"),
+        log: (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log"),
         output: getXMLChild(xmlDoc, "output")
     }
     
@@ -84,7 +84,7 @@ function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:num
         '</fps><width>' + optiones.width +
         '</width><stickDistance>' + optiones.stickDistance +
         '</stickDistance><stickMode2>' + ((optiones.stickMode2)?"true":"false") +
-        '</stickMode2><log>' + optiones.log +
+        '</stickMode2><log>' + ((optiones.log === "")? "None":optiones.log) +
         '</log><output>' + optiones.output +
         '</output></settings>';
     
