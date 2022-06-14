@@ -3,7 +3,6 @@ import { settingList, updateSettings, settingListLoadDefault } from "../settings
 import {blender, blenderCmd, renderingPicture} from "../blender-controller";
 import {dataPath} from "../paths";
 import path from "path";
-import {openSide, Side} from "../../renderer";
 
 let setRenderImg:React.Dispatch<React.SetStateAction<string>>;
 let setRenderLoading:React.Dispatch<React.SetStateAction<boolean>>;
@@ -82,8 +81,6 @@ function SettingsSide() {
                 setWidth(settingList.width);
                 setStickDistance(settingList.stickDistance);
                 setStickMode2(settingList.stickMode2);
-                
-                openSide(Side.Settings);
             }}>Reset Settings</button>
             <div id="renderImgDiv">
                 <img id="render-ex" src={renderImg}></img>
