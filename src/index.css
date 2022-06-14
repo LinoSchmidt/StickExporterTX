@@ -193,6 +193,7 @@ header h1 {
     position: relative;
     margin-top: 15px;
     width: 100%;
+    image-rendering: pixelated;
 }
 
 .noMarginBottom {
