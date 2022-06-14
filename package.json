@@ -6,6 +6,7 @@
   "main": "src/index.build.js",
   "scripts": {
     "install:deps": "python ./scripts/download-blender.py",
+    "install": "npm install && npm run install:deps",
     "build:main": "cross-env NODE_ENV=production webpack --config configs/webpack.main.prod.config.babel.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --config configs/webpack.renderer.prod.config.babel.js",
     "build": "cross-env npm run build:main && cross-env npm run build:renderer",
