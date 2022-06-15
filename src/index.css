@@ -240,3 +240,38 @@ button {
 button:hover {
     transform: scale(1.05);
 }
+
+.inputSpan {
+    position: relative;
+    display: inline-block;
+    align-items: center;
+    padding-bottom: 15px;
+}
+.inputSpan input {
+    width: 75px;
+    padding: 8px 0;
+    border: 0;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
+    text-align: center;
+    font-size: large;
+    line-height: 0px;
+}
+.inputSpan label {
+    padding: 10px 10px;
+    background: #00c24a;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+    font-weight: bolder;
+    text-shadow: #0d131e 1px 1px 1px;
+}
+
+#settingRow {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#resetSettingsButton {
+    height: 35px;
+}

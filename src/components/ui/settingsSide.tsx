@@ -45,43 +45,47 @@ function SettingsSide() {
     
     return (
         <div id="content">
-            <div className="dataDiv">
-                <p>FPS: </p>
-                <input id="fpsInput" type="number" value={fps.toString()} min="1" step="1" onChange={e => {
-                    if(e.target.value.trim().length !== 0) setFps(parseInt(e.target.value));
-                }}/>
-            </div>
-            <div className="dataDiv">
-                <p>Width: </p>
-                <input id="widthInput" type="number" value={width.toString()} min="1" step="1" onChange={e => {
-                    if(e.target.value.trim().length !== 0) setWidth(parseInt(e.target.value));
-                }}/>
-            </div>
-            <div className="dataDiv">
-                <p>Stick Distance: </p>
-                <input id="stickDistanceInput" type="number" value={stickDistance.toString()} min="0" step="1" onChange={e => {
-                    if(e.target.value.trim().length !== 0) setStickDistance(parseInt(e.target.value));
-                }}/>
-            </div>
-            <div className="dataDiv">
-                <p>Stick Mode:</p>
-                <label htmlFor="stickMode" className="toggle-switchy" data-style="rounded" data-text="12">
-                    <input checked={stickMode2} type="checkbox" id="stickMode" onChange={e => {
-                        setStickMode2(e.target.checked);
+            <div id="settingRow">
+                <span className="inputSpan">
+                    <label>FPS</label>
+                    <input id="fpsInput" type="number" value={fps.toString()} min="1" step="1" onChange={e => {
+                        if(e.target.value.trim().length !== 0) setFps(parseInt(e.target.value));
                     }}/>
-                    <span className="toggle">
-                        <span className="switch"></span>
-                    </span>
-                </label>
+                </span>
+                <span className="inputSpan">
+                    <label>Width: </label>
+                    <input id="widthInput" type="number" value={width.toString()} min="1" step="1" onChange={e => {
+                        if(e.target.value.trim().length !== 0) setWidth(parseInt(e.target.value));
+                    }}/>
+                </span>
+                <span className="inputSpan">
+                    <label>Stick Distance: </label>
+                    <input id="stickDistanceInput" type="number" value={stickDistance.toString()} min="0" step="1" onChange={e => {
+                        if(e.target.value.trim().length !== 0) setStickDistance(parseInt(e.target.value));
+                    }}/>
+                </span>
             </div>
-            <button onClick={() => {
-                settingListLoadDefault();
-                
-                setFps(settingList.fps);
-                setWidth(settingList.width);
-                setStickDistance(settingList.stickDistance);
-                setStickMode2(settingList.stickMode2);
-            }}>Reset Settings</button>
+            <div id="settingRow">
+                <div className="dataDiv">
+                    <p>Stick Mode:</p>
+                    <label htmlFor="stickMode" className="toggle-switchy" data-style="rounded" data-text="12">
+                        <input checked={stickMode2} type="checkbox" id="stickMode" onChange={e => {
+                            setStickMode2(e.target.checked);
+                        }}/>
+                        <span className="toggle">
+                            <span className="switch"></span>
+                        </span>
+                    </label>
+                </div>
+                <button id="resetSettingsButton" onClick={() => {
+                    settingListLoadDefault();
+                    
+                    setFps(settingList.fps);
+                    setWidth(settingList.width);
+                    setStickDistance(settingList.stickDistance);
+                    setStickMode2(settingList.stickMode2);
+                }}>Reset Settings</button>
+            </div>
             <div id="renderImgDiv">
                 <img id="render-ex" src={renderImg}></img>
                 {renderLoading? <RenderLoadingSpinner/> : null}
