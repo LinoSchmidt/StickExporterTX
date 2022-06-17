@@ -27,7 +27,7 @@ function MainSide() {
             
             setLogTable(logListName.map((log, index) => {
                 return <tr key={index}>
-                    <td title={logList[index]}>{index+1}. {log}</td>
+                    <td id="logList-Name" title={logList[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf('\\')))}>{index+1}. {log}</td>
                     <td><button className="listButton" onClick={() => {
                         const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
                         updateSettings({log:newLogs});
@@ -46,7 +46,6 @@ function MainSide() {
                     <path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z"/>
                 </svg>
             </button>
-            <button id="openOutputMain" onClick={() => openOutputFolder()}>Open Output Folder</button>
             <h4 className="noMarginBottom">Logs:</h4>
             <table>
                 <tbody>
@@ -62,8 +61,8 @@ function MainSide() {
             </div>
             <div className="dataDiv" id="outputDiv">
                 <h4>Output Folder:</h4>
-                <p id="output">{output}</p>
-                <button onClick={() => openVid(setOutput)}>Select Output Folder</button>
+                <p id="output" onClick={() => openFolder(settingList.output)}>{output}</p>
+                <button onClick={() => openVid(setOutput)}>Select Folder</button>
             </div>
         </div>
     )
@@ -113,15 +112,15 @@ function openVid(updateHook:React.Dispatch<React.SetStateAction<string>>) {
     });
 }
 
-function openOutputFolder() {
+function openFolder(folder:string) {
     if(settingList.output == "None") {
         logger.warningMSG("No output folder set!");
     } else {
-        exec('start "" "' + settingList.output + '"');
+        exec('start "" "' + folder + '"');
     }
 }
 
 export default MainSide;
 export {
-    openOutputFolder
+    openFolder
 }

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { settingList } from "../settings";
-import {openOutputFolder} from "./mainSide";
+import {openFolder} from "./mainSide";
 
 let setLogNumber:React.Dispatch<React.SetStateAction<string>>;
 let setStatus:React.Dispatch<React.SetStateAction<string>>;
@@ -15,7 +15,7 @@ function RenderingSide() {
         <div id="content">
             <p>{"Log " + logNumber + "/" + String(settingList.log.split("\"\"").length)}</p>
             <p>{status}</p>
-            <button onClick={() => openOutputFolder()}>Open Output Folder</button>
+            <button onClick={() => openFolder(settingList.output)}>Open Output Folder</button>
         </div>
     )
 }

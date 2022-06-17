@@ -199,6 +199,10 @@ header h1 {
 #output {
     margin-left: 5px;
 }
+#output:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
 
 #openLogButton {
     margin-top: 5px;
@@ -266,4 +270,9 @@ button:hover {
 
 #resetSettingsButton {
     height: 35px;
+}
+
+#logList-Name:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
