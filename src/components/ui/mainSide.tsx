@@ -22,7 +22,7 @@ function MainSide() {
             
             const logListName:string[] = [];
             logList.forEach(log => {
-                logListName.push(log.split('\\')[log.split('\\').length - 1]);
+                logListName.push(log.split('\\')[log.split('\\').length - 1].replace(".csv", ""));
             });
             
             setLogTable(logListName.map((log, index) => {
