@@ -86,7 +86,7 @@ function addLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
         result.filePaths.forEach(value => {
             const logToAdd = "\"" + value + "\"";
             if(settingList.log.includes(logToAdd)) {
-                logger.warningMSG("Log already added: " + logToAdd);
+                logger.warningMSG("Log " + logToAdd + " already added.");
             } else {
                 logStr += "\"" + String(value) + "\"";
             }
