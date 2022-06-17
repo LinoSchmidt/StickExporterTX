@@ -56,8 +56,6 @@ function startBlender() {
             frames = dataStr.split(":")[1];
             renderingVideo = true;
             readyToAcceptCommand = false;
-            setBlenderStatus("Rendering");
-            setBlenderLoading(true);
         }
         if(dataStr.includes("Fra:") && renderingVideo) {
             lastFrame = dataStr.split(":")[1].split(" ")[0];
@@ -126,6 +124,8 @@ function blender(command:blenderCmd) {
             readyToAcceptCommand = false;
             renderingPicture = true;
             imageLoading();
+            setBlenderStatus("Rendering");
+            setBlenderLoading(true);
             blenderConsole.stdin.write("getRender\n");
         } else {
             waitingForRender = true;
@@ -133,13 +133,15 @@ function blender(command:blenderCmd) {
     } else if(command === blenderCmd.startRendering) {
         if(readyToAcceptCommand) {
             if(settingList.log == "") {
-                logger.errorMSG("No log selected!");
+                logger.warningMSG("No log selected!");
             } else if(!isValid(settingList.log)) {
-                logger.errorMSG("Output path is invalid!");
+                logger.warningMSG("Output path is invalid!");
             } else {
                 readyToAcceptCommand = false;
                 renderingVideo = true;
                 sideSetRendering(true);
+                setBlenderStatus("Rendering");
+                setBlenderLoading(true);
                 blenderConsole.stdin.write("startRendering\n");
             }
         }
