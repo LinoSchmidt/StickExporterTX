@@ -28,9 +28,9 @@
     "appId": "de.lino3d.stickexportertx",
     "productName": "StickExporterTX",
     "files": [
-      "src/**/*",
-      "node_modules/**/*",
-      "package.json"
+      "src/.webpack/renderer.js",
+      "src/index.build.js",
+      "src/index.html"
     ],
     "extraFiles": [
       "dependencies/template.blend",
