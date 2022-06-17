@@ -7,6 +7,7 @@
   "scripts": {
     "install:win32": "python ./scripts/download-blender.py",
     "install:linux": "python3 ./scripts/download-blender.py",
+    "install:darwin": "python3 ./scripts/download-blender.py",
     "install": "run-script-os",
     "build:main": "cross-env NODE_ENV=production webpack --config configs/webpack.main.prod.config.babel.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --config configs/webpack.renderer.prod.config.babel.js",
