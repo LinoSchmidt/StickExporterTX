@@ -17,7 +17,9 @@ const blenderStartString = [
     dataPath.replaceAll("\\", "/")
 ]
 
-let blenderConsole = spawn(blenderPath, blenderStartString);
+let blenderConsole = spawn(blenderPath, blenderStartString).on('error', function(err) {
+    logger.errorMSG("Could not start blender: " + err.toString());
+});
 let readyToAcceptCommand = false;
 let renderingPicture = false;
 let renderingVideo = false;
