@@ -27,7 +27,7 @@ function MainSide() {
             
             setLogTable(logListName.map((log, index) => {
                 return <tr key={index}>
-                    <td id="logList-Name" title={logList[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf('\\')))}>{index+1}. {log}</td>
+                    <td id="logList-Name" title={logList[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf('\\')).substring(0, logList[index].lastIndexOf('/')))}>{index+1}. {log}</td>
                     <td><button className="listButton" onClick={() => {
                         const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
                         updateSettings({log:newLogs});
