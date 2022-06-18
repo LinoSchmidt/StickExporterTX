@@ -16,6 +16,14 @@ if(process.platform === "win32") {
     platformFolder = "linux";
 }
 
+export function platformCharacter() {
+    let platformCharacterTEMP = "/";
+    if (process.platform === "win32") {
+        platformCharacterTEMP = "\\";
+    }
+    return platformCharacterTEMP;
+}
+
 export const blenderPath = path.join(appPath, "dependencies", platformFolder, "blender", "blender");
 export const templatePath = path.join(appPath, "dependencies", "template.blend");
 export const blenderScriptPath = path.join(appPath, "dependencies", "blenderScript.py");

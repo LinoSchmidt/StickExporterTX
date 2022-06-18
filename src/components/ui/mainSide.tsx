@@ -4,6 +4,7 @@ import { settingList, updateSettings } from "../settings";
 import logger from "../logger";
 import {blender, blenderCmd} from "../blender-controller";
 import openFolder from "../openFolder";
+import {platformCharacter} from "../paths";
 
 function MainSide() {
     const [logs, setLogs] = useState(settingList.log);
@@ -22,12 +23,12 @@ function MainSide() {
             
             const logListName:string[] = [];
             logList.forEach(log => {
-                logListName.push(log.split('\\')[log.split('\\').length - 1].split('/')[log.split('/').length - 1].replace(".csv", ""));
+                logListName.push(log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""));
             });
             
             setLogTable(logListName.map((log, index) => {
                 return <tr key={index}>
-                    <td id="logList-Name" title={logList[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf('\\')).substring(0, logList[index].lastIndexOf('/')))}>{index+1}. {log}</td>
+                    <td id="logList-Name" title={logList[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf(platformCharacter())))}>{index+1}. {log}</td>
                     <td><button className="listButton" onClick={() => {
                         const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
                         updateSettings({log:newLogs});
