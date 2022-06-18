@@ -105,8 +105,10 @@ function openVid(updateHook:React.Dispatch<React.SetStateAction<string>>) {
             "openDirectory"
         ]
     }).then(result => {
-        updateSettings({output:String(result.filePaths)});
-        updateHook(String(result.filePaths));
+        if(result.filePaths.length > 0) {
+            updateSettings({output:String(result.filePaths)});
+            updateHook(String(result.filePaths));
+        }
     }).catch(err => {
         logger.errorMSG(err);
     });
