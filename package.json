@@ -32,7 +32,7 @@
       "src/index.build.js",
       "src/index.html"
     ],
-    "extraFiles": [
+    "extraResources": [
       "dependencies/template.blend",
       "dependencies/blenderScript.py"
     ],
@@ -41,7 +41,7 @@
       "target": [
         "nsis"
       ],
-      "extraFiles": [
+      "extraResources": [
         {
           "from": "dependencies/windows/",
           "to": "dependencies/windows/",
@@ -64,7 +64,7 @@
         "deb",
         "rpm"
       ],
-      "extraFiles": [
+      "extraResources": [
         {
           "from": "dependencies/linux/",
           "to": "dependencies/linux/",
@@ -80,7 +80,7 @@
       "target": [
         "dmg"
       ],
-      "extraFiles": [
+      "extraResources": [
         {
           "from": "dependencies/darwin/",
           "to": "dependencies/darwin/",
