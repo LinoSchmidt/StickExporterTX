@@ -2,8 +2,8 @@ import React, {useState, useEffect} from "react";
 import { dialog } from "@electron/remote";
 import { settingList, updateSettings } from "../settings";
 import logger from "../logger";
-import {exec} from "child_process";
 import {blender, blenderCmd} from "../blender-controller";
+import openFolder from "../openFolder";
 
 function MainSide() {
     const [logs, setLogs] = useState(settingList.log);
@@ -112,15 +112,4 @@ function openVid(updateHook:React.Dispatch<React.SetStateAction<string>>) {
     });
 }
 
-function openFolder(folder:string) {
-    if(settingList.output == "None") {
-        logger.warningMSG("No output folder set!");
-    } else {
-        exec('start "" "' + folder + '"');
-    }
-}
-
 export default MainSide;
-export {
-    openFolder
-}

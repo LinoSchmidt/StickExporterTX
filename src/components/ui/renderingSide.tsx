@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { settingList } from "../settings";
-import {openFolder} from "./mainSide";
+import openFolder from "../openFolder";
 
 let setLogNumber:React.Dispatch<React.SetStateAction<string>>;
 let setStatus:React.Dispatch<React.SetStateAction<string>>;
