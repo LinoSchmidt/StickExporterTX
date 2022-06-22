@@ -25,8 +25,8 @@ header {
     margin-bottom: 25px;
 }
 #winHeader {
-    padding: 0px 5px;
-    padding-right: 142px;
+    padding: 0px 8px;
+    padding-right: 0px;
     height: 31px;
     -webkit-app-region: drag;
 }
@@ -77,14 +77,30 @@ header h1 {
     text-decoration: none;
 }
 
-#stopRender-win {
-    background-color: #e1334e;
+#backButton-win {
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    outline: none;
 }
-#stopRender-linux {
-    background-color: #e1334e;
+#backButton-win svg {
+    height: 18px;
+    fill: #9DA8B9;
 }
-#stopRender-win:hover {
-    background-color: red;
+#backButton-win:hover {
+    background-color: #2d323c;
+    transform: scale(1);
+}
+
+#stopRenderButton {
+    background-color: #e1334e;
+    margin-right: 10px;
 }
 
 #content {
@@ -95,22 +111,21 @@ header h1 {
 #settings-button-win {
     cursor: pointer;
     -webkit-app-region: no-drag;
-    background-color: #2196F3;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
     align-items: center;
     border: none;
     outline: none;
 }
 #settings-button-win svg {
-    height: 24px;
-    fill: white;
-    margin-left: 3px;
-    margin-top: 3px;
+    height: 18px;
+    fill: #9DA8B9;
 }
 #settings-button-win:hover {
-    background-color: #0b6ab9;
+    background-color: #2d323c;
     transform: scale(1);
 }
 
@@ -333,4 +348,29 @@ button:hover {
 #logList-Name:hover {
     cursor: pointer;
     text-decoration: underline;
+}
+
+.winMenuButtons {
+    fill: #9DA8B9;
+    height: 100%;
+    width: 47px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    -webkit-app-region: no-drag;
+}
+.winMenuButtons:hover {
+    background-color: #2d323c;
+}
+.winMenuButtons svg {
+    height: 17px;
+    width: 17px;
+}
+
+#winClose:hover {
+    background-color: red;
+}
+
+#winMinimize {
+    margin-left: 5px;
 }

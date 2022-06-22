@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { settingList } from "../settings";
 import openFolder from "../openFolder";
+import { blenderCmd, blender } from "../blender-controller";
 
 let setLogNumber:React.Dispatch<React.SetStateAction<string>>;
 let setStatus:React.Dispatch<React.SetStateAction<string>>;
@@ -15,6 +16,7 @@ function RenderingSide() {
         <div id="content">
             <p>{"Log " + logNumber + "/" + String(settingList.log.split("\"\"").length)}</p>
             <p>{status}</p>
+            <button id="stopRenderButton" onClick={() => blender(blenderCmd.stopRendering)}>Stop</button>
             <button onClick={() => openFolder(settingList.output)}>Open Output Folder</button>
         </div>
     )

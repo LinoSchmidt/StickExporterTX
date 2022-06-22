@@ -1,10 +1,9 @@
-import {app, BrowserWindow, dialog} from 'electron';
+import {app, BrowserWindow, dialog, ipcMain} from 'electron';
 import {initialize as remoteInitialize, enable as remoteEnable} from '@electron/remote/main';
 import path from 'path';
 import { autoUpdater } from "electron-updater";
 import logger from 'electron-log';
 import { Platform, platform } from './components/platform';
-
 logger.transports.console.format = "{h}:{i}:{s} {text}";
 logger.transports.file.getFile();
 logger.transports.file.resolvePath = () => path.join(app.getPath('userData'), "logs", "start.log");
@@ -65,11 +64,7 @@ const createWindow = () => {
       nodeIntegration: true,
       contextIsolation: false,
     },
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#0d131e',
-      symbolColor: '#74b1be'
-    }
+    titleBarStyle: 'hidden'
   });
   
   mainWindow.setMenu(null);
@@ -79,6 +74,14 @@ const createWindow = () => {
 
   // load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  
+  ipcMain.on('closeApp', () => {
+    app.quit();
+  });
+  
+  ipcMain.on('minimize', () => {
+    mainWindow.minimize();
+  });
 };
 
 // This method will be called when Electron has finished
