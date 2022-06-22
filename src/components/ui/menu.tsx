@@ -44,7 +44,7 @@ function Menu({side}:{side:Side}) {
     
     return (
         <header>
-            <h1 id="main-headline">{(side == Side.Main)? "StickExporterTX" : "Settings"}</h1>
+            <h4 id="main-headline">{(side == Side.Main)? "StickExporterTX" : "Settings"}</h4>
             <div id="blender-info">
                 <div id="blender-icon">
                     {blenderLoading? <BlenderLoadingSVG/> : <BlenderReadySVG/>}

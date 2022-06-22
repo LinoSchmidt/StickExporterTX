@@ -16,13 +16,14 @@ const defaultSettings = {
     output: defaultOutputPath
 }
 
-let loadedSuccessfully = true;
-const settingList = await fetch(SettingPath).then(function(response){
+let loadedSuccessfully = false;
+const settingList = await fetch(SettingPath).then(function(response) {
     return response.text();
-}).then(function(data){
+}).then(function(data) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(data, 'text/xml');
     
+    loadedSuccessfully = true;
     return {
         fps: parseInt(getXMLChild(xmlDoc, "fps")),
         width: parseInt(getXMLChild(xmlDoc, "width")),
@@ -31,22 +32,11 @@ const settingList = await fetch(SettingPath).then(function(response){
         log: (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log"),
         output: getXMLChild(xmlDoc, "output")
     }
-    
 }).catch(function(error) {
     logger.warning("Could not load settings: " + error.toString() + "\n Creating new settings file...");
-    loadedSuccessfully = false;
     return defaultSettings;
 });
 if(!loadedSuccessfully) updateSettings({});
-
-function settingListLoadDefault() {
-    updateSettings({
-        fps:defaultSettings.fps,
-        width:defaultSettings.width,
-        stickDistance:defaultSettings.stickDistance,
-        stickMode2:defaultSettings.stickMode2
-    });
-}
 
 function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, log?:string, output?:string}) {
     if(optiones.fps === undefined) {
@@ -92,6 +82,15 @@ function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:num
         if(err) {
             logger.errorMSG(String(err));
         }
+    });
+}
+
+function settingListLoadDefault() {
+    updateSettings({
+        fps:defaultSettings.fps,
+        width:defaultSettings.width,
+        stickDistance:defaultSettings.stickDistance,
+        stickMode2:defaultSettings.stickMode2
     });
 }
 

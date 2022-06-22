@@ -1,5 +1,6 @@
 import path from 'path';
 import {app} from '@electron/remote';
+import { platformFolder, platform, Platform } from './platform';
 
 export const dataPath = app.getPath('userData');
 export const appPath = app.getAppPath().replace("app.asar", "");
@@ -7,18 +8,9 @@ export const SettingPath = path.join(dataPath, "settings.xml");
 
 export const defaultOutputPath = path.join(app.getPath('videos'), "StickExporterTX");
 
-let platformFolder = "";
-if(process.platform === "win32") {
-    platformFolder = "windows";
-} else if(process.platform === "darwin") {
-    platformFolder = "darwin";
-} else if(process.platform === "linux") {
-    platformFolder = "linux";
-}
-
 export function platformCharacter() {
     let platformCharacterTEMP = "/";
-    if (process.platform === "win32") {
+    if (platform === Platform.Windows) {
         platformCharacterTEMP = "\\";
     }
     return platformCharacterTEMP;

@@ -3,6 +3,7 @@ import {initialize as remoteInitialize, enable as remoteEnable} from '@electron/
 import path from 'path';
 import { autoUpdater } from "electron-updater";
 import logger from 'electron-log';
+import { Platform, platform } from './components/platform';
 
 logger.transports.console.format = "{h}:{i}:{s} {text}";
 logger.transports.file.getFile();
@@ -63,20 +64,21 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+    },
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#0d131e',
+      symbolColor: '#74b1be'
     }
   });
   
-  // remove the menu bar when in production.
-  if(process.env.NODE_ENV === 'production') mainWindow.setMenu(null);
+  mainWindow.setMenu(null);
   
   remoteInitialize();
   remoteEnable(mainWindow.webContents);
 
   // load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
-  // Open the DevTools when in development mode.
-  if(process.env.NODE_ENV === 'development') mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -88,7 +90,7 @@ app.on('ready', createWindow);
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  if (platform !== Platform.Mac) {
     app.quit();
   }
 });
