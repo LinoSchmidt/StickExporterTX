@@ -20,21 +20,33 @@ header {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 0px 5px;
-    padding-right: 142px;
     background-color: #0d131e;
-    height: 31px;
     color: #9DA8B9;
     margin-bottom: 25px;
+}
+#winHeader {
+    padding: 0px 5px;
+    padding-right: 142px;
+    height: 31px;
     -webkit-app-region: drag;
 }
+#linuxHeader {
+    padding: 20px 25px;
+    height: 20px;
+}
+
 header h4 {
     margin-right: auto;
     display: flex;
     width: auto;
 }
+header h1 {
+    margin-right: auto;
+    display: flex;
+    width: auto;
+}
 
-.back-button {
+.back-button-win {
     cursor: pointer;
     -webkit-app-region: no-drag;
     padding: 6px 10px;
@@ -45,16 +57,33 @@ header h4 {
     border-radius: 15px;
     font-size: large;
 }
+.back-button-linux {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    display: flex;
+    font-size: large;
+}
 
-.back-button:hover {
+.back-button-win:hover {
     background-color: #0b6ab9;
     transform: scale(1);
 }
+.back-button-linux:hover {
+    transform: scale(1.05);
+    text-decoration: none;
+}
 
-#stopRender {
+#stopRender-win {
     background-color: #e1334e;
 }
-#stopRender:hover {
+#stopRender-linux {
+    background-color: #e1334e;
+}
+#stopRender-win:hover {
     background-color: red;
 }
 
@@ -63,7 +92,7 @@ header h4 {
     padding-right: 25px;
 }
 
-#settings-button {
+#settings-button-win {
     cursor: pointer;
     -webkit-app-region: no-drag;
     background-color: #2196F3;
@@ -74,37 +103,80 @@ header h4 {
     border: none;
     outline: none;
 }
-#settings-button svg {
+#settings-button-win svg {
     height: 24px;
     fill: white;
     margin-left: 3px;
     margin-top: 3px;
 }
-#settings-button:hover {
+#settings-button-win:hover {
     background-color: #0b6ab9;
     transform: scale(1);
 }
 
-#blender-info {
+#settings-button-linux {
+    cursor: pointer;
+    background-color: #2196F3;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    align-items: center;
+    border: none;
+    outline: none;
+}
+#settings-button-linux svg {
+    height: 35px;
+    fill: white;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+#settings-button-linux:hover {
+    transform: scale(1.05);
+}
+
+#blender-info-win {
     margin-right: auto;
     display: flex;
     align-items: center;
 }
-#blender-info p {
+#blender-info-win p {
     padding-left: 5px;
 }
-#blender-icon {
+
+#blender-info-linux {
+    margin-right: auto;
+}
+#blender-info-linux p {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+#blender-icon-win {
     width: 20px;
     height: 20px;
     align-items: center;
     margin-left: auto;
     margin-right: auto;
 }
-#blender-icon svg {
+#blender-icon-linux {
+    width: 25px;
+    height: 25px;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#blender-icon-win svg {
     width: 20px;
     height: 20px;
     fill: white;
 }
+#blender-icon-linux svg {
+    width: 25px;
+    height: 25px;
+    fill: white;
+}
+
 #blender-loading-icon {
     animation: rotate-icon 1.2s linear infinite;
 }
