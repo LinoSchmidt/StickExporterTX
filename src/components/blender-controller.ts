@@ -7,6 +7,7 @@ import {imageLoading, imageLoaded} from "./ui/settingsSide";
 import { settingList } from "./settings";
 import isValid from "is-valid-path";
 import { sideSetRendering } from "../renderer";
+import { ipcRenderer } from "electron";
 
 const blenderStartString = [
     templatePath,
@@ -154,6 +155,14 @@ function blender(command:blenderCmd) {
         restartBlender();
     }
 }
+
+ipcRenderer.on("isRenderActiveClose", () => {
+    if(renderingPicture || renderingVideo) {
+        ipcRenderer.send("renderActiveClose");
+    } else {
+        ipcRenderer.send("renderInactiveClose");
+    }
+});
 
 export {
     blender,

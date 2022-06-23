@@ -76,11 +76,34 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
   
   ipcMain.on('closeApp', () => {
-    app.quit();
+    mainWindow.webContents.send('isRenderActiveClose');
   });
   
   ipcMain.on('minimize', () => {
     mainWindow.minimize();
+  });
+  
+  ipcMain.on('renderInactiveClose', () => {
+    app.quit();
+  });
+  ipcMain.on('renderActiveClose', async () => {
+    const response = await dialog.showMessageBox({
+      type: 'warning',
+      noLink: true,
+      buttons: ['Cancel', 'Exit'],
+      defaultId: 0,
+      title: 'Close',
+      message: 'A video is still being renderd!',
+      detail:
+        'If you close the application, the progress will be lost!',
+    });
+    if (response.response === 1) {
+      app.quit();
+    }
+  });
+  
+  mainWindow.on('close', () => {
+    mainWindow.webContents.send('closeApp');
   });
 };
 

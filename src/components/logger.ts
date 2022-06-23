@@ -23,6 +23,7 @@ const logger = {
     
         dialog.showMessageBox({
             type: 'error',
+            noLink: true,
             buttons: ['Open Log', 'OK'],
             defaultId: 1,
             title: 'Something went wrong!',
