@@ -332,7 +332,6 @@ button:hover {
     border-top-left-radius: 18px;
     border-bottom-left-radius: 18px;
     font-weight: bolder;
-    text-shadow: #0d131e 1px 1px 1px;
 }
 
 #settingRow {
@@ -373,4 +372,37 @@ button:hover {
 
 #winMinimize {
     margin-left: 5px;
+}
+
+.progress {
+    height: 25px;
+    width: 100%;
+    background-color: #0d131e;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+.progress-done {
+    height: 100%;
+    background: repeating-linear-gradient(
+        -45deg,
+        #2196F3,
+        #2196F3 10px,
+        #0b6ab9 10px,
+        #0b6ab9 20px
+    );
+    border-radius: 15px;
+    transition: width 1s;
+}
+.progress label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: large;
 }

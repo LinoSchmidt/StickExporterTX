@@ -94,8 +94,20 @@ function settingListLoadDefault() {
     });
 }
 
+function getLogList() {
+    return settingList.log.split("\"\"");
+}
+
+function getLogSize(index:number) {
+    const logList = settingList.log.substring(1).slice(0, -1).split('""');
+    
+    return fs.statSync(logList[index]).size;
+}
+
 export {
     updateSettings,
     settingListLoadDefault,
     settingList,
+    getLogList,
+    getLogSize
 }

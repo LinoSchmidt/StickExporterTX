@@ -2,11 +2,11 @@ import { blenderPath, blenderScriptPath, dataPath, templatePath } from "./paths"
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
-import { setLogNumber, setStatus } from "./ui/renderingSide";
+import { setLogNumber, setRenderDisplayProgress, setStatus } from "./ui/renderingSide";
 import {imageLoading, imageLoaded} from "./ui/settingsSide";
-import { settingList } from "./settings";
+import { getLogList, getLogSize, settingList } from "./settings";
 import isValid from "is-valid-path";
-import { sideSetRendering } from "../renderer";
+import { sideSetRendering, setProgress } from "../renderer";
 import { ipcRenderer } from "electron";
 
 const blenderStartString = [
@@ -26,9 +26,25 @@ let renderingPicture = false;
 let renderingVideo = false;
 let waitingForRender = false;
 
+let logPortionList:number[] = [];
+let currentLogPortion = 0;
+
+const estimatedRenderPortion = 0.97;
+function setRenderProgress(log:number, init:boolean, frameCount:number, frame:number) {
+    let progress = 0;
+    if(init) {
+        progress = logPortionList[log-1] * (frame / frameCount * (1 - estimatedRenderPortion)) + currentLogPortion;
+    } else {
+        progress = logPortionList[log-1] * (frame / frameCount * estimatedRenderPortion + (1 - estimatedRenderPortion)) + currentLogPortion;
+    }
+    setProgress(progress);
+    setRenderDisplayProgress(parseFloat((progress*100).toFixed(2)));
+}
+
 function startBlender() {
     let frames = "0";
     let lastFrame = "0";
+    let log = "0";
     
     blenderConsole.stdout.on('data', function(data) {
         const dataStr = data.toString();
@@ -52,6 +68,7 @@ function startBlender() {
             renderingVideo = false;
             setBlenderStatus("Restarting");
             setBlenderLoading(true);
+            setProgress();
             restartBlender();
         }
         
@@ -59,10 +76,12 @@ function startBlender() {
             frames = dataStr.split(":")[1];
             renderingVideo = true;
             readyToAcceptCommand = false;
+            setRenderProgress(parseInt(log), true, 0, 0);
         }
         if(dataStr.includes("Fra:") && renderingVideo) {
             lastFrame = dataStr.split(":")[1].split(" ")[0];
             setStatus("Rendering Frame " + lastFrame + "/" + frames);
+            setRenderProgress(parseInt(log), false, parseInt(frames), parseInt(lastFrame));
         }
         if(dataStr.includes("Finished") && renderingVideo) {
             sideSetRendering(false);
@@ -74,13 +93,19 @@ function startBlender() {
         }
         if(dataStr.includes("Init:") && renderingVideo) {
             setStatus("Initialize Frame " + dataStr.split(":")[1] + "/" + frames);
+            setRenderProgress(parseInt(log), true, parseInt(frames), parseInt(dataStr.split(":")[1]));
         }
         if(dataStr.includes("Lognr:") && renderingVideo) {
-            setLogNumber(dataStr.split(":")[1]);
+            log = dataStr.split(":")[1];
+            if(log !== "1") {
+                currentLogPortion += logPortionList[parseInt(log)-2];
+            }
+            setLogNumber(log);
         }
         
         if(dataStr.includes("Waiting for command")) {
             sideSetRendering(false);
+            setProgress();
             
             if(renderingPicture) {
                 imageLoaded();
@@ -140,6 +165,23 @@ function blender(command:blenderCmd) {
             } else if(!isValid(settingList.log)) {
                 logger.warningMSG("Output path is invalid!");
             } else {
+                currentLogPortion = 0;
+                
+                const logSizeList:number[] = [];
+                getLogList().forEach(function (value, index) {
+                    logSizeList.push(getLogSize(index));
+                });
+                
+                let fullLogSize = 0;
+                for(let i = 0; i < logSizeList.length; i++) {
+                    fullLogSize += logSizeList[i];
+                }
+                
+                logPortionList = [];
+                logSizeList.forEach(function (value) {
+                    logPortionList.push(value / fullLogSize);
+                });
+                
                 readyToAcceptCommand = false;
                 renderingVideo = true;
                 sideSetRendering(true);

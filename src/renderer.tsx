@@ -7,6 +7,7 @@ import RenderingSide from "./components/ui/renderingSide";
 import "./index.css";
 import "./toggle-switchy.css";
 import { startBlender } from "./components/blender-controller";
+import {ipcRenderer} from "electron";
 
 enum Side {
     Main,
@@ -50,9 +51,18 @@ function sideSetRendering(value:boolean) {
         }
     }
 }
+
+function setProgress(value?:number) {
+    if(value === undefined) {
+        ipcRenderer.send("setProgress", -1);
+    } else {
+        ipcRenderer.send("setProgress", value);
+    }
+}
         
 export {
     openSide,
     Side,
-    sideSetRendering
+    sideSetRendering,
+    setProgress
 }

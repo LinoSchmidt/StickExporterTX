@@ -68,6 +68,9 @@ const createWindow = () => {
   });
   
   mainWindow.setMenu(null);
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
   
   remoteInitialize();
   remoteEnable(mainWindow.webContents);
@@ -100,6 +103,10 @@ const createWindow = () => {
     if (response.response === 1) {
       app.quit();
     }
+  });
+  
+  ipcMain.on('setProgress', (event, arg) => {
+    mainWindow.setProgressBar(parseFloat(arg));
   });
   
   mainWindow.on('close', () => {
