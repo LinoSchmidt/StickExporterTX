@@ -4,17 +4,17 @@ StickExporterTX is a 3D Stick Exporter for EdgeTX/OpenTX logs.
 
 ## Quick Start Guide
 
-To log your sticks on every model, go to `settings -> global functions` in your RC Controller.
+To log your sticks on each model, go to `settings -> global functions` in your RC controller.
 
 ![global-functions](readme/pictures/global-functions.bmp)
 
-There you can choose one of the empty fields and edit it.
-For `Switch` you choose the one, who should activate the logging. For example, you can set it to the arm switch of your drone so that it is logging as long as the drone is armed.
-`Func` must be set to `SD Logs` and with `Value` you should take the lowest in order to create a smoother animation.
+There you can select and edit one of the empty fields.
+With `Switch` you select the one that should activate logging. For example, you can set your drone's arm switch to log it as long as the drone is armed.
+`Func` must be set to `SD Logs` and `Value` should be as low as possible to get a smoother animation.
 
 ![function-edit](readme/pictures/function-edit.bmp)
 
-If you want to set up logging for one model only, go to `model -> special functions` in your RC Controller and repeat the previous step.
+If you only want to set up logging for one model, go to `model -> special functions` in your RC controller and repeat the previous step.
 
 ![special-functions](readme/pictures/special-functions.bmp)
 
