@@ -50,7 +50,7 @@ function setRenderProgress(log:number, init:boolean, frameCount:number, frame:nu
         timeDiffMinutes++;
         timeDiffSeconds -= 60;
     }
-    setPastTimeNow(timeDiffMinutes + "min " + timeDiffSeconds.toFixed(0) + "sec");
+    setPastTimeNow(timeDiffMinutes + "m " + timeDiffSeconds.toFixed(0) + "s");
     
     if(progress > 0) {
         const timeRemaining = (timeDiff / progress) * (1 - progress);
@@ -60,7 +60,7 @@ function setRenderProgress(log:number, init:boolean, frameCount:number, frame:nu
             timeDiffMinutes++;
             timeDiffSeconds -= 60;
         }
-        setRemainingTimeNow(timeDiffMinutes + "min " + timeDiffSeconds.toFixed(0) + "sec");
+        setRemainingTimeNow(timeDiffMinutes + "m " + timeDiffSeconds.toFixed(0) + "s");
     }
 }
 

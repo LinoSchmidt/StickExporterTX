@@ -9,7 +9,7 @@ let setRenderDisplayProgress:React.Dispatch<React.SetStateAction<number>>;
 let setPastTime:React.Dispatch<React.SetStateAction<string>>;
 let setRemainingTime:React.Dispatch<React.SetStateAction<string>>;
 
-let pastTimeNow = "0min 0sec";
+let pastTimeNow = "0m 0s";
 let remainingTimeNow = "calculating...";
 
 function RenderingSide() {
@@ -19,7 +19,7 @@ function RenderingSide() {
     setStatus = setStatusInner;
     const [renderDisplayProgress, setRenderDisplayProgressInner] = useState(0);
     setRenderDisplayProgress = setRenderDisplayProgressInner;
-    const [pastTime, setPastTimeInner] = useState("0min 0sec");
+    const [pastTime, setPastTimeInner] = useState("0m 0s");
     setPastTime = setPastTimeInner;
     const [remainingTime, setRemainingTimeInner] = useState("calculating...");
     setRemainingTime = setRemainingTimeInner;
