@@ -6,6 +6,7 @@ import {blender, blenderCmd} from "../blenderController";
 import openFolder from "../openFolder";
 import {platformCharacter} from "../paths";
 import {getLogTime} from "../logReader";
+import {formatDate} from "../dateFormat";
 
 function MainSide() {
     const [logs, setLogs] = useState(settingList.log);
@@ -27,10 +28,10 @@ function MainSide() {
             for(const log of logList) {
                 logListName.push(log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""));
                 const logTime = await getLogTime(log);
-                const logTimeDisplay = logTime.start.day + "." + logTime.start.month + "." + logTime.start.year + " " + logTime.start.hour + ":" + logTime.start.minute + ":" + logTime.start.second;
+                const logTimeDisplay = formatDate(logTime.start.year, logTime.start.month, logTime.start.day) + " " + logTime.start.hour + ":" + logTime.start.minute + ":" + logTime.start.second;
                 logListTime.push(logTimeDisplay);
                 
-                let logLengthDisplay = "0:00:00";
+                let logLengthDisplay = "00:00:00";
                 if(logTime.length.years > 0) {
                     logLengthDisplay = logTime.length.years + "y " + logTime.length.months + "m " + logTime.length.days + "d " + logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
                 } else if(logTime.length.months > 0) {
