@@ -2,9 +2,10 @@ import React, {useState, useEffect} from "react";
 import { dialog } from "@electron/remote";
 import { settingList, updateSettings } from "../settings";
 import logger from "../logger";
-import {blender, blenderCmd} from "../blender-controller";
+import {blender, blenderCmd} from "../blenderController";
 import openFolder from "../openFolder";
 import {platformCharacter} from "../paths";
+import {getLogTime} from "../logReader";
 
 function MainSide() {
     const [logs, setLogs] = useState(settingList.log);
@@ -14,21 +15,45 @@ function MainSide() {
             <td>{log}</td>
         </tr>
     }));
+    
     useEffect(() => {
-        if(settingList.log == "") {
-            setLogTable([]);
-        } else {
         
+        async function getData() {
             const logList = settingList.log.substring(1).slice(0, -1).split('""');
             
             const logListName:string[] = [];
-            logList.forEach(log => {
+            const logListTime:string[] = [];
+            const logListLength:string[] = [];
+            for(const log of logList) {
                 logListName.push(log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""));
-            });
+                const logTime = await getLogTime(log);
+                const logTimeDisplay = logTime.start.day + "." + logTime.start.month + "." + logTime.start.year + " " + logTime.start.hour + ":" + logTime.start.minute + ":" + logTime.start.second;
+                logListTime.push(logTimeDisplay);
+                
+                let logLengthDisplay = "0:00:00";
+                if(logTime.length.years > 0) {
+                    logLengthDisplay = logTime.length.years + "y " + logTime.length.months + "m " + logTime.length.days + "d " + logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
+                } else if(logTime.length.months > 0) {
+                    logLengthDisplay = logTime.length.months + "m " + logTime.length.days + "d " + logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
+                } else if(logTime.length.days > 0) {
+                    logLengthDisplay = logTime.length.days + "d " + logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
+                } else {
+                    logLengthDisplay = logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
+                }
+                logListLength.push(logLengthDisplay);
+            }
             
             setLogTable(logListName.map((log, index) => {
                 return <tr key={index}>
-                    <td id="logList-Name" title={logList[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf(platformCharacter())))}>{index+1}. {log}</td>
+                    <td style={{
+                        fontWeight: "bold",
+                        fontStyle: "italic"
+                    }}>{index+1}.</td>
+                    <td id="logList-Name" title={logList[index]+"\n"+logListTime[index]+"\n"+logListLength[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf(platformCharacter())))}>{log}</td>
+                    <td style={{
+                        fontStyle: "italic",
+                        fontWeight: "lighter"
+                    }}>({logListLength[index]})</td>
                     <td><button className="listButton" onClick={() => {
                         const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
                         updateSettings({log:newLogs});
@@ -36,6 +61,12 @@ function MainSide() {
                     }}>Delete</button></td>
                 </tr>
             }));
+        }
+        
+        if(settingList.log == "") {
+            setLogTable([]);
+        } else {
+            getData();
         }
     }, [logs]);
     

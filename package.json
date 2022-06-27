@@ -102,6 +102,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "csv-parse": "^5.2.0",
     "electron-log": "^4.4.7",
     "electron-squirrel-startup": "^1.0.0",
     "electron-updater": "^5.0.1",

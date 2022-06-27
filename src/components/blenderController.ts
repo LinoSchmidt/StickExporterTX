@@ -2,7 +2,7 @@ import { blenderPath, blenderScriptPath, dataPath, templatePath } from "./paths"
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
-import { setLogNumber, setRenderDisplayProgress, setStatus } from "./ui/renderingSide";
+import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow } from "./ui/renderingSide";
 import {imageLoading, imageLoaded} from "./ui/settingsSide";
 import { getLogList, getLogSize, settingList } from "./settings";
 import isValid from "is-valid-path";
@@ -26,6 +26,8 @@ let renderingPicture = false;
 let renderingVideo = false;
 let waitingForRender = false;
 
+let renderStartTime = new Date().getTime();
+
 let logPortionList:number[] = [];
 let currentLogPortion = 0;
 
@@ -39,6 +41,27 @@ function setRenderProgress(log:number, init:boolean, frameCount:number, frame:nu
     }
     setProgress(progress);
     setRenderDisplayProgress(parseFloat((progress*100).toFixed(2)));
+    
+    const timeNow = new Date().getTime();
+    const timeDiff = timeNow - renderStartTime;
+    let timeDiffSeconds = timeDiff / 1000;
+    let timeDiffMinutes = 0;
+    while(timeDiffSeconds > 60) {
+        timeDiffMinutes++;
+        timeDiffSeconds -= 60;
+    }
+    setPastTimeNow(timeDiffMinutes + "min " + timeDiffSeconds.toFixed(0) + "sec");
+    
+    if(progress > 0) {
+        const timeRemaining = (timeDiff / progress) * (1 - progress);
+        timeDiffSeconds = timeRemaining / 1000;
+        timeDiffMinutes = 0;
+        while(timeDiffSeconds > 60) {
+            timeDiffMinutes++;
+            timeDiffSeconds -= 60;
+        }
+        setRemainingTimeNow(timeDiffMinutes + "min " + timeDiffSeconds.toFixed(0) + "sec");
+    }
 }
 
 function startBlender() {
@@ -188,6 +211,10 @@ function blender(command:blenderCmd) {
                 setBlenderStatus("Rendering");
                 setBlenderLoading(true);
                 blenderConsole.stdin.write("startRendering\n");
+                
+                renderStartTime = new Date().getTime();
+                setPastTime("0min 0sec");
+                setRemainingTime("calculating...");
             }
         }
     } else if(command === blenderCmd.stopRendering) {

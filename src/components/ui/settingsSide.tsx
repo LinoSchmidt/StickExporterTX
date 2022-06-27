@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { settingList, updateSettings, settingListLoadDefault } from "../settings";
-import {blender, blenderCmd, renderingPicture} from "../blender-controller";
+import {blender, blenderCmd, renderingPicture} from "../blenderController";
 import {dataPath} from "../paths";
 import path from "path";
 

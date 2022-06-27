@@ -6,7 +6,7 @@ import SettingsSite from "./components/ui/settingsSide";
 import RenderingSide from "./components/ui/renderingSide";
 import "./index.css";
 import "./toggle-switchy.css";
-import { startBlender } from "./components/blender-controller";
+import { startBlender } from "./components/blenderController";
 import {ipcRenderer} from "electron";
 
 enum Side {
