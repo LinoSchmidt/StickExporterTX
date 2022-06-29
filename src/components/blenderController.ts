@@ -6,8 +6,15 @@ import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, 
 import {imageLoading, imageLoaded} from "./ui/settingsSide";
 import { getLogList, getLogSize, settingList } from "./settings";
 import isValid from "is-valid-path";
-import { sideSetRendering, setProgress } from "../renderer";
+import { sideSetRendering, setProgress, openSide, Side } from "../renderer";
 import { ipcRenderer } from "electron";
+// import { getDoNotDisturb } from "electron-notification-state";
+
+export const renderInfo = {
+    time: "0min 0sec",
+    startTime: 0,
+    endTime: 0
+}
 
 const blenderStartString = [
     templatePath,
@@ -26,8 +33,6 @@ let renderingPicture = false;
 let renderingVideo = false;
 let waitingForRender = false;
 
-let renderStartTime = new Date().getTime();
-
 let logPortionList:number[] = [];
 let currentLogPortion = 0;
 
@@ -43,14 +48,15 @@ function setRenderProgress(log:number, init:boolean, frameCount:number, frame:nu
     setRenderDisplayProgress(parseFloat((progress*100).toFixed(2)));
     
     const timeNow = new Date().getTime();
-    const timeDiff = timeNow - renderStartTime;
+    const timeDiff = timeNow - renderInfo.startTime;
     let timeDiffSeconds = timeDiff / 1000;
     let timeDiffMinutes = 0;
     while(timeDiffSeconds > 60) {
         timeDiffMinutes++;
         timeDiffSeconds -= 60;
     }
-    setPastTimeNow(timeDiffMinutes + "m " + timeDiffSeconds.toFixed(0) + "s");
+    renderInfo.time = timeDiffMinutes + "m " + timeDiffSeconds.toFixed(0) + "s";
+    setPastTimeNow(renderInfo.time);
     
     if(progress > 0) {
         const timeRemaining = (timeDiff / progress) * (1 - progress);
@@ -108,8 +114,15 @@ function startBlender() {
         }
         if(dataStr.includes("Finished") && renderingVideo) {
             sideSetRendering(false);
+            renderInfo.endTime = new Date().getTime();
             if(lastFrame == frames) {
-                setStatus("Finished Render Successfully!");
+                openSide(Side.RenderFinish);
+                // TODO: only show notification if not in do not disturb mode, currently not working. Details: https://github.com/felixrieseberg/macos-notification-state/issues/30
+                    new Notification("Render Finished", {
+                        body: "Rendering finished successfully!"
+                    }).onclick = function() {
+                        ipcRenderer.send("openApp");
+                }
             } else {
                 logger.errorMSG("Render Failed!");
             }
@@ -212,7 +225,7 @@ function blender(command:blenderCmd) {
                 setBlenderLoading(true);
                 blenderConsole.stdin.write("startRendering\n");
                 
-                renderStartTime = new Date().getTime();
+                renderInfo.startTime = new Date().getTime();
                 setPastTime("0min 0sec");
                 setRemainingTime("calculating...");
             }

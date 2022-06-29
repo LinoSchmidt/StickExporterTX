@@ -72,6 +72,7 @@ function WindowsMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLo
                 {(side == Side.Main)? "StickExporterTX" : null}
                 {(side == Side.Settings)? "Settings" : null}
                 {(side == Side.Rendering)? "Rendering" : null}
+                {(side == Side.RenderFinish)? "Render Finished" : null}
             </h4>
             <div id="blender-info-win">
                 <div id="blender-icon-win">
@@ -89,7 +90,12 @@ function WindowsMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLo
 function LinuxMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLoading:boolean, blenderStatus:string}) {
     return (
         <header id="linuxHeader">
-            <h1>{(side == Side.Main)? "StickExporterTX" : "Settings"}</h1>
+            <h1>
+                {(side == Side.Main)? "StickExporterTX" : null}
+                {(side == Side.Settings)? "Settings" : null}
+                {(side == Side.Rendering)? "Rendering" : null}
+                {(side == Side.RenderFinish)? "Render Finished" : null}
+            </h1>
             <div id="blender-info-linux">
                 <div id="blender-icon-linux">
                     {blenderLoading? <BlenderLoadingSVG/> : <BlenderReadySVG/>}

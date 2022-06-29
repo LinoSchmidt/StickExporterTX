@@ -4,6 +4,7 @@ import path from 'path';
 import { autoUpdater } from "electron-updater";
 import logger from 'electron-log';
 import { Platform, platform } from './components/platform';
+
 logger.transports.console.format = "{h}:{i}:{s} {text}";
 logger.transports.file.getFile();
 logger.transports.file.resolvePath = () => path.join(app.getPath('userData'), "logs", "start.log");
@@ -111,6 +112,10 @@ const createWindow = () => {
   
   mainWindow.on('close', () => {
     mainWindow.webContents.send('closeApp');
+  });
+  
+  ipcMain.on('openApp', () => {
+    mainWindow.show();
   });
 };
 
