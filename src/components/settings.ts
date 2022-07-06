@@ -25,28 +25,40 @@ const defaultSettings = {
     output: defaultOutputPath
 }
 
-let loadedSuccessfully = false;
+function catchStr(tryFunc:()=>string, catchFunc:()=>string) {
+    let val;
+    try {
+        val = tryFunc();
+    } catch(err) {
+        logger.info("Failed to get setting value. Using default value:" + String(err));
+        val = catchFunc();
+    }
+    return val;
+}
+
 const settingList = await fetch(SettingPath).then(function(response) {
     return response.text();
+}).catch(function(err) {
+    logger.info(err);
+    return "fileLoadFailed";
 }).then(function(data) {
+    if(data === "fileLoadFailed") {
+        return defaultSettings;
+    }
+    
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(data, 'text/xml');
-    
-    loadedSuccessfully = true;
+
     return {
-        fps: parseInt(getXMLChild(xmlDoc, "fps")),
-        width: parseInt(getXMLChild(xmlDoc, "width")),
-        stickDistance: parseInt(getXMLChild(xmlDoc, "stickDistance")),
-        stickMode2: (getXMLChild(xmlDoc, "stickMode2") === "true"),
-        videoFormat: getXMLChild(xmlDoc, "videoFormat") as unknown as VideoFormat,
-        log: (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log"),
-        output: getXMLChild(xmlDoc, "output")
+        fps: parseInt(catchStr(function() {return getXMLChild(xmlDoc, "fps");},function() {return defaultSettings.fps.toString();})),
+        width: parseInt(catchStr(function() {return getXMLChild(xmlDoc, "width");},function() {return defaultSettings.width.toString();})),
+        stickDistance: parseInt(catchStr(function() {return getXMLChild(xmlDoc, "stickDistance");},function() {return defaultSettings.stickDistance.toString();})),
+        stickMode2: catchStr(function() {return getXMLChild(xmlDoc, "stickMode2");},function() {return defaultSettings.stickMode2.toString();}) === "true",
+        videoFormat: catchStr(function() {return getXMLChild(xmlDoc, "videoFormat");},function() {return defaultSettings.videoFormat.toString();}) as VideoFormat as VideoFormat,
+        log: catchStr(function() {return (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log");},function() {return defaultSettings.log;}),
+        output: catchStr(function() {return getXMLChild(xmlDoc, "output");},function() {return defaultSettings.output;})
     }
-}).catch(function(error) {
-    logger.warning("Could not load settings: " + error.toString() + "\n Creating new settings file...");
-    return defaultSettings;
 });
-if(!loadedSuccessfully) updateSettings({});
 
 function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, videoFormat?:VideoFormat, log?:string, output?:string}) {
     if(optiones.fps === undefined) {
