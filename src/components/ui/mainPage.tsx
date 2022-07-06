@@ -8,7 +8,7 @@ import {platformCharacter} from "../paths";
 import {getLogTime} from "../logReader";
 import {formatDate} from "../dateFormat";
 
-function MainSide() {
+function MainPage() {
     const [logs, setLogs] = useState(settingList.log);
     const [output, setOutput] = useState(settingList.output);
     const [logTable, setLogTable] = useState([<tr key={0}></tr>]);
@@ -143,4 +143,4 @@ function openVid(updateHook:React.Dispatch<React.SetStateAction<string>>) {
     });
 }
 
-export default MainSide;
+export default MainPage;

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { openSide, Side } from "../../renderer";
+import { openPage, Page } from "../../renderer";
 import { platform, Platform } from "../platform";
 import { ipcRenderer } from "electron";
 
@@ -20,8 +20,8 @@ const WinButtons = () => (
     </>
 )
 
-const MainSideButtonsWin = () => (
-    <div id="settings-button-win" onClick={() => openSide(Side.Settings)}>
+const MainPageButtonsWin = () => (
+    <div id="settings-button-win" onClick={() => openPage(Page.Settings)}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             {/* Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. */}
             <path
@@ -29,8 +29,8 @@ const MainSideButtonsWin = () => (
         </svg>
     </div>
 )
-const MainSideButtonsLinux = () => (
-    <div id="settings-button-linux" onClick={() => openSide(Side.Settings)}>
+const MainPageButtonsLinux = () => (
+    <div id="settings-button-linux" onClick={() => openPage(Page.Settings)}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             {/* Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. */}
             <path
@@ -39,8 +39,8 @@ const MainSideButtonsLinux = () => (
     </div>
 )
 
-const SettingsSideButtonsWin = () => (
-    <div id="backButton-win" onClick={() => openSide(Side.Main)}>
+const SettingsPageButtonsWin = () => (
+    <div id="backButton-win" onClick={() => openPage(Page.Main)}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             {/* <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
             <path d="M256 0C114.6 0 0 114.6 0 256c0 141.4 114.6 256 256 256s256-114.6 256-256C512 114.6 397.4 0 256 0zM310.6 345.4c12.5 12.5 12.5 32.75 0 45.25s-32.75 12.5-45.25 0l-112-112C147.1 272.4 144 264.2 144 256s3.125-16.38 9.375-22.62l112-112c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L221.3 256L310.6 345.4z"/>
@@ -48,8 +48,8 @@ const SettingsSideButtonsWin = () => (
     </div>
 )
 
-const SettingsSideButtonsLinux = () => (
-    <button className="back-button-linux" onClick={() => openSide(Side.Main)}>Back</button>
+const SettingsPageButtonsLinux = () => (
+    <button className="back-button-linux" onClick={() => openPage(Page.Main)}>Back</button>
 )
 
 const BlenderLoadingSVG = () => (
@@ -65,14 +65,14 @@ const BlenderReadySVG = () => (
     </svg>
 )
 
-function WindowsMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLoading:boolean, blenderStatus:string}) {
+function WindowsMenu({page, blenderLoading, blenderStatus}:{page:Page, blenderLoading:boolean, blenderStatus:string}) {
     return (
         <header id="winHeader">
             <h4>
-                {(side == Side.Main)? "StickExporterTX" : null}
-                {(side == Side.Settings)? "Settings" : null}
-                {(side == Side.Rendering)? "Rendering" : null}
-                {(side == Side.RenderFinish)? "Render Finished" : null}
+                {(page == Page.Main)? "StickExporterTX" : null}
+                {(page == Page.Settings)? "Settings" : null}
+                {(page == Page.Rendering)? "Rendering" : null}
+                {(page == Page.RenderFinish)? "Render Finished" : null}
             </h4>
             <div id="blender-info-win">
                 <div id="blender-icon-win">
@@ -80,21 +80,21 @@ function WindowsMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLo
                 </div>
                 <p>{blenderStatus}</p>
             </div>
-            {(side == Side.Main)? <MainSideButtonsWin/> : null}
-            {(side == Side.Settings)? <SettingsSideButtonsWin/> : null}
+            {(page == Page.Main)? <MainPageButtonsWin/> : null}
+            {(page == Page.Settings)? <SettingsPageButtonsWin/> : null}
             <WinButtons/>
         </header>
     )
 }
 
-function LinuxMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLoading:boolean, blenderStatus:string}) {
+function LinuxMenu({page, blenderLoading, blenderStatus}:{page:Page, blenderLoading:boolean, blenderStatus:string}) {
     return (
         <header id="linuxHeader">
             <h1>
-                {(side == Side.Main)? "StickExporterTX" : null}
-                {(side == Side.Settings)? "Settings" : null}
-                {(side == Side.Rendering)? "Rendering" : null}
-                {(side == Side.RenderFinish)? "Render Finished" : null}
+                {(page == Page.Main)? "StickExporterTX" : null}
+                {(page == Page.Settings)? "Settings" : null}
+                {(page == Page.Rendering)? "Rendering" : null}
+                {(page == Page.RenderFinish)? "Render Finished" : null}
             </h1>
             <div id="blender-info-linux">
                 <div id="blender-icon-linux">
@@ -102,8 +102,8 @@ function LinuxMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLoad
                 </div>
                 <p>{blenderStatus}</p>
             </div>
-            {(side == Side.Main)? <MainSideButtonsLinux/> : null}
-            {(side == Side.Settings)? <SettingsSideButtonsLinux/> : null}
+            {(page == Page.Main)? <MainPageButtonsLinux/> : null}
+            {(page == Page.Settings)? <SettingsPageButtonsLinux/> : null}
         </header>
     )
 }
@@ -111,7 +111,7 @@ function LinuxMenu({side, blenderLoading, blenderStatus}:{side:Side, blenderLoad
 let setBlenderLoading:React.Dispatch<React.SetStateAction<boolean>>;
 let setBlenderStatus:React.Dispatch<React.SetStateAction<string>>;
 
-function Menu({side}:{side:Side}) {
+function Menu({page}:{page:Page}) {
     
     const [blenderLoading, setBlenderLoadingInner] = useState(true);
     setBlenderLoading = setBlenderLoadingInner;
@@ -120,8 +120,8 @@ function Menu({side}:{side:Side}) {
     
     return (
         <>
-            {(platform === Platform.Windows)? <WindowsMenu side={side} blenderLoading={blenderLoading} blenderStatus={blenderStatus}/> : null}
-            {(platform === Platform.Linux)? <LinuxMenu side={side} blenderLoading={blenderLoading} blenderStatus={blenderStatus}/> : null}
+            {(platform === Platform.Windows)? <WindowsMenu page={page} blenderLoading={blenderLoading} blenderStatus={blenderStatus}/> : null}
+            {(platform === Platform.Linux)? <LinuxMenu page={page} blenderLoading={blenderLoading} blenderStatus={blenderStatus}/> : null}
         </>
     )
 }

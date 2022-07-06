@@ -12,7 +12,7 @@ let setRemainingTime:React.Dispatch<React.SetStateAction<string>>;
 let pastTimeNow = "0m 0s";
 let remainingTimeNow = "calculating...";
 
-function RenderingSide() {
+function RenderingPage() {
     const [logNumber, setLogNumberInner] = useState("0");
     setLogNumber = setLogNumberInner;
     const [status, setStatusInner] = useState("Idle");
@@ -82,7 +82,7 @@ function setRemainingTimeNow(time:string) {
     remainingTimeNow = time;
 }
 
-export default RenderingSide;
+export default RenderingPage;
 export {
     setLogNumber,
     setStatus,

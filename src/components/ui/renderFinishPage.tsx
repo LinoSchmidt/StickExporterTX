@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import {openSide, Side} from "../../renderer";
+import {openPage, Page} from "../../renderer";
 import {renderInfo} from "../blenderController";
 import openFolder from "../openFolder";
 import {settingList} from "../settings";
@@ -17,7 +17,7 @@ const detailsInnerStyle:CSSProperties = {
     marginRight: "5px",
 }
 
-function RenderFinishSide() {
+function RenderFinishPage() {
     const [logPlaying, setLogPlaying] = React.useState(path.join(settingList.output, settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter())[settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter()).length - 1].replace(".csv", "."+settingList.videoFormat)));
     
     const [logList, setLogList] = React.useState([<li key={0}></li>]);
@@ -75,7 +75,7 @@ function RenderFinishSide() {
                 marginRight: "10px",
                 backgroundColor: "#00c24a",
             }} onClick={() => {
-                openSide(Side.Main);
+                openPage(Page.Main);
             }}>Finish</button>
             <button onClick={() => openFolder(settingList.output)}>Open Output Folder</button>
             <div style={{
@@ -90,4 +90,4 @@ function RenderFinishSide() {
     );
 }
 
-export default RenderFinishSide;
+export default RenderFinishPage;

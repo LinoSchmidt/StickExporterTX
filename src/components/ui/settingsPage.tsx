@@ -6,7 +6,7 @@ import path from "path";
 
 let setRenderImg:React.Dispatch<React.SetStateAction<string>>;
 let setRenderLoading:React.Dispatch<React.SetStateAction<boolean>>;
-let sideLoaded = false;
+let pageLoaded = false;
 
 function picturePath() {
     return path.join(dataPath, "render.png?t="+Date.now());
@@ -57,7 +57,7 @@ function VideoFormatWarning({videoFormat}:{videoFormat:VideoFormat}) {
     );
 }
 
-function SettingsSide() {
+function SettingsPage() {
     
     const [fps, setFps] = useState(settingList.fps);
     const [width, setWidth] = useState(settingList.width);
@@ -86,7 +86,7 @@ function SettingsSide() {
         return () => clearTimeout(timer);
     }, [fps, videoFormat]);
     
-    sideLoaded = true;
+    pageLoaded = true;
     
     const VideoFormatOptions = Object.keys(VideoFormat).filter((el) => { return isNaN(Number(el)) }).map(key => {
         return <option key={key} value={key}>{key}</option>;
@@ -158,16 +158,16 @@ function SettingsSide() {
 }
 
 function imageLoading() {
-    if(sideLoaded) setRenderLoading(true);
+    if(pageLoaded) setRenderLoading(true);
 }
 function imageLoaded() {
-    if(sideLoaded) {
+    if(pageLoaded) {
         setRenderImg(picturePath());
         setRenderLoading(false);
     }
 }
 
-export default SettingsSide;
+export default SettingsPage;
 export {
     imageLoading,
     imageLoaded

@@ -2,11 +2,11 @@ import { blenderPath, blenderScriptPath, dataPath, templatePath } from "./paths"
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
-import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow } from "./ui/renderingSide";
-import {imageLoading, imageLoaded} from "./ui/settingsSide";
+import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow } from "./ui/renderingPage";
+import {imageLoading, imageLoaded} from "./ui/settingsPage";
 import { getLogList, getLogSize, settingList } from "./settings";
 import isValid from "is-valid-path";
-import { sideSetRendering, setProgress, openSide, Side } from "../renderer";
+import { pageSetRendering, setProgress, openPage, Page } from "../renderer";
 import { ipcRenderer } from "electron";
 // import { getDoNotDisturb } from "electron-notification-state";
 
@@ -113,10 +113,10 @@ function startBlender() {
             setRenderProgress(parseInt(log), false, parseInt(frames), parseInt(lastFrame));
         }
         if(dataStr.includes("Finished") && renderingVideo) {
-            sideSetRendering(false);
+            pageSetRendering(false);
             renderInfo.endTime = new Date().getTime();
             if(lastFrame == frames) {
-                openSide(Side.RenderFinish);
+                openPage(Page.RenderFinish);
                 // TODO: only show notification if not in do not disturb mode, currently not working. Details: https://github.com/felixrieseberg/macos-notification-state/issues/30
                     new Notification("Render Finished", {
                         body: "Rendering finished successfully!"
@@ -140,7 +140,7 @@ function startBlender() {
         }
         
         if(dataStr.includes("Waiting for command")) {
-            sideSetRendering(false);
+            pageSetRendering(false);
             setProgress();
             
             if(renderingPicture) {
@@ -170,7 +170,7 @@ function startBlender() {
 }
 
 function restartBlender() {
-    sideSetRendering(false);
+    pageSetRendering(false);
     blenderConsole.kill();
     blenderConsole = spawn(blenderPath, blenderStartString);
     startBlender();
@@ -220,7 +220,7 @@ function blender(command:blenderCmd) {
                 
                 readyToAcceptCommand = false;
                 renderingVideo = true;
-                sideSetRendering(true);
+                pageSetRendering(true);
                 setBlenderStatus("Rendering");
                 setBlenderLoading(true);
                 blenderConsole.stdin.write("startRendering\n");

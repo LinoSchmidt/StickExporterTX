@@ -1,16 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import Menu from "./components/ui/menu";
-import MainSide from "./components/ui/mainSide";
-import SettingsSite from "./components/ui/settingsSide";
-import RenderingSide from "./components/ui/renderingSide";
-import RenderFinishSide from "./components/ui/renderFinishSide";
+import MainPage from "./components/ui/mainPage";
+import SettingsPage from "./components/ui/settingsPage";
+import RenderingPage from "./components/ui/renderingPage";
+import RenderFinishPage from "./components/ui/renderFinishPage";
 import "./index.css";
 import "./toggle-switchy.css";
 import { startBlender } from "./components/blenderController";
 import {ipcRenderer} from "electron";
 
-enum Side {
+enum Page {
     Main,
     Rendering,
     Settings,
@@ -18,39 +18,39 @@ enum Side {
 }
 
 let rendering = false;
-let currentSide = Side.Main;
+let currentPage = Page.Main;
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
-function openSide(side:Side) {
-    if(side == Side.Main && rendering) {
-        side = Side.Rendering;
+function openPage(page:Page) {
+    if(page == Page.Main && rendering) {
+        page = Page.Rendering;
     }
-    currentSide = side;
+    currentPage = page;
     
     root.render(
         <React.StrictMode>
-            <Menu side={side}/>
-            {(side === Side.Main)? <MainSide/> : null}
-            {(side === Side.Settings)? <SettingsSite/> : null}
-            {(side === Side.Rendering)? <RenderingSide/> : null}
-            {(side === Side.RenderFinish)? <RenderFinishSide/> : null}
+            <Menu page={page}/>
+            {(page === Page.Main)? <MainPage/> : null}
+            {(page === Page.Settings)? <SettingsPage/> : null}
+            {(page === Page.Rendering)? <RenderingPage/> : null}
+            {(page === Page.RenderFinish)? <RenderFinishPage/> : null}
         </React.StrictMode>
     );
 }
 
-openSide(currentSide);
+openPage(currentPage);
 
 startBlender();
 
-function sideSetRendering(value:boolean) {
+function pageSetRendering(value:boolean) {
     rendering = value;
     if(value) {
-        if(currentSide === Side.Main) {
-            openSide(Side.Rendering);
+        if(currentPage === Page.Main) {
+            openPage(Page.Rendering);
         }
     } else {
-        if(currentSide === Side.Rendering) {
-            openSide(Side.Main);
+        if(currentPage === Page.Rendering) {
+            openPage(Page.Main);
         }
     }
 }
@@ -64,8 +64,8 @@ function setProgress(value?:number) {
 }
         
 export {
-    openSide,
-    Side,
-    sideSetRendering,
+    openPage,
+    Page,
+    pageSetRendering,
     setProgress
 }
