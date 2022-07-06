@@ -110,6 +110,7 @@
     "is-valid-path": "^0.1.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "video.js": "^7.19.2",
     "xml-formatter": "^2.6.1"
   },
   "devDependencies": {
@@ -123,6 +124,7 @@
     "@types/is-valid-path": "^0.1.0",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
+    "@types/video.js": "^7.3.42",
     "@types/webpack": "^5.28.0",
     "@types/webpack-dev-server": "^4.7.2",
     "@typescript-eslint/eslint-plugin": "^5.27.0",

@@ -3,6 +3,10 @@ import {openSide, Side} from "../../renderer";
 import {renderInfo} from "../blenderController";
 import openFolder from "../openFolder";
 import {settingList} from "../settings";
+import VideoPlayer from "./videoPlayer";
+import path from 'path';
+import {platformCharacter} from "../paths";
+import {VideoJsPlayerOptions} from "video.js";
 
 const detailsStyle:CSSProperties = {
     display: "flex",
@@ -14,6 +18,41 @@ const detailsInnerStyle:CSSProperties = {
 }
 
 function RenderFinishSide() {
+    const [logPlaying, setLogPlaying] = React.useState(path.join(settingList.output, settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter())[settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter()).length - 1].replace(".csv", "."+settingList.videoFormat)));
+    
+    const [logList, setLogList] = React.useState([<li key={0}></li>]);
+    
+    const videoPlayerOptions:VideoJsPlayerOptions = {
+        controls: true,
+        muted: true,
+        fluid: true,
+        controlBar: {
+            volumePanel: false,
+        }
+    };
+    
+    const [videoSource, setVideoSource] = React.useState({src: logPlaying, type: 'video/'+settingList.videoFormat.toUpperCase()});
+    
+    React.useEffect(() => {
+        setLogList(settingList.log.substring(1).slice(0, -1).split('""').map((inputLog, index) => {
+            const outputLogName = inputLog.split(platformCharacter())[inputLog.split(platformCharacter()).length - 1].replace(".csv", "");
+            const outputLogPath = path.join(settingList.output, outputLogName+"."+settingList.videoFormat);
+            
+            return <li key={index}>
+                <p style={{
+                    textDecoration: logPlaying === outputLogPath ? "underline" : "none",
+                }} onClick={() => {
+                    setLogPlaying(outputLogPath);
+                }} title={outputLogPath}>{outputLogName}</p>
+            </li>
+        }));
+        
+        setVideoSource({
+            src: logPlaying,
+            type: 'video/'+settingList.videoFormat.toUpperCase()
+        });
+    }, [logPlaying]);
+    
     return (
         <div id="content">
             <h3 style={{
@@ -39,6 +78,14 @@ function RenderFinishSide() {
                 openSide(Side.Main);
             }}>Finish</button>
             <button onClick={() => openFolder(settingList.output)}>Open Output Folder</button>
+            <div style={{
+                marginTop: "10px"
+            }}>
+                <VideoPlayer options={videoPlayerOptions} src={videoSource} />
+                <ol>
+                    {logList}
+                </ol>
+            </div>
         </div>
     );
 }
