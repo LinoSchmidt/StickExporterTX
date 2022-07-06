@@ -1,4 +1,4 @@
-import {app, BrowserWindow, dialog, ipcMain} from 'electron';
+import {app, BrowserWindow, dialog, ipcMain, NativeImage} from 'electron';
 import {initialize as remoteInitialize, enable as remoteEnable} from '@electron/remote/main';
 import path from 'path';
 import { autoUpdater } from "electron-updater";
@@ -116,12 +116,14 @@ const createWindow = () => {
     const progress = parseFloat(arg);
     mainWindow.setProgressBar(progress);
     if(progress === 1 && !mainWindow.isFocused()) {
-      app.setBadgeCount(1);
+      mainWindow.setOverlayIcon(path.join(__dirname, '../assets/render_finished_icon.png') as unknown as NativeImage, 'Rendering Complete');
+      mainWindow.flashFrame(true);
     }
   });
   
   mainWindow.on('focus', () => {
-    app.setBadgeCount(0);
+    mainWindow.setOverlayIcon(null, '');
+    mainWindow.flashFrame(false);
   });
   
   mainWindow.on('close', () => {
