@@ -54,6 +54,10 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+if(platform === Platform.Windows) {
+  app.setAppUserModelId(app.name);
+}
+
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -109,7 +113,15 @@ const createWindow = () => {
   });
   
   ipcMain.on('setProgress', (event, arg) => {
-    mainWindow.setProgressBar(parseFloat(arg));
+    const progress = parseFloat(arg);
+    mainWindow.setProgressBar(progress);
+    if(progress === 1 && !mainWindow.isFocused()) {
+      app.setBadgeCount(1);
+    }
+  });
+  
+  mainWindow.on('focus', () => {
+    app.setBadgeCount(0);
   });
   
   mainWindow.on('close', () => {
@@ -119,6 +131,8 @@ const createWindow = () => {
   ipcMain.on('openApp', () => {
     mainWindow.show();
   });
+  
+  mainWindow.setIcon(path.join(__dirname, '../assets/icon.png'));
 };
 
 // This method will be called when Electron has finished
