@@ -11,11 +11,7 @@ import {formatDate} from "../dateFormat";
 function MainSide() {
     const [logs, setLogs] = useState(settingList.log);
     const [output, setOutput] = useState(settingList.output);
-    const [logTable, setLogTable] = useState(logs.substring(1).slice(0, -1).split('""').map((log, index) => {
-        return <tr key={index}>
-            <td>{log}</td>
-        </tr>
-    }));
+    const [logTable, setLogTable] = useState([<tr key={0}></tr>]);
     
     useEffect(() => {
         
