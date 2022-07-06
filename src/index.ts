@@ -94,15 +94,17 @@ const createWindow = () => {
     const response = await dialog.showMessageBox({
       type: 'warning',
       noLink: true,
-      buttons: ['Cancel', 'Exit'],
+      buttons: ['Cancel','Minimize', 'Exit'],
       defaultId: 0,
       title: 'Close',
       message: 'A video is still being renderd!',
       detail:
         'If you close the application, the progress will be lost!',
     });
-    if (response.response === 1) {
+    if (response.response === 2) {
       app.quit();
+    } else if (response.response === 1) {
+      mainWindow.minimize();
     }
   });
   
