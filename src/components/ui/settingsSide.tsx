@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import { settingList, updateSettings, settingListLoadDefault } from "../settings";
+import React, {useState, useEffect, CSSProperties} from "react";
+import { settingList, updateSettings, settingListLoadDefault, VideoFormat } from "../settings";
 import {blender, blenderCmd, renderingPicture} from "../blenderController";
 import {dataPath} from "../paths";
 import path from "path";
@@ -21,12 +21,49 @@ const RenderLoadingSpinner = () => (
     </div>
 );
 
+function VideoFormatWarning({videoFormat}:{videoFormat:VideoFormat}) {
+    let message = "";
+    
+    switch(videoFormat) {
+        case VideoFormat.mp4:
+            message = "mp4 has no support for alpha channel and the background will be black.";
+            break;
+        case VideoFormat.avi:
+            message = "avi can't be played in the preview of this app.";
+            break;
+        case VideoFormat.mkv:
+            message = "mkv can't be played in the preview of this app.";
+            break;
+        case VideoFormat.mov:
+            message = "mov can't be played in the preview of this app.";
+            break;
+    }
+    
+    const style:CSSProperties = {
+        height: "30px",
+        width: "30px",
+        fill: "orange",
+        paddingLeft: "5px",
+        
+    };
+    
+    return (
+        <div id="videoFormatWarning" title={message} style={style}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                {/* <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                <path d="M506.3 417l-213.3-364c-16.33-28-57.54-28-73.98 0l-213.2 364C-10.59 444.9 9.849 480 42.74 480h426.6C502.1 480 522.6 445 506.3 417zM232 168c0-13.25 10.75-24 24-24S280 154.8 280 168v128c0 13.25-10.75 24-23.1 24S232 309.3 232 296V168zM256 416c-17.36 0-31.44-14.08-31.44-31.44c0-17.36 14.07-31.44 31.44-31.44s31.44 14.08 31.44 31.44C287.4 401.9 273.4 416 256 416z"/>
+            </svg>
+        </div>
+    );
+}
+
 function SettingsSide() {
     
     const [fps, setFps] = useState(settingList.fps);
     const [width, setWidth] = useState(settingList.width);
     const [stickDistance, setStickDistance] = useState(settingList.stickDistance);
     const [stickMode2, setStickMode2] = useState(settingList.stickMode2);
+    const [videoFormat, setVideoFormat] = useState(settingList.videoFormat);
     const [renderImg, setRenderImgInner] = useState(picturePath());
     setRenderImg = setRenderImgInner;
     const [renderLoading, setRenderLoadingInner] = useState(renderingPicture);
@@ -34,14 +71,26 @@ function SettingsSide() {
     
     useEffect(() => {
         const timer = setTimeout(() => {
-            updateSettings({fps, width, stickDistance, stickMode2});
+            updateSettings({width, stickDistance, stickMode2});
             blender(blenderCmd.getRender);
         }, 500);
         
         return () => clearTimeout(timer);
-    }, [fps, width, stickDistance, stickMode2]);
+    }, [width, stickDistance, stickMode2]);
+    
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            updateSettings({fps, videoFormat});
+        }, 500);
+        
+        return () => clearTimeout(timer);
+    }, [fps, videoFormat]);
     
     sideLoaded = true;
+    
+    const VideoFormatOptions = Object.keys(VideoFormat).filter((el) => { return isNaN(Number(el)) }).map(key => {
+        return <option key={key} value={key}>{key}</option>;
+    });
     
     return (
         <div id="content">
@@ -53,13 +102,13 @@ function SettingsSide() {
                     }}/>
                 </span>
                 <span className="inputSpan">
-                    <label>Width: </label>
+                    <label>Width</label>
                     <input id="widthInput" type="number" value={width.toString()} min="1" step="1" onChange={e => {
                         if(e.target.value.trim().length !== 0) setWidth(parseInt(e.target.value));
                     }}/>
                 </span>
                 <span className="inputSpan">
-                    <label>Stick Distance: </label>
+                    <label>Stick Distance</label>
                     <input id="stickDistanceInput" type="number" value={stickDistance.toString()} min="0" step="1" onChange={e => {
                         if(e.target.value.trim().length !== 0) setStickDistance(parseInt(e.target.value));
                     }}/>
@@ -67,7 +116,7 @@ function SettingsSide() {
             </div>
             <div id="settingRow">
                 <div className="dataDiv">
-                    <p>Stick Mode:</p>
+                    <p>Stick Mode</p>
                     <label htmlFor="stickMode" className="toggle-switchy" data-style="rounded" data-text="12">
                         <input checked={stickMode2} type="checkbox" id="stickMode" onChange={e => {
                             setStickMode2(e.target.checked);
@@ -77,6 +126,19 @@ function SettingsSide() {
                         </span>
                     </label>
                 </div>
+                <span className="selectSpan">
+                    <label className="selectSpanLabel">Format</label>
+                    <label className="selectSpanSelect" htmlFor="slct">
+                        <select id="slct" required={true} value={videoFormat} onChange={e => {
+                            setVideoFormat(e.target.value as unknown as VideoFormat);
+                        }}>
+                            {VideoFormatOptions}
+                        </select>
+                    </label>
+                    {videoFormat === VideoFormat.mov? <VideoFormatWarning videoFormat={videoFormat}/> : null}
+                    {videoFormat === VideoFormat.mp4? <VideoFormatWarning videoFormat={videoFormat}/> : null}
+                    {videoFormat === VideoFormat.avi? <VideoFormatWarning videoFormat={videoFormat}/> : null}
+                </span>
                 <button id="resetSettingsButton" onClick={() => {
                     settingListLoadDefault();
                     
@@ -84,6 +146,7 @@ function SettingsSide() {
                     setWidth(settingList.width);
                     setStickDistance(settingList.stickDistance);
                     setStickMode2(settingList.stickMode2);
+                    setVideoFormat(settingList.videoFormat);
                 }}>Reset Settings</button>
             </div>
             <div id="renderImgDiv">

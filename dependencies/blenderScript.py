@@ -55,14 +55,15 @@ while True:
     else:
         StickMode = 1
     
-    fps = int(settingsRoot[0].text)
     width = int(settingsRoot[1].text)
     StickDistance = _map(int(settingsRoot[2].text), 0, 100, 5, 105)
     
     if(command == "startRendering"):
         
-        logs = settingsRoot[4].text[1:][:-1].split("\"\"")
-        output = settingsRoot[5].text
+        fps = int(settingsRoot[0].text)
+        videoFormat = settingsRoot[4].text
+        logs = settingsRoot[5].text[1:][:-1].split("\"\"")
+        output = settingsRoot[6].text
         
         logCount = len(logs)
         logNumber = 1
@@ -105,8 +106,27 @@ while True:
                 logger.error("Can't read Log: " + (Str)(e))
                 
             bpy.context.scene.render.image_settings.file_format = 'FFMPEG'
-            bpy.context.scene.render.ffmpeg.format = "QUICKTIME"
-            bpy.context.scene.render.ffmpeg.codec = "QTRLE"
+            
+            if(videoFormat == "mp4"):
+                bpy.context.scene.render.ffmpeg.format = 'MPEG4'
+                bpy.context.scene.render.ffmpeg.codec = 'H264'
+                bpy.context.scene.render.image_settings.color_mode = 'RGB'
+            elif(videoFormat == "mov"):
+                bpy.context.scene.render.ffmpeg.format = 'QUICKTIME'
+                bpy.context.scene.render.ffmpeg.codec = 'QTRLE'
+                bpy.context.scene.render.image_settings.color_mode = 'RGBA'
+            elif(videoFormat == "avi"):
+                bpy.context.scene.render.ffmpeg.format = 'AVI'
+                bpy.context.scene.render.ffmpeg.codec = 'FFV1'
+                bpy.context.scene.render.image_settings.color_mode = 'RGBA'
+            elif(videoFormat == "webm"):
+                bpy.context.scene.render.ffmpeg.format = 'WEBM'
+                bpy.context.scene.render.ffmpeg.codec = 'WEBM'
+                bpy.context.scene.render.image_settings.color_mode = 'RGBA'
+            elif(videoFormat == "mkv"):
+                bpy.context.scene.render.ffmpeg.format = 'MKV'
+                bpy.context.scene.render.ffmpeg.codec = 'WEBM'
+                bpy.context.scene.render.image_settings.color_mode = 'RGBA'
             
             scn.render.resolution_x = width
             GimbalCoverR.location[0] = StickDistance
@@ -116,7 +136,7 @@ while True:
             Camera.location[0] = StickDistance/2
             Camera.data.ortho_scale = StickDistance+5
             scn.render.resolution_y = int(width/_map(StickDistance, 5, 105, 2, 21.6))
-            bpy.context.scene.render.filepath = output + "\\" + log.split("/")[-1].split("\\")[-1].replace(".csv", ".mov")
+            bpy.context.scene.render.filepath = output + "\\" + log.split("/")[-1].split("\\")[-1].replace(".csv", "."+videoFormat)
             
             scn.render.fps = 1000
             scn.render.fps_base = FPSxxx
@@ -143,32 +163,26 @@ while True:
                 
                 bpy.context.scene.frame_set(frame)
                 
+                StickL.rotation_euler=[0,0,0]
+                GimbalL.rotation_euler=[0,0,0]
+                StickR.rotation_euler=[0,0,0]
+                GimbalR.rotation_euler=[0,0,0]
+                
                 if StickMode == "1":
-                    StickL.rotation_euler=[0,0,0]
                     StickL.rotation_euler.rotate_axis("Y", ailP)
-                    StickL.keyframe_insert(data_path="rotation_euler", index=-1)
-                    GimbalL.rotation_euler=[0,0,0]
                     GimbalL.rotation_euler.rotate_axis("X", eleP)
-                    GimbalL.keyframe_insert(data_path="rotation_euler", index=-1)
-                    StickR.rotation_euler=[0,0,0]
                     StickR.rotation_euler.rotate_axis("Y", rudP)
-                    StickR.keyframe_insert(data_path="rotation_euler", index=-1)
-                    GimbalR.rotation_euler=[0,0,0]
                     GimbalR.rotation_euler.rotate_axis("X", thrP)
-                    GimbalR.keyframe_insert(data_path="rotation_euler", index=-1)
                 else:
-                    StickL.rotation_euler=[0,0,0]
                     StickL.rotation_euler.rotate_axis("Y", rudP)
-                    StickL.keyframe_insert(data_path="rotation_euler", index=-1)
-                    GimbalL.rotation_euler=[0,0,0]
                     GimbalL.rotation_euler.rotate_axis("X", thrP)
-                    GimbalL.keyframe_insert(data_path="rotation_euler", index=-1)
-                    StickR.rotation_euler=[0,0,0]
                     StickR.rotation_euler.rotate_axis("Y", ailP)
-                    StickR.keyframe_insert(data_path="rotation_euler", index=-1)
-                    GimbalR.rotation_euler=[0,0,0]
                     GimbalR.rotation_euler.rotate_axis("X", eleP)
-                    GimbalR.keyframe_insert(data_path="rotation_euler", index=-1)
+                    
+                StickL.keyframe_insert(data_path="rotation_euler", index=-1)
+                GimbalL.keyframe_insert(data_path="rotation_euler", index=-1)
+                StickR.keyframe_insert(data_path="rotation_euler", index=-1)
+                GimbalR.keyframe_insert(data_path="rotation_euler", index=-1)
                 
                 logger.info("Init:" + ((str)(frame)) + ":")
                 frame+=1
@@ -183,7 +197,6 @@ while True:
     elif(command == "getRender"):
         
         bpy.context.scene.render.image_settings.file_format = 'PNG'
-        bpy.context.scene.frame_set(0)
         bpy.context.scene.render.filepath = argv[0] + "\\render.png"
         
         scn.render.resolution_x = width
@@ -195,17 +208,52 @@ while True:
         Camera.data.ortho_scale = StickDistance+5
         scn.render.resolution_y = int(width/_map(StickDistance, 5, 105, 2, 21.6))
         
+        bpy.context.scene.frame_set(0)
+        
         StickL.rotation_euler=[0,0,0]
-        StickL.rotation_euler.rotate_axis("Y", 0.436)
-        StickL.keyframe_insert(data_path="rotation_euler", index=-1)
         GimbalL.rotation_euler=[0,0,0]
-        GimbalL.rotation_euler.rotate_axis("X", 0.236)
-        GimbalL.keyframe_insert(data_path="rotation_euler", index=-1)
         StickR.rotation_euler=[0,0,0]
-        StickR.rotation_euler.rotate_axis("Y", -0.056)
-        StickR.keyframe_insert(data_path="rotation_euler", index=-1)
         GimbalR.rotation_euler=[0,0,0]
-        GimbalR.rotation_euler.rotate_axis("X", -0.436)
+        
+        if(StickMode == 2):
+            StickL.rotation_euler.rotate_axis("Y", 0)
+            GimbalL.rotation_euler.rotate_axis("X", 0.436)
+            StickR.rotation_euler.rotate_axis("Y", 0)
+            GimbalR.rotation_euler.rotate_axis("X", 0)
+        else:
+            StickL.rotation_euler.rotate_axis("Y", 0)
+            GimbalL.rotation_euler.rotate_axis("X", 0)
+            StickR.rotation_euler.rotate_axis("Y", 0)
+            GimbalR.rotation_euler.rotate_axis("X", 0.436)
+            
+        StickL.keyframe_insert(data_path="rotation_euler", index=-1)
+        GimbalL.keyframe_insert(data_path="rotation_euler", index=-1)
+        StickR.keyframe_insert(data_path="rotation_euler", index=-1)
         GimbalR.keyframe_insert(data_path="rotation_euler", index=-1)
+        
+        bpy.context.scene.frame_set(1)
+        
+        StickL.rotation_euler=[0,0,0]
+        GimbalL.rotation_euler=[0,0,0]
+        StickR.rotation_euler=[0,0,0]
+        GimbalR.rotation_euler=[0,0,0]
+        
+        if(StickMode == 2):
+            StickL.rotation_euler.rotate_axis("Y", 0)
+            GimbalL.rotation_euler.rotate_axis("X", 0.436)
+            StickR.rotation_euler.rotate_axis("Y", 0)
+            GimbalR.rotation_euler.rotate_axis("X", 0)
+        else:
+            StickL.rotation_euler.rotate_axis("Y", 0)
+            GimbalL.rotation_euler.rotate_axis("X", 0)
+            StickR.rotation_euler.rotate_axis("Y", 0)
+            GimbalR.rotation_euler.rotate_axis("X", 0.436)
+            
+        StickL.keyframe_insert(data_path="rotation_euler", index=-1)
+        GimbalL.keyframe_insert(data_path="rotation_euler", index=-1)
+        StickR.keyframe_insert(data_path="rotation_euler", index=-1)
+        GimbalR.keyframe_insert(data_path="rotation_euler", index=-1)
+        
+        bpy.context.scene.frame_set(0)
         
         bpy.ops.render.render(write_still=True)

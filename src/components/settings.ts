@@ -7,11 +7,20 @@ function getXMLChild(doc:Document, child:string) {
     return String(doc.getElementsByTagName(child)[0].childNodes[0].nodeValue);
 }
 
+enum VideoFormat {
+    mp4="mp4",
+    mov="mov",
+    webm="webm",
+    avi="avi",
+    mkv="mkv",
+}
+
 const defaultSettings = {
     fps: 30,
     width: 540,
     stickDistance: 5,
     stickMode2: true,
+    videoFormat: VideoFormat.webm,
     log: '',
     output: defaultOutputPath
 }
@@ -29,6 +38,7 @@ const settingList = await fetch(SettingPath).then(function(response) {
         width: parseInt(getXMLChild(xmlDoc, "width")),
         stickDistance: parseInt(getXMLChild(xmlDoc, "stickDistance")),
         stickMode2: (getXMLChild(xmlDoc, "stickMode2") === "true"),
+        videoFormat: getXMLChild(xmlDoc, "videoFormat") as unknown as VideoFormat,
         log: (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log"),
         output: getXMLChild(xmlDoc, "output")
     }
@@ -38,7 +48,7 @@ const settingList = await fetch(SettingPath).then(function(response) {
 });
 if(!loadedSuccessfully) updateSettings({});
 
-function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, log?:string, output?:string}) {
+function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, videoFormat?:VideoFormat, log?:string, output?:string}) {
     if(optiones.fps === undefined) {
         optiones.fps = settingList.fps;
     } else {
@@ -59,6 +69,11 @@ function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:num
     } else {
         settingList.stickMode2 = optiones.stickMode2;
     }
+    if(optiones.videoFormat === undefined) {
+        optiones.videoFormat = settingList.videoFormat;
+    } else {
+        settingList.videoFormat = optiones.videoFormat;
+    }
     if(optiones.log === undefined) {
         optiones.log = settingList.log;
     } else {
@@ -70,13 +85,18 @@ function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:num
         settingList.output = optiones.output;
     }
     
-    const xmlStr = '<?xml version="1.0"?><settings><fps>' + optiones.fps +
-        '</fps><width>' + optiones.width +
-        '</width><stickDistance>' + optiones.stickDistance +
-        '</stickDistance><stickMode2>' + ((optiones.stickMode2)?"true":"false") +
-        '</stickMode2><log>' + ((optiones.log === "")? "None":optiones.log) +
-        '</log><output>' + optiones.output +
-        '</output></settings>';
+    const xmlStr = `
+        <?xml version="1.0" encoding="UTF-8"?>
+        <settings>
+            <fps>${optiones.fps}</fps>
+            <width>${optiones.width}</width>
+            <stickDistance>${optiones.stickDistance}</stickDistance>
+            <stickMode2>${optiones.stickMode2}</stickMode2>
+            <videoFormat>${optiones.videoFormat}</videoFormat>
+            <log>${(optiones.log === "")?"None":optiones.log}</log>
+            <output>${optiones.output}</output>
+        </settings>
+    `;
     
     fs.writeFile(SettingPath, formatXML(xmlStr, {collapseContent: true}), function(err) {
         if(err) {
@@ -90,7 +110,8 @@ function settingListLoadDefault() {
         fps:defaultSettings.fps,
         width:defaultSettings.width,
         stickDistance:defaultSettings.stickDistance,
-        stickMode2:defaultSettings.stickMode2
+        stickMode2:defaultSettings.stickMode2,
+        videoFormat:defaultSettings.videoFormat,
     });
 }
 
@@ -109,5 +130,6 @@ export {
     settingListLoadDefault,
     settingList,
     getLogList,
-    getLogSize
+    getLogSize,
+    VideoFormat
 }
