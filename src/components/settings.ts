@@ -25,17 +25,18 @@ const defaultSettings = {
     output: defaultOutputPath
 }
 
-function catchStr(tryFunc:()=>string, catchFunc:()=>string) {
+let allSettingsFound = true;
+function catchSetting(tryFunc:()=>string, catchFunc:()=>string) {
     let val;
     try {
         val = tryFunc();
     } catch(err) {
         logger.info("Failed to get setting value. Using default value:" + String(err));
+        allSettingsFound = false;
         val = catchFunc();
     }
     return val;
 }
-
 const settingList = await fetch(SettingPath).then(function(response) {
     return response.text();
 }).catch(function(err) {
@@ -43,6 +44,7 @@ const settingList = await fetch(SettingPath).then(function(response) {
     return "fileLoadFailed";
 }).then(function(data) {
     if(data === "fileLoadFailed") {
+        allSettingsFound = false;
         return defaultSettings;
     }
     
@@ -50,15 +52,18 @@ const settingList = await fetch(SettingPath).then(function(response) {
     const xmlDoc = parser.parseFromString(data, 'text/xml');
 
     return {
-        fps: parseInt(catchStr(function() {return getXMLChild(xmlDoc, "fps");},function() {return defaultSettings.fps.toString();})),
-        width: parseInt(catchStr(function() {return getXMLChild(xmlDoc, "width");},function() {return defaultSettings.width.toString();})),
-        stickDistance: parseInt(catchStr(function() {return getXMLChild(xmlDoc, "stickDistance");},function() {return defaultSettings.stickDistance.toString();})),
-        stickMode2: catchStr(function() {return getXMLChild(xmlDoc, "stickMode2");},function() {return defaultSettings.stickMode2.toString();}) === "true",
-        videoFormat: catchStr(function() {return getXMLChild(xmlDoc, "videoFormat");},function() {return defaultSettings.videoFormat.toString();}) as VideoFormat as VideoFormat,
-        log: catchStr(function() {return (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log");},function() {return defaultSettings.log;}),
-        output: catchStr(function() {return getXMLChild(xmlDoc, "output");},function() {return defaultSettings.output;})
+        fps: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "fps");},function() {return defaultSettings.fps.toString();})),
+        width: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "width");},function() {return defaultSettings.width.toString();})),
+        stickDistance: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "stickDistance");},function() {return defaultSettings.stickDistance.toString();})),
+        stickMode2: catchSetting(function() {return getXMLChild(xmlDoc, "stickMode2");},function() {return defaultSettings.stickMode2.toString();}) === "true",
+        videoFormat: catchSetting(function() {return getXMLChild(xmlDoc, "videoFormat");},function() {return defaultSettings.videoFormat.toString();}) as VideoFormat as VideoFormat,
+        log: catchSetting(function() {return (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log");},function() {return defaultSettings.log;}),
+        output: catchSetting(function() {return getXMLChild(xmlDoc, "output");},function() {return defaultSettings.output;})
     }
 });
+if(!allSettingsFound) {
+    updateSettings({});
+}
 
 function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, videoFormat?:VideoFormat, log?:string, output?:string}) {
     if(optiones.fps === undefined) {
