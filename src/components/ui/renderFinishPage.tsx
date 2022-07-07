@@ -7,6 +7,7 @@ import VideoPlayer from "./videoPlayer";
 import path from 'path';
 import {platformCharacter} from "../paths";
 import {VideoJsPlayerOptions} from "video.js";
+import {logList} from "../logReader";
 
 const detailsStyle:CSSProperties = {
     display: "flex",
@@ -20,7 +21,7 @@ const detailsInnerStyle:CSSProperties = {
 function RenderFinishPage() {
     const [logPlaying, setLogPlaying] = React.useState(path.join(settingList.output, settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter())[settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter()).length - 1].replace(".csv", "."+settingList.videoFormat)));
     
-    const [logList, setLogList] = React.useState([<li key={0}></li>]);
+    const [outputList, setOutputList] = React.useState([<li key={0}></li>]);
     
     const videoPlayerOptions:VideoJsPlayerOptions = {
         controls: true,
@@ -34,16 +35,15 @@ function RenderFinishPage() {
     const [videoSource, setVideoSource] = React.useState({src: logPlaying, type: 'video/'+settingList.videoFormat.toUpperCase()});
     
     React.useEffect(() => {
-        setLogList(settingList.log.substring(1).slice(0, -1).split('""').map((inputLog, index) => {
-            const outputLogName = inputLog.split(platformCharacter())[inputLog.split(platformCharacter()).length - 1].replace(".csv", "");
-            const outputLogPath = path.join(settingList.output, outputLogName+"."+settingList.videoFormat);
+        setOutputList(logList.map((inputLog, index) => {
+            const outputLogPath = path.join(settingList.output, inputLog.name+"."+settingList.videoFormat);
             
             return <li key={index}>
                 <p style={{
                     textDecoration: logPlaying === outputLogPath ? "underline" : "none",
                 }} onClick={() => {
                     setLogPlaying(outputLogPath);
-                }} title={outputLogPath}>{outputLogName}</p>
+                }} title={outputLogPath}>{inputLog.name}</p>
             </li>
         }));
         
@@ -83,7 +83,7 @@ function RenderFinishPage() {
             }}>
                 <VideoPlayer options={videoPlayerOptions} src={videoSource} />
                 <ol>
-                    {logList}
+                    {outputList}
                 </ol>
             </div>
         </div>

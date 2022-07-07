@@ -1,71 +1,19 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import { dialog } from "@electron/remote";
 import { settingList, updateSettings } from "../settings";
 import logger from "../logger";
 import {blender, blenderCmd} from "../blenderController";
 import openFolder from "../openFolder";
 import {platformCharacter} from "../paths";
-import {getLogTime} from "../logReader";
-import {formatDate} from "../dateFormat";
+import {logList, reloadAllLogs, updateLogs} from "../logReader";
 
 function MainPage() {
-    const [logs, setLogs] = useState(settingList.log);
     const [output, setOutput] = useState(settingList.output);
     const [logTable, setLogTable] = useState([<tr key={0}></tr>]);
     
     useEffect(() => {
-        
-        async function getData() {
-            const logList = settingList.log.substring(1).slice(0, -1).split('""');
-            
-            const logListName:string[] = [];
-            const logListTime:string[] = [];
-            const logListLength:string[] = [];
-            for(const log of logList) {
-                logListName.push(log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""));
-                const logTime = await getLogTime(log);
-                const logTimeDisplay = formatDate(logTime.start.year, logTime.start.month, logTime.start.day) + " " + logTime.start.hour + ":" + logTime.start.minute + ":" + logTime.start.second;
-                logListTime.push(logTimeDisplay);
-                
-                let logLengthDisplay = "00:00:00";
-                if(logTime.length.years > 0) {
-                    logLengthDisplay = logTime.length.years + "y " + logTime.length.months + "m " + logTime.length.days + "d " + logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
-                } else if(logTime.length.months > 0) {
-                    logLengthDisplay = logTime.length.months + "m " + logTime.length.days + "d " + logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
-                } else if(logTime.length.days > 0) {
-                    logLengthDisplay = logTime.length.days + "d " + logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
-                } else {
-                    logLengthDisplay = logTime.length.hours + "h " + logTime.length.minutes + "m " + logTime.length.seconds + "s";
-                }
-                logListLength.push(logLengthDisplay);
-            }
-            
-            setLogTable(logListName.map((log, index) => {
-                return <tr key={index}>
-                    <td style={{
-                        fontWeight: "bold",
-                        fontStyle: "italic"
-                    }}>{index+1}.</td>
-                    <td id="logList-Name" title={logList[index]+"\n"+logListTime[index]+"\n"+logListLength[index]} onClick={() => openFolder(logList[index].substring(0, logList[index].lastIndexOf(platformCharacter())))}>{log}</td>
-                    <td style={{
-                        fontStyle: "italic",
-                        fontWeight: "lighter"
-                    }}>({logListLength[index]})</td>
-                    <td><button className="listButton" onClick={() => {
-                        const newLogs = settingList.log.replace('"'+logList[index]+'"', "");
-                        updateSettings({log:newLogs});
-                        setLogs(newLogs);
-                    }}>Delete</button></td>
-                </tr>
-            }));
-        }
-        
-        if(settingList.log == "") {
-            setLogTable([]);
-        } else {
-            getData();
-        }
-    }, [logs]);
+        updateLogTable(setLogTable);
+    }, []);
     
     return (
         <div id="content">
@@ -82,10 +30,11 @@ function MainPage() {
                 </tbody>
             </table>
             <div className="dataDiv">
-                <button id="openLogButton" onClick={() => addLog(setLogs)}>Add Log(s)</button>
-                <button id="deleteLogsButton" onClick={() => {
+                <button id="openLogButton" onClick={() => addLog(setLogTable)}>Add Log(s)</button>
+                <button id="deleteLogsButton" onClick={async () => {
                     updateSettings({log:""});
-                    setLogs("");
+                    await reloadAllLogs();
+                    updateLogTable(setLogTable);
                 }}>Delete All</button>
             </div>
             <div className="dataDiv" id="outputDiv">
@@ -97,7 +46,37 @@ function MainPage() {
     )
 }
 
-function addLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
+function updateLogTable(setLogTable:React.Dispatch<React.SetStateAction<JSX.Element[]>>) {
+    function getData() {
+        setLogTable(logList.map((log, index) => {
+            return <tr key={index}>
+                <td style={{
+                    fontWeight: "bold",
+                    fontStyle: "italic"
+                }}>{index+1}.</td>
+                <td id="logList-Name" title={log.path+"\n"+log.time.start.formatted+"\n"+log.time.length.formatted} onClick={() => openFolder(log.path.substring(0, log.path.lastIndexOf(platformCharacter())))}>{log.name}</td>
+                <td style={{
+                    fontStyle: "italic",
+                    fontWeight: "lighter"
+                }}>({log.time.length.formatted})</td>
+                <td><button className="listButton" onClick={async () => {
+                    const newLogs = settingList.log.replace('"'+log.path+'"', "");
+                    updateSettings({log:newLogs});
+                    await updateLogs();
+                    updateLogTable(setLogTable);
+                }}>Delete</button></td>
+            </tr>
+        }));
+    }
+    
+    if(settingList.log == "") {
+        setLogTable([]);
+    } else {
+        getData();
+    }
+}
+
+function addLog(setLogTable:React.Dispatch<React.SetStateAction<JSX.Element[]>>) {
     dialog.showOpenDialog({
         properties: [
             "multiSelections"
@@ -110,7 +89,7 @@ function addLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
                 ]
             }
         ]
-    }).then(result => {
+    }).then(async result => {
         let logStr = "";
         result.filePaths.forEach(value => {
             const logToAdd = "\"" + value + "\"";
@@ -122,7 +101,8 @@ function addLog(updateHook:React.Dispatch<React.SetStateAction<string>>) {
         });
         const newLogs = settingList.log + logStr;
         updateSettings({log:newLogs});
-        updateHook(newLogs);
+        await updateLogs();
+        updateLogTable(setLogTable);
     }).catch(err => {
         logger.errorMSG(err);
     });

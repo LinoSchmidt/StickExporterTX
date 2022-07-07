@@ -1,5 +1,8 @@
 import logger from "./logger";
 import {parse as csvParse} from "csv-parse";
+import {settingList} from "./settings";
+import {platformCharacter} from "./paths";
+import {formatDate} from "./dateFormat";
 
 async function openLogFile(filePath:string, rawData:boolean) {
     const data = await fetch(filePath).then(function(response) {
@@ -94,6 +97,19 @@ async function getLogTime(filePath:string) {
                 pastYears--;
             }
             
+            const logTimeFormatted = formatDate(year, month, day) + " " + hour + ":" + minute + ":" + second;
+            
+            let logLengthFormatted = "00:00:00";
+            if(pastYears > 0) {
+                logLengthFormatted = pastYears + "y " + pastMonths + "m " + pastDays + "d " + pastHours + "h " + pastMinutes + "m " + pastSeconds + "s";
+            } else if(pastMonths > 0) {
+                logLengthFormatted = pastMonths + "m " + pastDays + "d " + pastHours + "h " + pastMinutes + "m " + pastSeconds + "s";
+            } else if(pastDays > 0) {
+                logLengthFormatted = pastDays + "d " + pastHours + "h " + pastMinutes + "m " + pastSeconds + "s";
+            } else {
+                logLengthFormatted = pastHours + "h " + pastMinutes + "m " + pastSeconds + "s";
+            }
+            
             return {
                 start: {
                     year,
@@ -102,7 +118,8 @@ async function getLogTime(filePath:string) {
                     hour,
                     minute,
                     second,
-                    millisecond
+                    millisecond,
+                    formatted: logTimeFormatted
                 },
                 length: {
                     years: pastYears,
@@ -111,7 +128,8 @@ async function getLogTime(filePath:string) {
                     hours: pastHours,
                     minutes: pastMinutes,
                     seconds: pastSeconds,
-                    milliseconds: pastMilliseconds
+                    milliseconds: pastMilliseconds,
+                    formatted: logLengthFormatted
                 }
             }
         } else {
@@ -124,6 +142,7 @@ async function getLogTime(filePath:string) {
                     minute: 0,
                     second: 0,
                     millisecond: 0,
+                    formatted: "Not Found"
                 },
                 length: {
                     years: 0,
@@ -132,13 +151,63 @@ async function getLogTime(filePath:string) {
                     hours: 0,
                     minutes: 0,
                     seconds: 0,
-                    milliseconds: 0
+                    milliseconds: 0,
+                    formatted: "Not Found"
                 }
             };
         }
     });
 }
 
+async function getAllLogs() {
+    const loadList = [];
+    
+    if(settingList.log.length > 0) {
+        const logs = settingList.log.substring(1).slice(0, -1).split('""');
+        
+        for(const log of logs) {
+            loadList.push({
+                name: log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""),
+                path: log,
+                time: await getLogTime(log)
+            });
+        }
+    }
+    
+    return loadList;
+}
+
+let logList = await getAllLogs();
+
+async function reloadAllLogs() {
+    logList = await getAllLogs();
+}
+
+async function updateLogs() {
+    if(settingList.log.length > 0) {
+        const logs = settingList.log.substring(1).slice(0, -1).split('""');
+        for(const log of logs) {
+            if(!logList.some(x => x.path === log)) {
+                logList.push({
+                    name: log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""),
+                    path: log,
+                    time: await getLogTime(log)
+                });
+            }
+        }
+        
+        for(const log of logList) {
+            if(!logs.some(x => x === log.path)) {
+                logList.splice(logList.indexOf(log), 1);
+            }
+        }
+    } else {
+        logList = [];
+    }
+}
+
 export {
-    getLogTime
+    reloadAllLogs,
+    logList,
+    updateLogs
 };
