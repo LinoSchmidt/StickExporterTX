@@ -9,6 +9,9 @@ logger.transports.console.format = "{h}:{i}:{s} {text}";
 logger.transports.file.getFile();
 logger.transports.file.resolvePath = () => path.join(app.getPath('userData'), "logs", "start.log");
 
+const appIconPath = path.join(app.getAppPath().replace("app.asar", ""), "assets", "icon.png");
+const finsishedIconPath = path.join(app.getAppPath().replace("app.asar", ""), "assets", "render_finished_icon.png");
+
 autoUpdater.autoDownload = false;
 
 autoUpdater.checkForUpdatesAndNotify();
@@ -116,7 +119,7 @@ const createWindow = () => {
     const progress = parseFloat(arg);
     mainWindow.setProgressBar(progress);
     if(progress === 1 && !mainWindow.isFocused()) {
-      mainWindow.setOverlayIcon(path.join(__dirname, '../assets/render_finished_icon.png') as unknown as NativeImage, 'Rendering Complete');
+      mainWindow.setOverlayIcon(finsishedIconPath as unknown as NativeImage, 'Rendering Complete');
       mainWindow.flashFrame(true);
     }
   });
@@ -134,7 +137,7 @@ const createWindow = () => {
     mainWindow.show();
   });
   
-  mainWindow.setIcon(path.join(__dirname, '../assets/icon.png'));
+  mainWindow.setIcon(appIconPath);
 };
 
 // This method will be called when Electron has finished

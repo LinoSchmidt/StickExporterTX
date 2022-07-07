@@ -1,4 +1,4 @@
-import { blenderPath, blenderScriptPath, dataPath, templatePath } from "./paths";
+import { blenderPath, blenderScriptPath, dataPath, templatePath, finsishedIconPath } from "./paths";
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
@@ -120,7 +120,7 @@ function startBlender() {
                 // TODO: only show notification if not in do not disturb mode, currently not working. Details: https://github.com/felixrieseberg/macos-notification-state/issues/30
                     new Notification("Render Finished", {
                         body: "Rendering finished successfully!",
-                        icon: "../assets/render_finished_icon.png"
+                        icon: finsishedIconPath
                     }).onclick = function() {
                         ipcRenderer.send("openApp");
                 }

@@ -19,3 +19,5 @@ export function platformCharacter() {
 export const blenderPath = path.join(appPath, "dependencies", platformFolder, "blender", "blender");
 export const templatePath = path.join(appPath, "dependencies", "template.blend");
 export const blenderScriptPath = path.join(appPath, "dependencies", "blenderScript.py");
+
+export const finsishedIconPath = path.join(appPath, "assets", "render_finished_icon.png");

@@ -34,7 +34,9 @@
     ],
     "extraResources": [
       "dependencies/template.blend",
-      "dependencies/blenderScript.py"
+      "dependencies/blenderScript.py",
+      "assets/icon.png",
+      "assets/render_finished_icon.png"
     ],
     "win": {
       "icon": "assets/icon.png",
