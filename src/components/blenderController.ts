@@ -117,12 +117,13 @@ function startBlender() {
             renderInfo.endTime = new Date().getTime();
             if(lastFrame == frames) {
                 openPage(Page.RenderFinish);
+                ipcRenderer.send("renderFinished");
                 // TODO: only show notification if not in do not disturb mode, currently not working. Details: https://github.com/felixrieseberg/macos-notification-state/issues/30
-                    new Notification("Render Finished", {
-                        body: "Rendering finished successfully!",
-                        icon: finsishedIconPath
-                    }).onclick = function() {
-                        ipcRenderer.send("openApp");
+                new Notification("Render Finished", {
+                    body: "Rendering finished successfully!",
+                    icon: finsishedIconPath
+                }).onclick = function() {
+                    ipcRenderer.send("openApp");
                 }
             } else {
                 logger.errorMSG("Render Failed!");

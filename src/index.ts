@@ -118,7 +118,10 @@ const createWindow = () => {
   ipcMain.on('setProgress', (event, arg) => {
     const progress = parseFloat(arg);
     mainWindow.setProgressBar(progress);
-    if(progress === 1 && !mainWindow.isFocused()) {
+  });
+  
+  ipcMain.on('renderFinished', () => {
+    if(!mainWindow.isFocused()) {
       mainWindow.setOverlayIcon(finsishedIconPath as unknown as NativeImage, 'Rendering Complete');
       mainWindow.flashFrame(true);
     }
