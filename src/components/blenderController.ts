@@ -241,7 +241,7 @@ function blender(command:blenderCmd) {
 }
 
 ipcRenderer.on("isRenderActiveClose", () => {
-    if(renderingPicture || renderingVideo) {
+    if(renderingVideo) {
         ipcRenderer.send("renderActiveClose");
     } else {
         ipcRenderer.send("renderInactiveClose");
