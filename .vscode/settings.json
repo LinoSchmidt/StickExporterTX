@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./dependencies/windows/blender/3.2/scripts/modules",
+        "./dependencies/linux/blender/3.2/scripts/modules"
+    ]
+}
