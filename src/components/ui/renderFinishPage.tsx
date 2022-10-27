@@ -41,6 +41,7 @@ function RenderFinishPage() {
             return <li key={index}>
                 <p style={{
                     textDecoration: logPlaying === outputLogPath ? "underline" : "none",
+                    cursor: logPlaying === outputLogPath ? "default" : "pointer",
                 }} onClick={() => {
                     setLogPlaying(outputLogPath);
                 }} title={outputLogPath}>{inputLog.name}</p>
