@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { settingList, getLogList } from "../settings";
+import {getInOutSettings} from "../settings";
 import openFolder from "../openFolder";
 import { blenderCmd, blender } from "../blenderController";
 
@@ -34,7 +34,7 @@ function RenderingPage() {
     
     return (
         <div id="content">
-            <p>{"Log " + logNumber + "/" + getLogList().length}</p>
+            <p>{"Log " + logNumber + "/" + getInOutSettings().logList.length}</p>
             <p>{status}</p>
             <div className="progress">
                 <div className="progress-done" style={{
@@ -69,7 +69,7 @@ function RenderingPage() {
                 }>{remainingTime}</p>
             </div>
             <button id="stopRenderButton" onClick={() => blender(blenderCmd.stopRendering)}>Stop</button>
-            <button onClick={() => openFolder(settingList.output)}>Open Output Folder</button>
+            <button onClick={() => openFolder(getInOutSettings().output)}>Open Output Folder</button>
         </div>
     )
 }

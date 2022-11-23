@@ -1,8 +1,9 @@
 import logger from "./logger";
 import {parse as csvParse} from "csv-parse";
-import {settingList} from "./settings";
+import {getInOutSettings} from "./settings";
 import {platformCharacter} from "./paths";
 import {formatDate} from "./dateFormat";
+import fs from "fs";
 
 async function openLogFile(filePath:string, rawData:boolean) {
     const data = await fetch(filePath).then(function(response) {
@@ -162,8 +163,8 @@ async function getLogTime(filePath:string) {
 async function getAllLogs() {
     const loadList = [];
     
-    if(settingList.log.length > 0) {
-        const logs = settingList.log.substring(1).slice(0, -1).split('""');
+    if(getInOutSettings().log.length > 0) {
+        const logs = getInOutSettings().log.substring(1).slice(0, -1).split('""');
         
         for(const log of logs) {
             loadList.push({
@@ -184,8 +185,8 @@ async function reloadAllLogs() {
 }
 
 async function updateLogs() {
-    if(settingList.log.length > 0) {
-        const logs = settingList.log.substring(1).slice(0, -1).split('""');
+    if(getInOutSettings().log.length > 0) {
+        const logs = getInOutSettings().log.substring(1).slice(0, -1).split('""');
         for(const log of logs) {
             if(!logList.some(x => x.path === log)) {
                 logList.push({
@@ -206,8 +207,20 @@ async function updateLogs() {
     }
 }
 
+function getLogList() {
+    return getInOutSettings().log.split("\"\"");
+}
+
+function getLogSize(index:number) {
+    const logList = getInOutSettings().log.substring(1).slice(0, -1).split('""');
+    
+    return fs.statSync(logList[index]).size;
+}
+
 export {
     reloadAllLogs,
     logList,
-    updateLogs
+    updateLogs,
+    getLogList,
+    getLogSize
 };

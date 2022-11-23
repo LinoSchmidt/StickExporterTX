@@ -2,7 +2,7 @@ import React, { CSSProperties } from "react";
 import {openPage, Page} from "../../renderer";
 import {renderInfo} from "../blenderController";
 import openFolder from "../openFolder";
-import {settingList} from "../settings";
+import {getInOutSettings, getActiveProfile} from "../settings";
 import VideoPlayer from "./videoPlayer";
 import path from 'path';
 import {platformCharacter} from "../paths";
@@ -19,7 +19,7 @@ const detailsInnerStyle:CSSProperties = {
 }
 
 function RenderFinishPage() {
-    const [logPlaying, setLogPlaying] = React.useState(path.join(settingList.output, settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter())[settingList.log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter()).length - 1].replace(".csv", "."+settingList.videoFormat)));
+    const [logPlaying, setLogPlaying] = React.useState(path.join(getInOutSettings().output, getInOutSettings().log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter())[getInOutSettings().log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter()).length - 1].replace(".csv", "."+getActiveProfile().videoFormat)));
     
     const [outputList, setOutputList] = React.useState([<li key={0}></li>]);
     
@@ -32,11 +32,11 @@ function RenderFinishPage() {
         }
     };
     
-    const [videoSource, setVideoSource] = React.useState({src: logPlaying, type: 'video/'+settingList.videoFormat.toUpperCase()});
+    const [videoSource, setVideoSource] = React.useState({src: logPlaying, type: 'video/'+getActiveProfile().videoFormat.toUpperCase()});
     
     React.useEffect(() => {
         setOutputList(logList.map((inputLog, index) => {
-            const outputLogPath = path.join(settingList.output, inputLog.name+"."+settingList.videoFormat);
+            const outputLogPath = path.join(getInOutSettings().output, inputLog.name+"."+getActiveProfile().videoFormat);
             
             return <li key={index}>
                 <p style={{
@@ -50,7 +50,7 @@ function RenderFinishPage() {
         
         setVideoSource({
             src: logPlaying,
-            type: 'video/'+settingList.videoFormat.toUpperCase()
+            type: 'video/'+getActiveProfile().videoFormat.toUpperCase()
         });
     }, [logPlaying]);
     
@@ -78,7 +78,7 @@ function RenderFinishPage() {
             }} onClick={() => {
                 openPage(Page.Main);
             }}>Finish</button>
-            <button onClick={() => openFolder(settingList.output)}>Open Output Folder</button>
+            <button onClick={() => openFolder(getInOutSettings().output)}>Open Output Folder</button>
             <div style={{
                 marginTop: "10px"
             }}>

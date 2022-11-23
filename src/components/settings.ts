@@ -1,11 +1,6 @@
-import formatXML from "xml-formatter";
-import {SettingPath, defaultOutputPath} from './paths';
-import fs from "fs";
+import {SettingPath, defaultOutputPath, OLDSettingPath} from './paths';
 import logger from "./logger";
-
-function getXMLChild(doc:Document, child:string) {
-    return String(doc.getElementsByTagName(child)[0].childNodes[0].nodeValue);
-}
+import fs from "fs";
 
 enum VideoFormat {
     mp4="mp4",
@@ -15,125 +10,219 @@ enum VideoFormat {
     mkv="mkv",
 }
 
-const defaultSettings = {
-    fps: 30,
-    width: 540,
-    stickDistance: 5,
-    stickMode2: true,
-    videoFormat: VideoFormat.webm,
-    log: '',
-    output: defaultOutputPath
+type JSONProfile = {
+    profileName: string,
+    fps: number,
+    width: number,
+    stickDistance: number,
+    stickMode2: boolean,
+    videoFormat: VideoFormat
+};
+
+type JSONSettings = {
+    activeProfile: string,
+    profiles: JSONProfile[],
+    log: string,
+    output: string,
 }
 
-let allSettingsFound = true;
+const defaultSettings:JSONSettings = {
+    activeProfile: "Default",
+    profiles: [
+        {
+            profileName: "Default",
+            fps: 30,
+            width: 540,
+            stickDistance: 5,
+            stickMode2: true,
+            videoFormat: VideoFormat.webm
+        }
+    ],
+    log: '',
+    output: defaultOutputPath
+};
+
 function catchSetting(tryFunc:()=>string, catchFunc:()=>string) {
     let val;
     try {
         val = tryFunc();
     } catch(err) {
         logger.info("Failed to get setting value. Using default value:" + String(err));
-        allSettingsFound = false;
         val = catchFunc();
     }
     return val;
 }
+
+function getXMLChild(doc:Document, child:string) {
+    return String(doc.getElementsByTagName(child)[0].childNodes[0].nodeValue);
+}
+
 const settingList = await fetch(SettingPath).then(function(response) {
     return response.text();
 }).catch(function(err) {
     logger.info(err);
     return "fileLoadFailed";
-}).then(function(data) {
+}).then(async function(data) {
     if(data === "fileLoadFailed") {
-        allSettingsFound = false;
-        return defaultSettings;
+        
+        return await fetch(OLDSettingPath).then(function(response) {
+            return response.text();
+        }).catch(function(err) {
+            logger.info(err);
+            return "fileLoadFailed";
+        }).then(function(data) {
+            if(data === "fileLoadFailed") {
+                return defaultSettings;
+            }
+            
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, 'text/xml');
+        
+            return {
+                activeProfile: defaultSettings.activeProfile,
+                profiles: [
+                    {
+                        profileName: defaultSettings.profiles[0].profileName,
+                        fps: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "fps");},function() {return defaultSettings.profiles[0].fps.toString();})),
+                        width: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "width");},function() {return defaultSettings.profiles[0].width.toString();})),
+                        stickDistance: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "stickDistance");},function() {return defaultSettings.profiles[0].stickDistance.toString();})),
+                        stickMode2: catchSetting(function() {return getXMLChild(xmlDoc, "stickMode2");},function() {return defaultSettings.profiles[0].stickMode2.toString();}) === "true",
+                        videoFormat: catchSetting(function() {return getXMLChild(xmlDoc, "videoFormat");},function() {return defaultSettings.profiles[0].videoFormat.toString();}) as VideoFormat as VideoFormat
+                    }
+                ],
+                log: catchSetting(function() {return (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log");},function() {return defaultSettings.log;}),
+                output: catchSetting(function() {return getXMLChild(xmlDoc, "output");},function() {return defaultSettings.output;})
+            } as JSONSettings;
+        });
     }
     
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data, 'text/xml');
-
-    return {
-        fps: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "fps");},function() {return defaultSettings.fps.toString();})),
-        width: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "width");},function() {return defaultSettings.width.toString();})),
-        stickDistance: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "stickDistance");},function() {return defaultSettings.stickDistance.toString();})),
-        stickMode2: catchSetting(function() {return getXMLChild(xmlDoc, "stickMode2");},function() {return defaultSettings.stickMode2.toString();}) === "true",
-        videoFormat: catchSetting(function() {return getXMLChild(xmlDoc, "videoFormat");},function() {return defaultSettings.videoFormat.toString();}) as VideoFormat as VideoFormat,
-        log: catchSetting(function() {return (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log");},function() {return defaultSettings.log;}),
-        output: catchSetting(function() {return getXMLChild(xmlDoc, "output");},function() {return defaultSettings.output;})
-    }
+    return JSON.parse(data) as JSONSettings;
 });
-if(!allSettingsFound) {
-    updateSettings({});
+
+function createProfile(profileName:string, clone:boolean) {
+    
+    
+    settingList.profiles.push({
+        profileName: profileName,
+        fps: clone? getActiveProfile().fps:defaultSettings.profiles[0].fps,
+        width: clone? getActiveProfile().width:defaultSettings.profiles[0].width,
+        stickDistance: clone? getActiveProfile().stickDistance:defaultSettings.profiles[0].stickDistance,
+        stickMode2: clone? getActiveProfile().stickMode2:defaultSettings.profiles[0].stickMode2,
+        videoFormat: clone? getActiveProfile().videoFormat:defaultSettings.profiles[0].videoFormat
+    });
+    
+    writeSettings();
 }
 
-function updateSettings(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, videoFormat?:VideoFormat, log?:string, output?:string}) {
-    if(optiones.fps === undefined) {
-        optiones.fps = settingList.fps;
-    } else {
-        settingList.fps = optiones.fps;
-    }
-    if(optiones.width === undefined) {
-        optiones.width = settingList.width;
-    } else {
-        settingList.width = optiones.width;
-    }
-    if(optiones.stickDistance === undefined) {
-        optiones.stickDistance = settingList.stickDistance;
-    } else {
-        settingList.stickDistance = optiones.stickDistance;
-    }
-    if(optiones.stickMode2 === undefined) {
-        optiones.stickMode2 = settingList.stickMode2;
-    } else {
-        settingList.stickMode2 = optiones.stickMode2;
-    }
-    if(optiones.videoFormat === undefined) {
-        optiones.videoFormat = settingList.videoFormat;
-    } else {
-        settingList.videoFormat = optiones.videoFormat;
-    }
-    if(optiones.log === undefined) {
-        optiones.log = settingList.log;
-    } else {
-        settingList.log = optiones.log;
-    }
-    if(optiones.output === undefined) {
-        optiones.output = settingList.output;
-    } else {
-        settingList.output = optiones.output;
+function ProfileLoadDefault(profileName?:string) {
+    if(profileName === undefined) {
+        profileName = getActiveProfile().profileName;
     }
     
-    const xmlStr = `
-        <?xml version="1.0" encoding="UTF-8"?>
-        <settings>
-            <fps>${optiones.fps}</fps>
-            <width>${optiones.width}</width>
-            <stickDistance>${optiones.stickDistance}</stickDistance>
-            <stickMode2>${optiones.stickMode2}</stickMode2>
-            <videoFormat>${optiones.videoFormat}</videoFormat>
-            <log>${(optiones.log === "")?"None":optiones.log}</log>
-            <output>${optiones.output}</output>
-        </settings>
-    `;
+    settingList.profiles.forEach(profile => {
+        if(profile.profileName === profileName) {
+            profile.fps = defaultSettings.profiles[0].fps;
+            profile.width = defaultSettings.profiles[0].width;
+            profile.stickDistance = defaultSettings.profiles[0].stickDistance;
+            profile.stickMode2 = defaultSettings.profiles[0].stickMode2;
+            profile.videoFormat = defaultSettings.profiles[0].videoFormat;
+        }
+    });
     
-    fs.writeFile(SettingPath, formatXML(xmlStr, {collapseContent: true}), function(err) {
+    writeSettings();
+}
+
+function editProfile(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, videoFormat?:VideoFormat}, profileName?:string) {
+    if(profileName === undefined) {
+        profileName = getActiveProfile().profileName;
+    }
+    
+    settingList.profiles.forEach(profile => {
+        if(profile.profileName === profileName) {
+            if(optiones.fps !== undefined) {
+                profile.fps = optiones.fps;
+            }
+            if(optiones.width !== undefined) {
+                profile.width = optiones.width;
+            }
+            if(optiones.stickDistance !== undefined) {
+                profile.stickDistance = optiones.stickDistance;
+            }
+            if(optiones.stickMode2 !== undefined) {
+                profile.stickMode2 = optiones.stickMode2;
+            }
+            if(optiones.videoFormat !== undefined) {
+                profile.videoFormat = optiones.videoFormat;
+            }
+        }
+    });
+    
+    writeSettings();
+}
+
+function setInOutSettings(args:{log?:string, output?:string}) {
+    if(args.log !== undefined) {
+        settingList.log = args.log;
+    }
+    if(args.output !== undefined) {
+        settingList.output = args.output;
+    }
+    writeSettings();
+}
+function getInOutSettings() {
+    return {log: settingList.log, output: settingList.output, logList:settingList.log.split("\"\"")};
+}
+
+function removeProfile(profileName?:string) {
+    if(profileName === undefined) {
+        profileName = getActiveProfile().profileName;
+    }
+    
+    settingList.profiles.forEach(profile => {
+        if(profile.profileName === profileName) {
+            settingList.profiles.splice(settingList.profiles.indexOf(profile), 1);
+        }
+    });
+    
+    writeSettings();
+}
+
+function setActiveProfile(profileName:string) {
+    settingList.profiles.forEach(profile => {
+        if(profile.profileName === profileName) {
+            settingList.activeProfile = profile.profileName;
+        }
+    });
+    
+    writeSettings();
+}
+
+function writeSettings(settings?:JSONSettings) {
+    if(settings === undefined) {
+        settings = settingList;
+    }
+    
+    fs.writeFile(SettingPath, JSON.stringify(settings), function(err) {
         if(err) {
             logger.errorMSG(String(err));
         }
     });
 }
 
-function settingListLoadDefault() {
-    updateSettings({
-        fps:defaultSettings.fps,
-        width:defaultSettings.width,
-        stickDistance:defaultSettings.stickDistance,
-        stickMode2:defaultSettings.stickMode2,
-        videoFormat:defaultSettings.videoFormat,
+function getActiveProfile() {
+    let activeProfile;
+    settingList.profiles.forEach(profile => {
+        if(profile.profileName === settingList.activeProfile) {
+            activeProfile = profile;
+        }
     });
-}
-
-function getLogList() {
-    return settingList.log.split("\"\"");
+    
+    if(activeProfile === undefined) {
+        activeProfile = settingList.profiles[0];
+        logger.errorMSG("Active profile not found, using default profile");
+    }
+    
+    return activeProfile;
 }
 
 function getLogSize(index:number) {
@@ -143,10 +232,14 @@ function getLogSize(index:number) {
 }
 
 export {
-    updateSettings,
-    settingListLoadDefault,
-    settingList,
-    getLogList,
+    createProfile,
+    ProfileLoadDefault,
+    editProfile,
+    removeProfile,
+    setActiveProfile,
+    getActiveProfile,
+    setInOutSettings,
+    getInOutSettings,
     getLogSize,
     VideoFormat
 }

@@ -4,7 +4,7 @@ import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
 import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow } from "./ui/renderingPage";
 import {imageLoading, imageLoaded} from "./ui/settingsPage";
-import { getLogList, getLogSize, settingList } from "./settings";
+import { getLogSize, getInOutSettings } from "./settings";
 import isValid from "is-valid-path";
 import { pageSetRendering, setProgress, openPage, Page } from "../renderer";
 import { ipcRenderer } from "electron";
@@ -198,15 +198,15 @@ function blender(command:blenderCmd) {
         }
     } else if(command === blenderCmd.startRendering) {
         if(readyToAcceptCommand) {
-            if(settingList.log == "") {
+            if(getInOutSettings().log == "") {
                 logger.warningMSG("No log selected!");
-            } else if(!isValid(settingList.log)) {
+            } else if(!isValid(getInOutSettings().log)) {
                 logger.warningMSG("Output path is invalid!");
             } else {
                 currentLogPortion = 0;
                 
                 const logSizeList:number[] = [];
-                getLogList().forEach(function (value, index) {
+                getInOutSettings().logList.forEach(function (value, index) {
                     logSizeList.push(getLogSize(index));
                 });
                 

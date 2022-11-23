@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { dialog } from "@electron/remote";
-import { settingList, updateSettings } from "../settings";
+import { setInOutSettings, getInOutSettings } from "../settings";
 import logger from "../logger";
 import {blender, blenderCmd} from "../blenderController";
 import openFolder from "../openFolder";
@@ -8,7 +8,7 @@ import {platformCharacter} from "../paths";
 import {logList, reloadAllLogs, updateLogs} from "../logReader";
 
 function MainPage() {
-    const [output, setOutput] = useState(settingList.output);
+    const [output, setOutput] = useState(getInOutSettings().output);
     const [logTable, setLogTable] = useState([<tr key={0}></tr>]);
     
     useEffect(() => {
@@ -32,14 +32,14 @@ function MainPage() {
             <div className="dataDiv">
                 <button id="openLogButton" onClick={() => addLog(setLogTable)}>Add Log(s)</button>
                 <button id="deleteLogsButton" onClick={async () => {
-                    updateSettings({log:""});
+                    setInOutSettings({log:""});
                     await reloadAllLogs();
                     updateLogTable(setLogTable);
                 }}>Delete All</button>
             </div>
             <div className="dataDiv" id="outputDiv">
                 <h4>Output Folder:</h4>
-                <p id="output" onClick={() => openFolder(settingList.output)}>{output}</p>
+                <p id="output" onClick={() => openFolder(getInOutSettings().output)}>{output}</p>
                 <button onClick={() => openVid(setOutput)}>Select Folder</button>
             </div>
         </div>
@@ -60,8 +60,8 @@ function updateLogTable(setLogTable:React.Dispatch<React.SetStateAction<JSX.Elem
                     fontWeight: "lighter"
                 }}>({log.time.length.formatted})</td>
                 <td><button className="listButton" onClick={async () => {
-                    const newLogs = settingList.log.replace('"'+log.path+'"', "");
-                    updateSettings({log:newLogs});
+                    const newLogs = getInOutSettings().log.replace('"'+log.path+'"', "");
+                    setInOutSettings({log:newLogs});
                     await updateLogs();
                     updateLogTable(setLogTable);
                 }}>Delete</button></td>
@@ -69,7 +69,7 @@ function updateLogTable(setLogTable:React.Dispatch<React.SetStateAction<JSX.Elem
         }));
     }
     
-    if(settingList.log == "") {
+    if(getInOutSettings().log == "") {
         setLogTable([]);
     } else {
         getData();
@@ -93,14 +93,14 @@ function addLog(setLogTable:React.Dispatch<React.SetStateAction<JSX.Element[]>>)
         let logStr = "";
         result.filePaths.forEach(value => {
             const logToAdd = "\"" + value + "\"";
-            if(settingList.log.includes(logToAdd)) {
+            if(getInOutSettings().log.includes(logToAdd)) {
                 logger.warningMSG("Log " + logToAdd + " already added.");
             } else {
                 logStr += "\"" + String(value) + "\"";
             }
         });
-        const newLogs = settingList.log + logStr;
-        updateSettings({log:newLogs});
+        const newLogs = getInOutSettings().log + logStr;
+        setInOutSettings({log:newLogs});
         await updateLogs();
         updateLogTable(setLogTable);
     }).catch(err => {
@@ -115,7 +115,7 @@ function openVid(updateHook:React.Dispatch<React.SetStateAction<string>>) {
         ]
     }).then(result => {
         if(result.filePaths.length > 0) {
-            updateSettings({output:String(result.filePaths)});
+            setInOutSettings({output:String(result.filePaths)});
             updateHook(String(result.filePaths));
         }
     }).catch(err => {

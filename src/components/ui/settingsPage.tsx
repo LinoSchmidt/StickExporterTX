@@ -1,5 +1,5 @@
 import React, {useState, useEffect, CSSProperties} from "react";
-import { settingList, updateSettings, settingListLoadDefault, VideoFormat } from "../settings";
+import { VideoFormat, editProfile, getActiveProfile, ProfileLoadDefault } from "../settings";
 import {blender, blenderCmd, renderingPicture} from "../blenderController";
 import {dataPath} from "../paths";
 import path from "path";
@@ -59,11 +59,11 @@ function VideoFormatWarning({videoFormat}:{videoFormat:VideoFormat}) {
 
 function SettingsPage() {
     
-    const [fps, setFps] = useState(settingList.fps);
-    const [width, setWidth] = useState(settingList.width);
-    const [stickDistance, setStickDistance] = useState(settingList.stickDistance);
-    const [stickMode2, setStickMode2] = useState(settingList.stickMode2);
-    const [videoFormat, setVideoFormat] = useState(settingList.videoFormat);
+    const [fps, setFps] = useState(getActiveProfile().fps);
+    const [width, setWidth] = useState(getActiveProfile().width);
+    const [stickDistance, setStickDistance] = useState(getActiveProfile().stickDistance);
+    const [stickMode2, setStickMode2] = useState(getActiveProfile().stickMode2);
+    const [videoFormat, setVideoFormat] = useState(getActiveProfile().videoFormat);
     const [renderImg, setRenderImgInner] = useState(picturePath());
     setRenderImg = setRenderImgInner;
     const [renderLoading, setRenderLoadingInner] = useState(renderingPicture);
@@ -71,7 +71,7 @@ function SettingsPage() {
     
     useEffect(() => {
         const timer = setTimeout(() => {
-            updateSettings({width, stickDistance, stickMode2});
+            editProfile({width, stickDistance, stickMode2});
             blender(blenderCmd.getRender);
         }, 500);
         
@@ -80,7 +80,7 @@ function SettingsPage() {
     
     useEffect(() => {
         const timer = setTimeout(() => {
-            updateSettings({fps, videoFormat});
+            editProfile({fps, videoFormat});
         }, 500);
         
         return () => clearTimeout(timer);
@@ -140,13 +140,13 @@ function SettingsPage() {
                     {videoFormat === VideoFormat.avi? <VideoFormatWarning videoFormat={videoFormat}/> : null}
                 </span>
                 <button id="resetSettingsButton" onClick={() => {
-                    settingListLoadDefault();
+                    ProfileLoadDefault();
                     
-                    setFps(settingList.fps);
-                    setWidth(settingList.width);
-                    setStickDistance(settingList.stickDistance);
-                    setStickMode2(settingList.stickMode2);
-                    setVideoFormat(settingList.videoFormat);
+                    setFps(getActiveProfile().fps);
+                    setWidth(getActiveProfile().width);
+                    setStickDistance(getActiveProfile().stickDistance);
+                    setStickMode2(getActiveProfile().stickMode2);
+                    setVideoFormat(getActiveProfile().videoFormat);
                 }}>Reset Settings</button>
             </div>
             <div id="renderImgDiv">
