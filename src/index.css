@@ -1,3 +1,12 @@
+body {
+    background-color: #172336;
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
 .dataDiv {
     display: flex;
 }
@@ -249,16 +258,18 @@ header h1 {
 }
 
 #render-ex {
-    width: 100%;
+    width: auto;
     height: auto;
+    max-width: 100%;
     display: block;
     border-radius: 10px;
 }
 #renderImgDiv {
     position: relative;
     margin-top: 15px;
-    width: 100%;
     image-rendering: pixelated;
+    width: fit-content;
+    height: fit-content;
 }
 
 .noMarginBottom {
