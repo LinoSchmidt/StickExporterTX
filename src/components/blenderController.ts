@@ -1,10 +1,10 @@
-import { blenderPath, blenderScriptPath, dataPath, templatePath, finsishedIconPath } from "./paths";
+import { blenderPath, blenderScriptPath, templatePath, finsishedIconPath, dataPath } from "./paths";
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
 import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow } from "./ui/renderingPage";
 import {imageLoading, imageLoaded} from "./ui/settingsPage";
-import { getLogSize, getInOutSettings } from "./settings";
+import { getLogSize, getInOutSettings, getActiveProfile } from "./settings";
 import isValid from "is-valid-path";
 import { pageSetRendering, setProgress, openPage, Page } from "../renderer";
 import { ipcRenderer } from "electron";
@@ -20,9 +20,7 @@ const blenderStartString = [
     templatePath,
     "--background",
     "--python",
-    blenderScriptPath,
-    "--",
-    dataPath.replaceAll("\\", "/")
+    blenderScriptPath
 ]
 
 let blenderConsole = spawn(blenderPath, blenderStartString).on('error', function(err) {
@@ -158,7 +156,17 @@ function startBlender() {
             } else {
                 waitingForRender = false;
                 renderingPicture = true;
-                blenderConsole.stdin.write("getRender\n");
+                const blenderArgs = JSON.stringify({
+                    stickMode2:getActiveProfile().stickMode2,
+                    width:getActiveProfile().width,
+                    stickDistance:getActiveProfile().stickDistance,
+                    fps:getActiveProfile().fps,
+                    videoFormat:getActiveProfile().videoFormat,
+                    logs:getInOutSettings().log,
+                    output:getInOutSettings().output,
+                    dataPath:dataPath
+                });
+                blenderConsole.stdin.write("getRender -- "+blenderArgs+"\n");
                 setBlenderStatus("Rendering");
                 setBlenderLoading(true);
                 imageLoading();
@@ -192,7 +200,17 @@ function blender(command:blenderCmd) {
             imageLoading();
             setBlenderStatus("Rendering");
             setBlenderLoading(true);
-            blenderConsole.stdin.write("getRender\n");
+            const blenderArgs = JSON.stringify({
+                stickMode2:getActiveProfile().stickMode2,
+                width:getActiveProfile().width,
+                stickDistance:getActiveProfile().stickDistance,
+                fps:getActiveProfile().fps,
+                videoFormat:getActiveProfile().videoFormat,
+                logs:getInOutSettings().log,
+                output:getInOutSettings().output,
+                dataPath:dataPath
+            });
+            blenderConsole.stdin.write("getRender -- "+blenderArgs+"\n");
         } else {
             waitingForRender = true;
         }
@@ -225,7 +243,17 @@ function blender(command:blenderCmd) {
                 pageSetRendering(true);
                 setBlenderStatus("Rendering");
                 setBlenderLoading(true);
-                blenderConsole.stdin.write("startRendering\n");
+                const blenderArgs = JSON.stringify({
+                    stickMode2:getActiveProfile().stickMode2,
+                    width:getActiveProfile().width,
+                    stickDistance:getActiveProfile().stickDistance,
+                    fps:getActiveProfile().fps,
+                    videoFormat:getActiveProfile().videoFormat,
+                    logs:getInOutSettings().log,
+                    output:getInOutSettings().output,
+                    dataPath:dataPath
+                });
+                blenderConsole.stdin.write("startRendering -- "+blenderArgs+"\n");
                 
                 renderInfo.startTime = new Date().getTime();
                 setPastTime("0min 0sec");

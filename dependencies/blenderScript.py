@@ -5,10 +5,7 @@ import math
 import sys
 import time
 import bpy
-import xml.etree.ElementTree as ET
-
-argv = sys.argv
-argv = argv[argv.index("--") + 1:]
+import json
 
 logger = logging.getLogger('simple_example')
 logger.setLevel(logging.INFO)
@@ -43,28 +40,22 @@ def _map(x, in_min, in_max, out_min, out_max):
 logger.info("Blender started successfully!")
 
 while True:
-    command = input("Waiting for command: ")
+    command = input("Waiting for command: ").split(" -- ")
     
     time.sleep(0.5)
     
-    settingsRoot = ET.parse(argv[0]+"/settings.xml").getroot()
+    settings = json.loads(command[1])
     
-    StickMode = settingsRoot[3].text
-    if(StickMode == "true"):
-        StickMode = 2
-    else:
-        StickMode = 1
+    stickMode2 = settings["stickMode2"]
+    width = settings["width"]
+    stickDistance = _map(settings["stickDistance"], 0, 100, 5, 105)
+    fps = settings["fps"]
+    videoFormat = settings["videoFormat"]
+    logs = settings["logs"][1:][:-1].split("\"\"")
+    output = settings["output"]
+    dataPath = settings["dataPath"]
     
-    width = int(settingsRoot[1].text)
-    StickDistance = _map(int(settingsRoot[2].text), 0, 100, 5, 105)
-    
-    if(command == "startRendering"):
-        
-        fps = int(settingsRoot[0].text)
-        videoFormat = settingsRoot[4].text
-        logs = settingsRoot[5].text[1:][:-1].split("\"\"")
-        output = settingsRoot[6].text
-        
+    if(command[0] == "startRendering"):
         logCount = len(logs)
         logNumber = 1
         
@@ -129,13 +120,13 @@ while True:
                 bpy.context.scene.render.image_settings.color_mode = 'RGBA'
             
             scn.render.resolution_x = width
-            GimbalCoverR.location[0] = StickDistance
-            GimbalR.location[0] = StickDistance
-            TrailR.location[0] = StickDistance
-            Plane.location[0] = StickDistance
-            Camera.location[0] = StickDistance/2
-            Camera.data.ortho_scale = StickDistance+5
-            scn.render.resolution_y = int(width/_map(StickDistance, 5, 105, 2, 21.6))
+            GimbalCoverR.location[0] = stickDistance
+            GimbalR.location[0] = stickDistance
+            TrailR.location[0] = stickDistance
+            Plane.location[0] = stickDistance
+            Camera.location[0] = stickDistance/2
+            Camera.data.ortho_scale = stickDistance+5
+            scn.render.resolution_y = int(width/_map(stickDistance, 5, 105, 2, 21.6))
             bpy.context.scene.render.filepath = output + "\\" + log.split("/")[-1].split("\\")[-1].replace(".csv", "."+videoFormat)
             
             scn.render.fps = 1000
@@ -168,7 +159,7 @@ while True:
                 StickR.rotation_euler=[0,0,0]
                 GimbalR.rotation_euler=[0,0,0]
                 
-                if StickMode == "1":
+                if stickMode2 == False:
                     StickL.rotation_euler.rotate_axis("Y", ailP)
                     GimbalL.rotation_euler.rotate_axis("X", eleP)
                     StickR.rotation_euler.rotate_axis("Y", rudP)
@@ -194,19 +185,19 @@ while True:
             
             logNumber+=1
     
-    elif(command == "getRender"):
+    elif(command[0] == "getRender"):
         
         bpy.context.scene.render.image_settings.file_format = 'PNG'
-        bpy.context.scene.render.filepath = argv[0] + "\\render.png"
+        bpy.context.scene.render.filepath = dataPath + "\\render.png"
         
         scn.render.resolution_x = width
-        GimbalCoverR.location[0] = StickDistance
-        GimbalR.location[0] = StickDistance
-        TrailR.location[0] = StickDistance
-        Plane.location[0] = StickDistance
-        Camera.location[0] = StickDistance/2
-        Camera.data.ortho_scale = StickDistance+5
-        scn.render.resolution_y = int(width/_map(StickDistance, 5, 105, 2, 21.6))
+        GimbalCoverR.location[0] = stickDistance
+        GimbalR.location[0] = stickDistance
+        TrailR.location[0] = stickDistance
+        Plane.location[0] = stickDistance
+        Camera.location[0] = stickDistance/2
+        Camera.data.ortho_scale = stickDistance+5
+        scn.render.resolution_y = int(width/_map(stickDistance, 5, 105, 2, 21.6))
         
         bpy.context.scene.frame_set(0)
         
@@ -215,7 +206,7 @@ while True:
         StickR.rotation_euler=[0,0,0]
         GimbalR.rotation_euler=[0,0,0]
         
-        if(StickMode == 2):
+        if(stickMode2 == True):
             StickL.rotation_euler.rotate_axis("Y", 0)
             GimbalL.rotation_euler.rotate_axis("X", 0.436)
             StickR.rotation_euler.rotate_axis("Y", 0)
@@ -238,7 +229,7 @@ while True:
         StickR.rotation_euler=[0,0,0]
         GimbalR.rotation_euler=[0,0,0]
         
-        if(StickMode == 2):
+        if(stickMode2 == True):
             StickL.rotation_euler.rotate_axis("Y", 0)
             GimbalL.rotation_euler.rotate_axis("X", 0.436)
             StickR.rotation_euler.rotate_axis("Y", 0)
