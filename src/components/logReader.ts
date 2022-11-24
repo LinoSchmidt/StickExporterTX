@@ -21,7 +21,7 @@ async function openLogFile(filePath:string, rawData:boolean) {
         let logData:string[]|undefined = undefined;
         csvParse(data, {}, (err, output:string[]) => {
             if(err) {
-                logger.errorMSG(`Error parsing csv file: ${err}`);
+                logger.errorMSG(`Error parsing file "${filePath}": ${err}`);
                 logData = [];
             } else {
                 logData = output;
