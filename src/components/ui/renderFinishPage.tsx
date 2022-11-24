@@ -5,7 +5,6 @@ import openFolder from "../openFolder";
 import {getInOutSettings, getActiveProfile} from "../settings";
 import VideoPlayer from "./videoPlayer";
 import path from 'path';
-import {platformCharacter} from "../paths";
 import {VideoJsPlayerOptions} from "video.js";
 import {logList} from "../logReader";
 
@@ -19,9 +18,7 @@ const detailsInnerStyle:CSSProperties = {
 }
 
 function RenderFinishPage() {
-    const [logPlaying, setLogPlaying] = React.useState(path.join(getInOutSettings().output, getInOutSettings().log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter())[getInOutSettings().log.substring(1).slice(0, -1).split('""')[0].split(platformCharacter()).length - 1].replace(".csv", "."+getActiveProfile().videoFormat)));
-    
-    const [outputList, setOutputList] = React.useState([<li key={0}></li>]);
+    const [logPlaying, setLogPlaying] = React.useState(logList[0].name);
     
     const videoPlayerOptions:VideoJsPlayerOptions = {
         controls: true,
@@ -32,24 +29,16 @@ function RenderFinishPage() {
         }
     };
     
-    const [videoSource, setVideoSource] = React.useState({src: logPlaying, type: 'video/'+getActiveProfile().videoFormat.toUpperCase()});
+    const [videoSource, setVideoSource] = React.useState({src: path.join(getInOutSettings().output, logPlaying+"."+getActiveProfile().videoFormat), type: 'video/'+getActiveProfile().videoFormat.toUpperCase()});
+    
+    const OutputList = logList.map((inputLog, index) => {
+        const outputLogPath = path.join(getInOutSettings().output, inputLog.name+"."+getActiveProfile().videoFormat);
+        return <option key={index} value={inputLog.name} title={outputLogPath}>{inputLog.name}</option>
+    });
     
     React.useEffect(() => {
-        setOutputList(logList.map((inputLog, index) => {
-            const outputLogPath = path.join(getInOutSettings().output, inputLog.name+"."+getActiveProfile().videoFormat);
-            
-            return <li key={index}>
-                <p style={{
-                    textDecoration: logPlaying === outputLogPath ? "underline" : "none",
-                    cursor: logPlaying === outputLogPath ? "default" : "pointer",
-                }} onClick={() => {
-                    setLogPlaying(outputLogPath);
-                }} title={outputLogPath}>{inputLog.name}</p>
-            </li>
-        }));
-        
         setVideoSource({
-            src: logPlaying,
+            src: path.join(getInOutSettings().output, logPlaying+"."+getActiveProfile().videoFormat),
             type: 'video/'+getActiveProfile().videoFormat.toUpperCase()
         });
     }, [logPlaying]);
@@ -82,10 +71,16 @@ function RenderFinishPage() {
             <div style={{
                 marginTop: "10px"
             }}>
+                <span className="selectSpan">
+                    <label className="videoSelect" htmlFor="vslct">
+                        <select id="vslct" required={true} value={logPlaying} onChange={e => {
+                            setLogPlaying(e.target.value);
+                        }}>
+                            {OutputList}
+                        </select>
+                    </label>
+                </span>
                 <VideoPlayer options={videoPlayerOptions} src={videoSource} />
-                <ol>
-                    {outputList}
-                </ol>
             </div>
         </div>
     );
