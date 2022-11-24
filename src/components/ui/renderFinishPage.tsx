@@ -17,6 +17,19 @@ const detailsInnerStyle:CSSProperties = {
     marginRight: "5px",
 }
 
+const VideoSpanStyle:CSSProperties = {
+    display: "flex",
+    alignItems: "center"
+}
+const videoSelectStyle:CSSProperties = {
+    padding: "4px 0",
+    border: "0",
+    borderRadius: "14px",
+    cursor: "pointer",
+    textAlign: "center",
+    fontSize: "large"
+}
+
 function RenderFinishPage() {
     const [logPlaying, setLogPlaying] = React.useState(logList[0].name);
     
@@ -71,9 +84,9 @@ function RenderFinishPage() {
             <div style={{
                 marginTop: "10px"
             }}>
-                <span className="selectSpan">
-                    <label className="videoSelect" htmlFor="vslct">
-                        <select id="vslct" required={true} value={logPlaying} onChange={e => {
+                <span style={VideoSpanStyle}>
+                    <label htmlFor="vslct">
+                        <select style={videoSelectStyle} id="vslct" required={true} value={logPlaying} onChange={e => {
                             setLogPlaying(e.target.value);
                         }}>
                             {OutputList}
