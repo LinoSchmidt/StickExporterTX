@@ -114,18 +114,28 @@ function createProfile(profileName:string, clone:boolean) {
     writeSettings();
 }
 
-function ProfileLoadDefault(profileName?:string) {
+function ProfileLoadDefault(reset:{fps?:boolean, width?:boolean, stickDistance?:boolean, stickMode2?:boolean, videoFormat?:boolean, all?:boolean}, profileName?:string) {
     if(profileName === undefined) {
         profileName = getActiveProfile().profileName;
     }
     
     settingList.profiles.forEach(profile => {
         if(profile.profileName === profileName) {
-            profile.fps = defaultSettings.profiles[0].fps;
-            profile.width = defaultSettings.profiles[0].width;
-            profile.stickDistance = defaultSettings.profiles[0].stickDistance;
-            profile.stickMode2 = defaultSettings.profiles[0].stickMode2;
-            profile.videoFormat = defaultSettings.profiles[0].videoFormat;
+            if(reset.all || reset.fps) {
+                profile.fps = defaultSettings.profiles[0].fps;
+            }
+            if(reset.all || reset.width) {
+                profile.width = defaultSettings.profiles[0].width;
+            }
+            if(reset.all || reset.stickDistance) {
+                profile.stickDistance = defaultSettings.profiles[0].stickDistance;
+            }
+            if(reset.all || reset.stickMode2) {
+                profile.stickMode2 = defaultSettings.profiles[0].stickMode2;
+            }
+            if(reset.all || reset.videoFormat) {
+                profile.videoFormat = defaultSettings.profiles[0].videoFormat;
+            }
         }
     });
     

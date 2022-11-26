@@ -8,8 +8,116 @@ let setRenderImg:React.Dispatch<React.SetStateAction<string>>;
 let setRenderLoading:React.Dispatch<React.SetStateAction<boolean>>;
 let pageLoaded = false;
 
+const VideoFormatOptions = Object.keys(VideoFormat).filter((el) => { return isNaN(Number(el)) }).map(key => {
+    return <option key={key} value={key}>{key}</option>;
+});
+
 function picturePath() {
     return path.join(dataPath, "render.png?t="+Date.now());
+}
+
+const overlayArrowStyle:CSSProperties = {
+    width: "50%",
+    height: "50%",
+    fill: "white"
+}
+const settingLabelStyle:CSSProperties = {
+    position: "relative",
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    height: "100%",
+    background: "#00c24a",
+    borderTopLeftRadius: "19px",
+    borderBottomLeftRadius: "19px",
+    fontWeight: "bolder",
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center"
+}
+
+function InputSpan({name, value, min, step, onChange, onReset}:{name:string, value:number, min:number, step:number, onChange:React.ChangeEventHandler<HTMLInputElement>, onReset:CallableFunction}) {
+    const [dispayOverlay, setDisplayOverlay] = useState("none");
+    
+    return (
+        <span className="inputSelectSpan">
+            <div style={settingLabelStyle} onMouseEnter={() => {setDisplayOverlay("flex");}} onMouseLeave={() => {setDisplayOverlay("none");}}>
+                {name}
+                <div className="overlay" style={{display: dispayOverlay}} onClick={() => {onReset()}}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={overlayArrowStyle}>
+                        {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                        <path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z"/>
+                    </svg>
+                </div>
+            </div>
+            <input id={name+" Input"} type="number" value={value.toString()} min={min.toString()} step={step.toString()} onChange={onChange}/>
+        </span>
+    )
+}
+
+function SelectSpan({name, value, optiones, onChange, onReset}:{name:string, value:string, optiones:JSX.Element[], onChange:React.ChangeEventHandler<HTMLSelectElement>, onReset:CallableFunction}) {
+    const [dispayOverlay, setDisplayOverlay] = useState("none");
+    
+    return (
+        <span className="inputSelectSpan">
+            <div style={settingLabelStyle} onMouseEnter={() => {setDisplayOverlay("flex");}} onMouseLeave={() => {setDisplayOverlay("none");}}>
+                {name}
+                <div className="overlay" style={{display: dispayOverlay}} onClick={() => {onReset()}}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={overlayArrowStyle}>
+                        {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                        <path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z"/>
+                    </svg>
+                </div>
+            </div>
+            <select id={name+" slct"} required={true} value={value} onChange={onChange}>
+                {optiones}
+            </select>
+        </span>
+    )
+}
+
+function ToggleSpan({name, state, checkedValue, uncheckedValue, onChange, onReset}:{name:string, state:boolean, checkedValue:string, uncheckedValue:string, onChange(checked:boolean):void, onReset:CallableFunction}) {
+    const [dispayOverlay, setDisplayOverlay] = useState("none");
+    const [checked, setChecked] = useState(state);
+    
+    useEffect(() => {
+        setChecked(state);
+    }, [state]);
+    
+    const toggleStyle:CSSProperties = {
+        height: "100%",
+        border: "0",
+        borderTopRightRadius: "18px",
+        borderBottomRightRadius: "18px",
+        textAlign: "center",
+        fontSize: "large",
+        paddingLeft: "15px",
+        paddingRight: "15px",
+        display: "flex",
+        alignItems: "center",
+        backgroundColor: checked ? "#2196F3" : "white",
+        color: checked ? "white" : "black",
+        cursor: "pointer"
+    }
+    
+    return (
+        <span className="inputSelectSpan">
+            <div style={settingLabelStyle} onMouseEnter={() => {setDisplayOverlay("flex");}} onMouseLeave={() => {setDisplayOverlay("none");}}>
+                {name}
+                <div className="overlay" style={{display: dispayOverlay}} onClick={() => {onReset()}}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={overlayArrowStyle}>
+                        {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                        <path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z"/>
+                    </svg>
+                </div>
+            </div>
+            <div style={toggleStyle} onClick={() => {
+                onChange(!checked);
+                setChecked(!checked);
+            }}>
+                {checked ? checkedValue : uncheckedValue}
+            </div>
+        </span>
+    )
 }
 
 const RenderLoadingSpinner = () => (
@@ -88,59 +196,57 @@ function SettingsPage() {
     
     pageLoaded = true;
     
-    const VideoFormatOptions = Object.keys(VideoFormat).filter((el) => { return isNaN(Number(el)) }).map(key => {
-        return <option key={key} value={key}>{key}</option>;
-    });
-    
     return (
         <div id="content">
             <div id="settingRow">
-                <span className="inputSpan">
-                    <label>FPS</label>
-                    <input id="fpsInput" type="number" value={fps.toString()} min="1" step="1" onChange={e => {
+                {<InputSpan name={"FPS"} value={fps} min={1} step={1} onChange={
+                    e => {
                         if(e.target.value.trim().length !== 0) setFps(parseInt(e.target.value));
-                    }}/>
-                </span>
-                <span className="inputSpan">
-                    <label>Width</label>
-                    <input id="widthInput" type="number" value={width.toString()} min="1" step="1" onChange={e => {
+                    }
+                } onReset={() => {
+                    ProfileLoadDefault({fps: true});
+                    setFps(getActiveProfile().fps);
+                }}/>}
+                {<InputSpan name="Width" value={width} min={1} step={1} onChange={
+                    e => {
                         if(e.target.value.trim().length !== 0) setWidth(parseInt(e.target.value));
-                    }}/>
-                </span>
-                <span className="inputSpan">
-                    <label>Stick Distance</label>
-                    <input id="stickDistanceInput" type="number" value={stickDistance.toString()} min="0" step="1" onChange={e => {
+                    }
+                } onReset={() => {
+                    ProfileLoadDefault({width: true});
+                    setWidth(getActiveProfile().width);
+                }}/>}
+                {<InputSpan name="Stick Distance" value={stickDistance} min={0} step={1} onChange={
+                    e => {
                         if(e.target.value.trim().length !== 0) setStickDistance(parseInt(e.target.value));
-                    }}/>
-                </span>
+                    }
+                } onReset={() => {
+                    ProfileLoadDefault({stickDistance: true});
+                    setStickDistance(getActiveProfile().stickDistance);
+                }}/>}
             </div>
             <div id="settingRow">
-                <div className="dataDiv">
-                    <p>Stick Mode</p>
-                    <label htmlFor="stickMode" className="toggle-switchy" data-style="rounded" data-text="12">
-                        <input checked={stickMode2} type="checkbox" id="stickMode" onChange={e => {
-                            setStickMode2(e.target.checked);
-                        }}/>
-                        <span className="toggle">
-                            <span className="switch"></span>
-                        </span>
-                    </label>
-                </div>
-                <span className="selectSpan">
-                    <label className="selectSpanLabel">Format</label>
-                    <label className="selectSpanSelect" htmlFor="slct">
-                        <select id="slct" required={true} value={videoFormat} onChange={e => {
-                            setVideoFormat(e.target.value as unknown as VideoFormat);
-                        }}>
-                            {VideoFormatOptions}
-                        </select>
-                    </label>
+                {<ToggleSpan name="Stick Mode" state={stickMode2} checkedValue={"2"} uncheckedValue={"1"} onChange={checked => {
+                    setStickMode2(checked);
+                }} onReset={() => {
+                    ProfileLoadDefault({stickMode2: true});
+                    setStickMode2(getActiveProfile().stickMode2);
+                }}/>}
+                <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                }}>
+                    {<SelectSpan name="Format" value={videoFormat} optiones={VideoFormatOptions} onChange={ e => {
+                        setVideoFormat(e.target.value as unknown as VideoFormat);
+                    }} onReset={() => {
+                        ProfileLoadDefault({videoFormat: true});
+                        setVideoFormat(getActiveProfile().videoFormat);
+                    }}/>}
                     {videoFormat === VideoFormat.mov? <VideoFormatWarning videoFormat={videoFormat}/> : null}
                     {videoFormat === VideoFormat.mp4? <VideoFormatWarning videoFormat={videoFormat}/> : null}
                     {videoFormat === VideoFormat.avi? <VideoFormatWarning videoFormat={videoFormat}/> : null}
-                </span>
+                </div>
                 <button id="resetSettingsButton" onClick={() => {
-                    ProfileLoadDefault();
+                    ProfileLoadDefault({all: true});
                     
                     setFps(getActiveProfile().fps);
                     setWidth(getActiveProfile().width);
