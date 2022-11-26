@@ -96,7 +96,8 @@ function ToggleSpan({name, state, checkedValue, uncheckedValue, onChange, onRese
         alignItems: "center",
         backgroundColor: checked ? "#2196F3" : "white",
         color: checked ? "white" : "black",
-        cursor: "pointer"
+        cursor: "pointer",
+        userSelect: "none"
     }
     
     return (
