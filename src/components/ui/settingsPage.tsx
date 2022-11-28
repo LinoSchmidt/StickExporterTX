@@ -149,9 +149,9 @@ function VideoFormatWarning({videoFormat}:{videoFormat:VideoFormat}) {
     }
     
     const style:CSSProperties = {
-        height: "30px",
-        width: "30px",
-        fill: "orange",
+        height: "35px",
+        width: "35px",
+        fill: "yellow",
         paddingLeft: "5px",
         
     };
@@ -234,7 +234,6 @@ function SettingsPage() {
                 }}/>}
                 <div style={{
                     display: "flex",
-                    alignItems: "center",
                 }}>
                     {<SelectSpan name="Format" value={videoFormat} optiones={VideoFormatOptions} onChange={ e => {
                         setVideoFormat(e.target.value as unknown as VideoFormat);
