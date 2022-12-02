@@ -34,7 +34,7 @@ function RenderingPage() {
     
     return (
         <div id="content">
-            <p>{"Log " + logNumber + "/" + getInOutSettings().logList.length}</p>
+            <p>{"Log " + logNumber + "/" + getInOutSettings().logs.length}</p>
             <p>{status}</p>
             <div className="progress">
                 <div className="progress-done" style={{

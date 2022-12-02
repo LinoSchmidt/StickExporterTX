@@ -51,7 +51,7 @@ while True:
     stickDistance = _map(settings["stickDistance"], 0, 100, 5, 105)
     fps = settings["fps"]
     videoFormat = settings["videoFormat"]
-    logs = settings["logs"][1:][:-1].split("\"\"")
+    logs = settings["logs"]
     output = settings["output"]
     dataPath = settings["dataPath"]
     
@@ -127,7 +127,7 @@ while True:
             Camera.location[0] = stickDistance/2
             Camera.data.ortho_scale = stickDistance+5
             scn.render.resolution_y = int(width/_map(stickDistance, 5, 105, 2, 21.6))
-            bpy.context.scene.render.filepath = output + "\\" + log.split("/")[-1].split("\\")[-1].replace(".csv", "."+videoFormat)
+            bpy.context.scene.render.filepath = output[logNumber-1]
             
             scn.render.fps = 1000
             scn.render.fps_base = FPSxxx

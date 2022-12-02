@@ -32,7 +32,7 @@ function MainPage() {
             <div className="dataDiv">
                 <button id="openLogButton" onClick={() => addLog(setLogTable)}>Add Log(s)</button>
                 <button id="deleteLogsButton" onClick={async () => {
-                    setInOutSettings({log:""});
+                    setInOutSettings({logs:[]});
                     await reloadAllLogs();
                     updateLogTable(setLogTable);
                 }}>Delete All</button>
@@ -60,8 +60,8 @@ function updateLogTable(setLogTable:React.Dispatch<React.SetStateAction<JSX.Elem
                     fontWeight: "lighter"
                 }}>({log.time.length.formatted})</td>
                 <td><button className="listButton" onClick={async () => {
-                    const newLogs = getInOutSettings().log.replace('"'+log.path+'"', "");
-                    setInOutSettings({log:newLogs});
+                    const newLogs = getInOutSettings().logs.filter(value => value !== log.path);
+                    setInOutSettings({logs:newLogs});
                     await updateLogs();
                     updateLogTable(setLogTable);
                 }}>Delete</button></td>
@@ -69,7 +69,7 @@ function updateLogTable(setLogTable:React.Dispatch<React.SetStateAction<JSX.Elem
         }));
     }
     
-    if(getInOutSettings().log == "") {
+    if(getInOutSettings().logs.length === 0) {
         setLogTable([]);
     } else {
         getData();
@@ -90,17 +90,15 @@ function addLog(setLogTable:React.Dispatch<React.SetStateAction<JSX.Element[]>>)
             }
         ]
     }).then(async result => {
-        let logStr = "";
+        const newLogs = getInOutSettings().logs;
         result.filePaths.forEach(value => {
-            const logToAdd = "\"" + value + "\"";
-            if(getInOutSettings().log.includes(logToAdd)) {
-                logger.warningMSG("Log " + logToAdd + " already added.");
+            if(getInOutSettings().logs.includes(value)) {
+                logger.warningMSG("Log \"" + value + "\" already added.");
             } else {
-                logStr += "\"" + String(value) + "\"";
+                newLogs.push(value);
             }
         });
-        const newLogs = getInOutSettings().log + logStr;
-        setInOutSettings({log:newLogs});
+        setInOutSettings({logs:newLogs});
         await updateLogs();
         updateLogTable(setLogTable);
     }).catch(err => {

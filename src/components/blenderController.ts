@@ -5,9 +5,10 @@ import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
 import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow } from "./ui/renderingPage";
 import {imageLoading, imageLoaded} from "./ui/settingsPage";
 import { getLogSize, getInOutSettings, getActiveProfile } from "./settings";
-import isValid from "is-valid-path";
 import { pageSetRendering, setProgress, openPage, Page } from "../renderer";
 import { ipcRenderer } from "electron";
+import path from 'path';
+import fs from "fs";
 // import { getDoNotDisturb } from "electron-notification-state";
 
 export const renderInfo = {
@@ -66,6 +67,42 @@ function setRenderProgress(log:number, init:boolean, frameCount:number, frame:nu
         }
         setRemainingTimeNow(timeDiffMinutes + "m " + timeDiffSeconds.toFixed(0) + "s");
     }
+}
+
+function getOutPath(log:string) {
+    let fullOutPath = path.join(getInOutSettings().output, log.substring(log.lastIndexOf("\\")).replace(".csv", "."+getActiveProfile().videoFormat));
+    
+    if(fs.existsSync(fullOutPath)) {
+        let i = 1;
+        while(fs.existsSync(fullOutPath.replace("."+getActiveProfile().videoFormat, " ("+i+")."+getActiveProfile().videoFormat))) {
+            i++;
+        }
+        fullOutPath = fullOutPath.replace("."+getActiveProfile().videoFormat, " ("+i+")."+getActiveProfile().videoFormat);
+    }
+    
+    return fullOutPath;
+}
+
+let outputArgs:string[] = [];
+
+function blenderArgs() {
+    const outputList:string[] = [];
+    getInOutSettings().logs.forEach(log => {
+        outputList.push(getOutPath(log));
+    });
+    
+    outputArgs = outputList;
+    
+    return JSON.stringify({
+        stickMode2:getActiveProfile().stickMode2,
+        width:getActiveProfile().width,
+        stickDistance:getActiveProfile().stickDistance,
+        fps:getActiveProfile().fps,
+        videoFormat:getActiveProfile().videoFormat,
+        logs:getInOutSettings().logs,
+        output:outputList,
+        dataPath:dataPath
+    });
 }
 
 function startBlender() {
@@ -156,17 +193,7 @@ function startBlender() {
             } else {
                 waitingForRender = false;
                 renderingPicture = true;
-                const blenderArgs = JSON.stringify({
-                    stickMode2:getActiveProfile().stickMode2,
-                    width:getActiveProfile().width,
-                    stickDistance:getActiveProfile().stickDistance,
-                    fps:getActiveProfile().fps,
-                    videoFormat:getActiveProfile().videoFormat,
-                    logs:getInOutSettings().log,
-                    output:getInOutSettings().output,
-                    dataPath:dataPath
-                });
-                blenderConsole.stdin.write("getRender -- "+blenderArgs+"\n");
+                blenderConsole.stdin.write("getRender -- "+blenderArgs()+"\n");
                 setBlenderStatus("Rendering");
                 setBlenderLoading(true);
                 imageLoading();
@@ -200,31 +227,19 @@ function blender(command:blenderCmd) {
             imageLoading();
             setBlenderStatus("Rendering");
             setBlenderLoading(true);
-            const blenderArgs = JSON.stringify({
-                stickMode2:getActiveProfile().stickMode2,
-                width:getActiveProfile().width,
-                stickDistance:getActiveProfile().stickDistance,
-                fps:getActiveProfile().fps,
-                videoFormat:getActiveProfile().videoFormat,
-                logs:getInOutSettings().log,
-                output:getInOutSettings().output,
-                dataPath:dataPath
-            });
-            blenderConsole.stdin.write("getRender -- "+blenderArgs+"\n");
+            blenderConsole.stdin.write("getRender -- "+blenderArgs()+"\n");
         } else {
             waitingForRender = true;
         }
     } else if(command === blenderCmd.startRendering) {
         if(readyToAcceptCommand) {
-            if(getInOutSettings().log == "") {
+            if(getInOutSettings().logs.length === 0) {
                 logger.warningMSG("No log selected!");
-            } else if(!isValid(getInOutSettings().log)) {
-                logger.warningMSG("Output path is invalid!");
             } else {
                 currentLogPortion = 0;
                 
                 const logSizeList:number[] = [];
-                getInOutSettings().logList.forEach(function (value, index) {
+                getInOutSettings().logs.forEach(function (value, index) {
                     logSizeList.push(getLogSize(index));
                 });
                 
@@ -243,17 +258,7 @@ function blender(command:blenderCmd) {
                 pageSetRendering(true);
                 setBlenderStatus("Rendering");
                 setBlenderLoading(true);
-                const blenderArgs = JSON.stringify({
-                    stickMode2:getActiveProfile().stickMode2,
-                    width:getActiveProfile().width,
-                    stickDistance:getActiveProfile().stickDistance,
-                    fps:getActiveProfile().fps,
-                    videoFormat:getActiveProfile().videoFormat,
-                    logs:getInOutSettings().log,
-                    output:getInOutSettings().output,
-                    dataPath:dataPath
-                });
-                blenderConsole.stdin.write("startRendering -- "+blenderArgs+"\n");
+                blenderConsole.stdin.write("startRendering -- "+blenderArgs()+"\n");
                 
                 renderInfo.startTime = new Date().getTime();
                 setPastTime("0min 0sec");
@@ -280,5 +285,6 @@ export {
     blender,
     blenderCmd,
     startBlender,
-    renderingPicture
+    renderingPicture,
+    outputArgs
 }

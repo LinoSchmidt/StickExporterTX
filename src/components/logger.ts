@@ -40,10 +40,14 @@ const logger = {
     
         dialog.showMessageBox({
             type: 'warning',
-            buttons: ['OK'],
+            buttons: ['Open Log', 'OK'],
             defaultId: 1,
             title: 'Warning!',
             message: message
+        }).then(res => {
+            if(res.response === 0) {
+                exec('start "" "' + path.join(dataPath, "logs") + '"');
+            }
         });
     }
 }

@@ -163,10 +163,8 @@ async function getLogTime(filePath:string) {
 async function getAllLogs() {
     const loadList = [];
     
-    if(getInOutSettings().log.length > 0) {
-        const logs = getInOutSettings().log.substring(1).slice(0, -1).split('""');
-        
-        for(const log of logs) {
+    if(getInOutSettings().logs.length > 0) {
+        for(const log of getInOutSettings().logs) {
             loadList.push({
                 name: log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""),
                 path: log,
@@ -185,9 +183,8 @@ async function reloadAllLogs() {
 }
 
 async function updateLogs() {
-    if(getInOutSettings().log.length > 0) {
-        const logs = getInOutSettings().log.substring(1).slice(0, -1).split('""');
-        for(const log of logs) {
+    if(getInOutSettings().logs.length > 0) {
+        for(const log of getInOutSettings().logs) {
             if(!logList.some(x => x.path === log)) {
                 logList.push({
                     name: log.split(platformCharacter())[log.split(platformCharacter()).length - 1].replace(".csv", ""),
@@ -198,7 +195,7 @@ async function updateLogs() {
         }
         
         for(const log of logList) {
-            if(!logs.some(x => x === log.path)) {
+            if(!getInOutSettings().logs.some(x => x === log.path)) {
                 logList.splice(logList.indexOf(log), 1);
             }
         }
@@ -207,20 +204,13 @@ async function updateLogs() {
     }
 }
 
-function getLogList() {
-    return getInOutSettings().log.split("\"\"");
-}
-
 function getLogSize(index:number) {
-    const logList = getInOutSettings().log.substring(1).slice(0, -1).split('""');
-    
-    return fs.statSync(logList[index]).size;
+    return fs.statSync(getInOutSettings().logs[index]).size;
 }
 
 export {
     reloadAllLogs,
     logList,
     updateLogs,
-    getLogList,
     getLogSize
 };

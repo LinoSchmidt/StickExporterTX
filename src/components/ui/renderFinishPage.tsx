@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
 import {openPage, Page} from "../../renderer";
-import {renderInfo} from "../blenderController";
+import {renderInfo, outputArgs} from "../blenderController";
 import openFolder from "../openFolder";
 import {getInOutSettings, getActiveProfile} from "../settings";
 import VideoPlayer from "./videoPlayer";
@@ -44,14 +44,14 @@ function RenderFinishPage() {
     
     const [videoSource, setVideoSource] = React.useState({src: path.join(getInOutSettings().output, logPlaying+"."+getActiveProfile().videoFormat), type: 'video/'+getActiveProfile().videoFormat.toUpperCase()});
     
-    const OutputList = logList.map((inputLog, index) => {
-        const outputLogPath = path.join(getInOutSettings().output, inputLog.name+"."+getActiveProfile().videoFormat);
-        return <option key={index} value={inputLog.name} title={outputLogPath}>{inputLog.name}</option>
+    const OutputList = outputArgs.map((output, index) => {
+        const outputName = output.substring(output.lastIndexOf("\\")+1);
+        return <option key={index} value={outputName} title={output}>{outputName}</option>
     });
     
     React.useEffect(() => {
         setVideoSource({
-            src: path.join(getInOutSettings().output, logPlaying+"."+getActiveProfile().videoFormat),
+            src: path.join(getInOutSettings().output, logPlaying.replace(".csv", "."+getActiveProfile().videoFormat)),
             type: 'video/'+getActiveProfile().videoFormat.toUpperCase()
         });
     }, [logPlaying]);

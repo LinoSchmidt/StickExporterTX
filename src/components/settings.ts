@@ -1,6 +1,9 @@
 import {SettingPath, defaultOutputPath, OLDSettingPath} from './paths';
+import {dialog} from '@electron/remote';
 import logger from "./logger";
 import fs from "fs";
+import {app} from 'electron';
+import { ipcRenderer } from "electron";
 
 enum VideoFormat {
     mp4="mp4",
@@ -22,7 +25,7 @@ type JSONProfile = {
 type JSONSettings = {
     activeProfile: string,
     profiles: JSONProfile[],
-    log: string,
+    logs: string[],
     output: string,
 }
 
@@ -38,7 +41,7 @@ const defaultSettings:JSONSettings = {
             videoFormat: VideoFormat.webm
         }
     ],
-    log: '',
+    logs: [],
     output: defaultOutputPath
 };
 
@@ -57,6 +60,7 @@ function getXMLChild(doc:Document, child:string) {
     return String(doc.getElementsByTagName(child)[0].childNodes[0].nodeValue);
 }
 
+let fetchFailed = "";
 const settingList = await fetch(SettingPath).then(function(response) {
     return response.text();
 }).catch(function(err) {
@@ -64,7 +68,6 @@ const settingList = await fetch(SettingPath).then(function(response) {
     return "fileLoadFailed";
 }).then(async function(data) {
     if(data === "fileLoadFailed") {
-        
         return await fetch(OLDSettingPath).then(function(response) {
             return response.text();
         }).catch(function(err) {
@@ -72,32 +75,171 @@ const settingList = await fetch(SettingPath).then(function(response) {
             return "fileLoadFailed";
         }).then(function(data) {
             if(data === "fileLoadFailed") {
+                fetchFailed = "fileLoadFailed";
                 return defaultSettings;
             }
             
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(data, 'text/xml');
+            
+            const allLogs = catchSetting(function() {return (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log");},function() {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                return ""
+            });
+            const newLogs = defaultSettings.logs;
+            if(allLogs !== "") {
+                const allLogsList = allLogs.split("\"\"");
+                allLogsList.forEach(log => {
+                    if(log !== "") {
+                        newLogs.push(log.replace('"', ''));
+                    }
+                });
+            }
         
             return {
                 activeProfile: defaultSettings.activeProfile,
                 profiles: [
                     {
                         profileName: defaultSettings.profiles[0].profileName,
-                        fps: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "fps");},function() {return defaultSettings.profiles[0].fps.toString();})),
-                        width: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "width");},function() {return defaultSettings.profiles[0].width.toString();})),
-                        stickDistance: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "stickDistance");},function() {return defaultSettings.profiles[0].stickDistance.toString();})),
-                        stickMode2: catchSetting(function() {return getXMLChild(xmlDoc, "stickMode2");},function() {return defaultSettings.profiles[0].stickMode2.toString();}) === "true",
-                        videoFormat: catchSetting(function() {return getXMLChild(xmlDoc, "videoFormat");},function() {return defaultSettings.profiles[0].videoFormat.toString();}) as VideoFormat as VideoFormat
+                        fps: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "fps");},function() {
+                            fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                            return defaultSettings.profiles[0].fps.toString();
+                        })),
+                        width: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "width");},function() {
+                            fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                            return defaultSettings.profiles[0].width.toString();
+                        })),
+                        stickDistance: parseInt(catchSetting(function() {return getXMLChild(xmlDoc, "stickDistance");},function() {
+                            fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                            return defaultSettings.profiles[0].stickDistance.toString();
+                        })),
+                        stickMode2: catchSetting(function() {return getXMLChild(xmlDoc, "stickMode2");},function() {
+                            fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                            return defaultSettings.profiles[0].stickMode2.toString();
+                        }) === "true",
+                        videoFormat: catchSetting(function() {return getXMLChild(xmlDoc, "videoFormat");},function() {
+                            return defaultSettings.profiles[0].videoFormat.toString();
+                        }) as VideoFormat as VideoFormat
                     }
                 ],
-                log: catchSetting(function() {return (getXMLChild(xmlDoc, "log") === "None")? "":getXMLChild(xmlDoc, "log");},function() {return defaultSettings.log;}),
-                output: catchSetting(function() {return getXMLChild(xmlDoc, "output");},function() {return defaultSettings.output;})
+                logs: newLogs,
+                output: catchSetting(function() {return getXMLChild(xmlDoc, "output");},function() {
+                    fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                    return defaultSettings.output;
+                })
             } as JSONSettings;
         });
     }
+    const parsedData = JSON.parse(data);
     
-    return JSON.parse(data) as JSONSettings;
+    let profiles:JSONProfile[] = [];
+    if(parsedData.profiles !== undefined) {
+        parsedData.profiles.forEach((profile:JSONProfile) => {
+            if(typeof profile.profileName !== "string") {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                profile.profileName = defaultSettings.profiles[0].profileName;
+            }
+            if(typeof profile.fps !== "number") {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                profile.fps = defaultSettings.profiles[0].fps;
+            }
+            if(typeof profile.width !== "number") {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                profile.width = defaultSettings.profiles[0].width;
+            }
+            if(typeof profile.stickDistance !== "number") {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                profile.stickDistance = defaultSettings.profiles[0].stickDistance;
+            }
+            if(typeof profile.stickMode2 !== "boolean") {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                profile.stickMode2 = defaultSettings.profiles[0].stickMode2;
+            }
+            if(typeof profile.videoFormat !== "string") {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                profile.videoFormat = defaultSettings.profiles[0].videoFormat;
+            }
+            
+            profiles.push({
+                profileName: profile.profileName,
+                fps: profile.fps,
+                width: profile.width,
+                stickDistance: profile.stickDistance,
+                stickMode2: profile.stickMode2,
+                videoFormat: profile.videoFormat
+            });
+        });
+    } else {
+        fetchFailed = "multiSetting";
+        profiles = defaultSettings.profiles;
+    }
+    
+    const logs:string[] = [];
+    if(parsedData.logs !== undefined) {
+        parsedData.logs.forEach((log:string) => {
+            if(typeof log === "string") {
+                logs.push(log);
+            }
+        });
+    } else {
+        fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+    }
+    
+    return {
+        activeProfile: catchSetting(function() {return parsedData.activeProfile;},function() {
+            fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+            return defaultSettings.activeProfile;
+        }),
+        profiles,
+        logs,
+        output: catchSetting(function() {return parsedData.output;},function() {
+            fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+            return defaultSettings.output;
+        })
+    }
 });
+if(fetchFailed !== "") {
+    if(fetchFailed === "fileLoadFailed") {
+        dialog.showMessageBox({
+            type: 'warning',
+            buttons: ['View Settings', 'Continue'],
+            defaultId: 1,
+            title: 'Warning!',
+            message: "Failed to load settings file. Using default settings. if you continue, the settings will be overwritten.",
+        }).then((result) => {
+            if(result.response === 0) {
+                ipcRenderer.send('closeApp');
+                app.quit();
+            }
+        });
+    } else if(fetchFailed === "singleSetting") {
+        dialog.showMessageBox({
+            type: 'warning',
+            buttons: ['View Settings', 'Continue'],
+            defaultId: 1,
+            title: 'Warning!',
+            message: "A setting failed to load. If you continue, the setting will be overwritten.",
+        }).then((result) => {
+            if(result.response === 0) {
+                ipcRenderer.send('closeApp');
+                app.quit();
+            }
+        });
+    } else if(fetchFailed === "multiSetting") {
+        dialog.showMessageBox({
+            type: 'warning',
+            buttons: ['View Settings', 'Continue'],
+            defaultId: 1,
+            title: 'Warning!',
+            message: "Multiple settings failed to load. If you continue, the settings will be overwritten.",
+        }).then((result) => {
+            if(result.response === 0) {
+                ipcRenderer.send('closeApp');
+                app.quit();
+            }
+        });
+    }
+}
 
 function createProfile(profileName:string, clone:boolean) {
     
@@ -170,9 +312,9 @@ function editProfile(optiones:{fps?:number, width?:number, stickDistance?:number
     writeSettings();
 }
 
-function setInOutSettings(args:{log?:string, output?:string}) {
-    if(args.log !== undefined) {
-        settingList.log = args.log;
+function setInOutSettings(args:{logs?:string[], output?:string}) {
+    if(args.logs !== undefined) {
+        settingList.logs = args.logs;
     }
     if(args.output !== undefined) {
         settingList.output = args.output;
@@ -180,7 +322,7 @@ function setInOutSettings(args:{log?:string, output?:string}) {
     writeSettings();
 }
 function getInOutSettings() {
-    return {log: settingList.log, output: settingList.output, logList:settingList.log.split("\"\"")};
+    return {logs: settingList.logs, output: settingList.output};
 }
 
 function removeProfile(profileName?:string) {
@@ -236,9 +378,7 @@ function getActiveProfile() {
 }
 
 function getLogSize(index:number) {
-    const logList = settingList.log.substring(1).slice(0, -1).split('""');
-    
-    return fs.statSync(logList[index]).size;
+    return fs.statSync(settingList.logs[index]).size;
 }
 
 export {
