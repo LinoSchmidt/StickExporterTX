@@ -241,9 +241,13 @@ if(fetchFailed !== "") {
     }
 }
 
+function getProfiles() {
+    return settingList.profiles.map((profile) => {
+        return profile.profileName;
+    });
+}
+
 function createProfile(profileName:string, clone:boolean) {
-    
-    
     settingList.profiles.push({
         profileName: profileName,
         fps: clone? getActiveProfile().fps:defaultSettings.profiles[0].fps,
@@ -284,13 +288,16 @@ function ProfileLoadDefault(reset:{fps?:boolean, width?:boolean, stickDistance?:
     writeSettings();
 }
 
-function editProfile(optiones:{fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, videoFormat?:VideoFormat}, profileName?:string) {
+function editProfile(optiones:{profileName?:string, fps?:number, width?:number, stickDistance?:number, stickMode2?:boolean, videoFormat?:VideoFormat}, profileName?:string) {
     if(profileName === undefined) {
         profileName = getActiveProfile().profileName;
     }
     
     settingList.profiles.forEach(profile => {
         if(profile.profileName === profileName) {
+            if(optiones.profileName !== undefined) {
+                profile.profileName = optiones.profileName;
+            }
             if(optiones.fps !== undefined) {
                 profile.fps = optiones.fps;
             }
@@ -381,7 +388,108 @@ function getLogSize(index:number) {
     return fs.statSync(settingList.logs[index]).size;
 }
 
+function importProfile(importSucces:CallableFunction) {
+    dialog.showOpenDialog({
+        properties: [
+            "openFile"
+        ],
+        filters: [
+            {
+                name: "StickExporterTX-Profile",
+                extensions: [
+                    "setp"
+                ]
+            }
+        ]
+    }).then(async result => {
+        if(result.filePaths.length === 1) {
+            const rawData = await fs.promises.readFile(result.filePaths[0], "utf8");
+            const jsonData = JSON.parse(rawData) as JSONProfile[];
+            const importProfiles:JSONProfile[] = [];
+            jsonData.forEach(profile => {
+                importProfiles.push({
+                    profileName: profile.profileName,
+                    fps: profile.fps,
+                    width: profile.width,
+                    stickDistance: profile.stickDistance,
+                    stickMode2: profile.stickMode2,
+                    videoFormat: profile.videoFormat
+                });
+            });
+            
+            importProfiles.forEach(importProfile => {
+                while(settingList.profiles.find(profile => profile.profileName === importProfile.profileName) !== undefined) {
+                    importProfile.profileName = importProfile.profileName + " (imported)";
+                }
+                settingList.profiles.push(importProfile);
+            });
+            writeSettings();
+            importSucces();
+        }
+    }).catch(err => {
+        logger.errorMSG("Import faulty: "+err);
+    });
+}
+
+function exportProfile() {
+    dialog.showMessageBox({
+        type: "question",
+        noLink: true,
+        buttons: ["This", "All", "Cancel"],
+        title: "Export profile",
+        message: "Do you want to export all profiles or just the active one?"
+    }).then(result => {
+        if(result.response === 0) {
+            dialog.showSaveDialog({
+                filters: [
+                    {
+                        name: "StickExporterTX-Profile",
+                        extensions: [
+                            "setp"
+                        ]
+                    }
+                ]
+            }).then(result => {
+                if(result.filePath !== undefined) {
+                    fs.writeFile(result.filePath, JSON.stringify([getActiveProfile()]), function(err) {
+                        if(err) {
+                            logger.errorMSG(String(err));
+                        }
+                    });
+                }
+            }).catch(err => {
+                logger.errorMSG("Export faulty: "+err);
+            });
+        }
+        else if(result.response === 1) {
+            dialog.showSaveDialog({
+                filters: [
+                    {
+                        name: "StickExporterTX-Profile",
+                        extensions: [
+                            "setp"
+                        ]
+                    }
+                ]
+            }).then(result => {
+                if(result.filePath !== undefined) {
+                    fs.writeFile(result.filePath, JSON.stringify(settingList.profiles), function(err) {
+                        if(err) {
+                            logger.errorMSG(String(err));
+                        }
+                    });
+                }
+            }).catch(err => {
+                logger.errorMSG("Export faulty: "+err);
+            });
+        }
+    }).catch(err => {
+        logger.errorMSG("Export faulty: "+err);
+    });
+}
+
 export {
+    getProfiles,
     createProfile,
     ProfileLoadDefault,
     editProfile,
@@ -391,5 +499,7 @@ export {
     setInOutSettings,
     getInOutSettings,
     getLogSize,
+    importProfile,
+    exportProfile,
     VideoFormat
 }

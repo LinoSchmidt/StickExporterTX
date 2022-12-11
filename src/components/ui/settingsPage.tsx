@@ -1,8 +1,9 @@
 import React, {useState, useEffect, CSSProperties} from "react";
-import { VideoFormat, editProfile, getActiveProfile, ProfileLoadDefault } from "../settings";
+import { VideoFormat, editProfile, getActiveProfile, ProfileLoadDefault, getProfiles, setActiveProfile, createProfile, removeProfile, exportProfile, importProfile } from "../settings";
 import {blender, blenderCmd, renderingPicture} from "../blenderController";
 import {dataPath} from "../paths";
 import path from "path";
+import logger from "../logger";
 
 let setRenderImg:React.Dispatch<React.SetStateAction<string>>;
 let setRenderLoading:React.Dispatch<React.SetStateAction<boolean>>;
@@ -54,19 +55,54 @@ function InputSpan({name, value, min, step, onChange, onReset}:{name:string, val
     )
 }
 
-function SelectSpan({name, value, optiones, onChange, onReset}:{name:string, value:string, optiones:JSX.Element[], onChange:React.ChangeEventHandler<HTMLSelectElement>, onReset:CallableFunction}) {
+function TextSpan({name, value, placeholder, onChange, onReset}:{name:string, value:string, placeholder:string, onChange:React.ChangeEventHandler<HTMLInputElement>, onReset?:CallableFunction}) {
     const [dispayOverlay, setDisplayOverlay] = useState("none");
+    
+    const Overlay = (
+        <div className="overlay" style={{display: dispayOverlay}} onClick={() => {
+                if(onReset !== undefined) {
+                    onReset()
+                }
+            }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={overlayArrowStyle}>
+                {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                <path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z"/>
+            </svg>
+        </div>
+    )
     
     return (
         <span className="inputSelectSpan">
             <div style={settingLabelStyle} onMouseEnter={() => {setDisplayOverlay("flex");}} onMouseLeave={() => {setDisplayOverlay("none");}}>
                 {name}
-                <div className="overlay" style={{display: dispayOverlay}} onClick={() => {onReset()}}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={overlayArrowStyle}>
-                        {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
-                        <path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z"/>
-                    </svg>
-                </div>
+                {onReset !== undefined ? Overlay : null}
+            </div>
+            <input id={name+" Input"} type="text" value={value.toString()} placeholder={placeholder} onChange={onChange}/>
+        </span>
+    )
+}
+
+function SelectSpan({name, value, optiones, onChange, onReset}:{name:string, value:string, optiones:JSX.Element[], onChange:React.ChangeEventHandler<HTMLSelectElement>, onReset?:CallableFunction}) {
+    const [dispayOverlay, setDisplayOverlay] = useState("none");
+    
+    const Overlay = (
+        <div className="overlay" style={{display: dispayOverlay}} onClick={() => {
+                if(onReset !== undefined) {
+                    onReset()
+                }
+            }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={overlayArrowStyle}>
+                {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                <path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z"/>
+            </svg>
+        </div>
+    )
+    
+    return (
+        <span className="inputSelectSpan">
+            <div style={settingLabelStyle} onMouseEnter={() => {setDisplayOverlay("flex");}} onMouseLeave={() => {setDisplayOverlay("none");}}>
+                {name}
+                {onReset !== undefined ? Overlay : null}
             </div>
             <select id={name+" slct"} required={true} value={value} onChange={onChange}>
                 {optiones}
@@ -166,6 +202,57 @@ function VideoFormatWarning({videoFormat}:{videoFormat:VideoFormat}) {
     );
 }
 
+function ProfileSettings({setNameProfile, setProfileName, setNewProfileName, profileName, setNewProfileType, setProfileOptions}:{setNameProfile:CallableFunction, setProfileName:CallableFunction, setNewProfileName:CallableFunction, profileName:string, setNewProfileType:CallableFunction, setProfileOptions:CallableFunction}) {
+    return (
+        <>
+            <button title="Rename" style={{width:"35px", height:"35px", marginLeft:"5px"}} onClick={() => {
+                    setNewProfileName(profileName);
+                    setNameProfile(true);
+                    setNewProfileType("rename");
+                }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{fill:"white"}}>
+                    {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                    <path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/>
+                </svg>
+            </button>
+            <button title="Create" style={{width:"35px", height:"35px", marginLeft:"5px"}} onClick={() => {
+                    setNewProfileName("");
+                    setNameProfile(true);
+                    setNewProfileType("create");
+                }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{fill:"white"}}>
+                    {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                    <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
+                </svg>
+            </button>
+            <button title="Duplicate" style={{width:"35px", height:"35px", marginLeft:"5px"}} onClick={() => {
+                    setNewProfileName("");
+                    setNameProfile(true);
+                    setNewProfileType("duplicate");
+                }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{fill:"white"}}>
+                    {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                    <path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/>
+                </svg>
+            </button>
+            <button title="Delete" style={{width:"35px", height:"35px", backgroundColor:"#e1334e", marginLeft:"5px"}} onClick={() => {
+                    removeProfile(profileName);
+                    const newActiveProfile = getProfiles()[getProfiles().length - 1];
+                    setActiveProfile(newActiveProfile);
+                    setProfileName(newActiveProfile);
+                    setProfileOptions(getProfiles().map(p => {
+                        return <option key={p} value={p}>{p}</option>;
+                    }));
+                }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{fill:"white"}}>
+                    {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                </svg>
+            </button>
+        </>
+    )
+}
+
 function SettingsPage() {
     
     const [fps, setFps] = useState(getActiveProfile().fps);
@@ -177,6 +264,23 @@ function SettingsPage() {
     setRenderImg = setRenderImgInner;
     const [renderLoading, setRenderLoadingInner] = useState(renderingPicture);
     setRenderLoading = setRenderLoadingInner;
+    // TODO: remove this
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [profileOptions, setProfileOptions] = useState(getProfiles().map(p => {
+        return <option key={p} value={p}>{p}</option>;
+    }));
+    const [profileName, setProfileName] = useState(getActiveProfile().profileName);
+    const [newProfileName, setNewProfileName] = useState("");
+    const [nameProfile, setNameProfile] = useState(false);
+    const [newProfileType, setNewProfileType] = useState("");
+    
+    useEffect(() => {
+        setFps(getActiveProfile().fps);
+        setWidth(getActiveProfile().width);
+        setStickDistance(getActiveProfile().stickDistance);
+        setStickMode2(getActiveProfile().stickMode2);
+        setVideoFormat(getActiveProfile().videoFormat);
+    }, [profileName]);
     
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -199,6 +303,75 @@ function SettingsPage() {
     
     return (
         <div id="content">
+            <div id="settingRow">
+                <div style={{
+                        display: "flex",
+                    }}>
+                    {nameProfile? <TextSpan name="Set Profile Name" value={newProfileName} placeholder="Enter Profile Name Here" onChange={e => {
+                            setNewProfileName(e.target.value);
+                        }}/> : <SelectSpan name="Select Profile" value={profileName} optiones={profileOptions} onChange={ e => {
+                            setActiveProfile(e.target.value);
+                            setProfileName(e.target.value);
+                        }}/>
+                    }
+                    {nameProfile? <button title="Save" style={{width:"35px", height:"35px"}} onClick={() => {
+                                let profileExists = false;
+                                getProfiles().forEach(profile => {
+                                    if (profile === newProfileName) {
+                                        profileExists = true;
+                                    }
+                                });
+                                
+                                if (profileExists) {
+                                    logger.warningMSG("Profile with the name \""+newProfileName+"\" already exists");
+                                } else {
+                                    setProfileName(newProfileName);
+                                    if(newProfileType === "rename") {
+                                        editProfile({profileName: newProfileName});
+                                    } else if (newProfileType === "create") {
+                                        createProfile(newProfileName, false);
+                                    } else if (newProfileType === "duplicate") {
+                                        createProfile(newProfileName, true);
+                                    }
+                                    setActiveProfile(newProfileName);
+                                }
+                                setProfileOptions(getProfiles().map(p => {
+                                    return <option key={p} value={p}>{p}</option>;
+                                }));
+                                setNameProfile(false);
+                            }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{fill:"white"}}>
+                                {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                                <path d="M224 256c-35.2 0-64 28.8-64 64c0 35.2 28.8 64 64 64c35.2 0 64-28.8 64-64C288 284.8 259.2 256 224 256zM433.1 129.1l-83.9-83.9C341.1 37.06 328.8 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 151.2 442.9 138.9 433.1 129.1zM128 80h144V160H128V80zM400 416c0 8.836-7.164 16-16 16H64c-8.836 0-16-7.164-16-16V96c0-8.838 7.164-16 16-16h16v104c0 13.25 10.75 24 24 24h192C309.3 208 320 197.3 320 184V83.88l78.25 78.25C399.4 163.2 400 164.8 400 166.3V416z"/>
+                            </svg>
+                        </button> : <ProfileSettings setNameProfile={setNameProfile} setProfileName={setProfileName} setNewProfileName={setNewProfileName} profileName={profileName} setNewProfileType={setNewProfileType} setProfileOptions={setProfileOptions}/>
+                    }
+                </div>
+                <div style={{
+                        display: "flex",
+                    }}>
+                    <button title="Import" style={{width:"35px", height:"35px"}} onClick={() => {
+                        importProfile(() => {
+                            setProfileOptions(getProfiles().map(p => {
+                                return <option key={p} value={p}>{p}</option>;
+                            }));
+                        });
+                    }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{fill:"white"}}>
+                            {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                            <path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"/>
+                        </svg>
+                    </button>
+                    <button title="Export" style={{width:"35px", height:"35px", marginLeft:"5px"}} onClick={() => {
+                        exportProfile();
+                    }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style={{fill:"white"}}>
+                            {/* <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --> */}
+                            <path d="M32 64C32 28.7 60.7 0 96 0H256V128c0 17.7 14.3 32 32 32H416V288H248c-13.3 0-24 10.7-24 24s10.7 24 24 24H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V64zM416 336V288H526.1l-39-39c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l80 80c9.4 9.4 9.4 24.6 0 33.9l-80 80c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l39-39H416zm0-208H288V0L416 128z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
             <div id="settingRow">
                 {<InputSpan name={"FPS"} value={fps} min={1} step={1} onChange={
                     e => {
@@ -244,6 +417,7 @@ function SettingsPage() {
                     {videoFormat === VideoFormat.mov? <VideoFormatWarning videoFormat={videoFormat}/> : null}
                     {videoFormat === VideoFormat.mp4? <VideoFormatWarning videoFormat={videoFormat}/> : null}
                     {videoFormat === VideoFormat.avi? <VideoFormatWarning videoFormat={videoFormat}/> : null}
+                    {videoFormat === VideoFormat.mkv? <VideoFormatWarning videoFormat={videoFormat}/> : null}
                 </div>
                 <button id="resetSettingsButton" onClick={() => {
                     ProfileLoadDefault({all: true});
@@ -253,7 +427,7 @@ function SettingsPage() {
                     setStickDistance(getActiveProfile().stickDistance);
                     setStickMode2(getActiveProfile().stickMode2);
                     setVideoFormat(getActiveProfile().videoFormat);
-                }}>Reset Settings</button>
+                }}>Reset Profile</button>
             </div>
             <div id="renderImgDiv">
                 <img id="render-ex" src={renderImg}></img>
