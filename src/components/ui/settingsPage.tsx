@@ -264,8 +264,6 @@ function SettingsPage() {
     setRenderImg = setRenderImgInner;
     const [renderLoading, setRenderLoadingInner] = useState(renderingPicture);
     setRenderLoading = setRenderLoadingInner;
-    // TODO: remove this
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [profileOptions, setProfileOptions] = useState(getProfiles().map(p => {
         return <option key={p} value={p}>{p}</option>;
     }));
@@ -314,7 +312,7 @@ function SettingsPage() {
                             setProfileName(e.target.value);
                         }}/>
                     }
-                    {nameProfile? <button title="Save" style={{width:"35px", height:"35px"}} onClick={() => {
+                    {nameProfile? <button title="Save" style={{width:"35px", height:"35px", marginLeft:"5px"}} onClick={() => {
                                 let profileExists = false;
                                 getProfiles().forEach(profile => {
                                     if (profile === newProfileName) {
