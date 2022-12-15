@@ -7,7 +7,7 @@ import RenderingPage from "./components/ui/renderingPage";
 import RenderFinishPage from "./components/ui/renderFinishPage";
 import "./index.css";
 import "./toggle-switchy.css";
-import { startBlender } from "./components/blenderController";
+import { blender, blenderCmd, startBlender } from "./components/blenderController";
 import {ipcRenderer} from "electron";
 
 enum Page {
@@ -39,6 +39,18 @@ function openPage(page:Page) {
 }
 
 openPage(currentPage);
+
+window.addEventListener("keydown", (e:KeyboardEvent) => {
+    if(e.key === "Escape") {
+        if(currentPage === Page.Main) {
+            ipcRenderer.send("closeApp");
+        } else if(currentPage === Page.Rendering) {
+            blender(blenderCmd.stopRendering);
+        } else {
+            openPage(Page.Main);
+        }
+    }
+});
 
 startBlender();
 
