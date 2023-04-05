@@ -236,6 +236,10 @@ function ProfileSettings({setNameProfile, setProfileName, setNewProfileName, pro
                 </svg>
             </button>
             <button title="Delete" style={{width:"35px", height:"35px", backgroundColor:"#e1334e", marginLeft:"5px"}} onClick={() => {
+                    if (getProfiles().length === 1) {
+                        logger.warningMSG("You can't delete the last profile!");
+                        return;
+                    }
                     removeProfile(profileName);
                     const newActiveProfile = getProfiles()[getProfiles().length - 1];
                     setActiveProfile(newActiveProfile);
