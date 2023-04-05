@@ -377,8 +377,8 @@ function getActiveProfile() {
     });
     
     if(activeProfile === undefined) {
-        activeProfile = settingList.profiles[0];
-        logger.errorMSG("Active profile not found, using default profile");
+        activeProfile = defaultSettings.profiles[0];
+        logger.error("Active profile not found, using default profile");
     }
     
     return activeProfile;
