@@ -2,7 +2,7 @@ import { blenderPath, blenderScriptPath, templatePath, finsishedIconPath, dataPa
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
-import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow } from "./ui/renderingPage";
+import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow, addTerminalLine } from "./ui/renderingPage";
 import {imageLoading, imageLoaded} from "./ui/settingsPage";
 import { getLogSize, getInOutSettings, getActiveProfile } from "./settings";
 import { pageSetRendering, setProgress, openPage, Page } from "../renderer";
@@ -114,6 +114,10 @@ function startBlender() {
         const dataStr = data.toString();
         
         logger.info("Blender: " + dataStr);
+        
+        if(renderingVideo) {
+            addTerminalLine(dataStr);
+        }
         
         if (dataStr.includes("Blender started successfully")) {
             renderingPicture = false;

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {getInOutSettings} from "../settings";
 import openFolder from "../openFolder";
 import { blenderCmd, blender } from "../blenderController";
@@ -8,11 +8,15 @@ let setStatus:React.Dispatch<React.SetStateAction<string>>;
 let setRenderDisplayProgress:React.Dispatch<React.SetStateAction<number>>;
 let setPastTime:React.Dispatch<React.SetStateAction<string>>;
 let setRemainingTime:React.Dispatch<React.SetStateAction<string>>;
+let setTerminalLines:React.Dispatch<React.SetStateAction<JSX.Element[]>>;
 
 let pastTimeNow = "0m 0s";
 let remainingTimeNow = "calculating...";
 
 function RenderingPage() {
+    const [terminalHidden, setTerminalHidden] = useState("none");
+    const [terminalScroll, setTerminalScroll] = useState(true);
+    const [scrollButtonText, setScrollButtonText] = useState("pause scroll");
     const [logNumber, setLogNumberInner] = useState("0");
     setLogNumber = setLogNumberInner;
     const [status, setStatusInner] = useState("Idle");
@@ -23,6 +27,24 @@ function RenderingPage() {
     setPastTime = setPastTimeInner;
     const [remainingTime, setRemainingTimeInner] = useState("calculating...");
     setRemainingTime = setRemainingTimeInner;
+    const [terminalLines, setTerminalLinesInner] = useState([
+        <tr key={0}>
+            <td className="terminalTableNumber">0:</td>
+            <td>==== Start ====</td>
+        </tr>
+    ]);
+    setTerminalLines = setTerminalLinesInner;
+    
+    const messagesEndRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+    
+    useEffect(() => {
+        if(terminalScroll) {
+            messagesEndRef.current?.scrollIntoView();
+            setScrollButtonText("pause scroll");
+        } else {
+            setScrollButtonText("continue scroll");
+        }
+    }, [terminalLines, messagesEndRef, terminalScroll]);
     
     useEffect(() => {
         const interval = setInterval(() => {
@@ -70,6 +92,24 @@ function RenderingPage() {
             </div>
             <button id="stopRenderButton" onClick={() => blender(blenderCmd.stopRendering)}>Stop</button>
             <button onClick={() => openFolder(getInOutSettings().output)}>Open Output Folder</button>
+            <button onClick={() => {
+                if (terminalHidden === "none") {
+                    setTerminalHidden("block");
+                } else {
+                    setTerminalHidden("none");
+                }
+            }} style={{marginLeft:"10px"}}>Details</button>
+            <div style={{display: terminalHidden}}>
+                <div id="outerTerminal">
+                    <div id="innerTerminal">
+                        <table id="terminalTable">
+                            {terminalLines}
+                        </table>
+                        <div ref={messagesEndRef}/>
+                    </div>
+                </div>
+                <button style={{padding:"4px"}} onClick={() => setTerminalScroll(!terminalScroll)}>{scrollButtonText}</button>
+            </div>
         </div>
     )
 }
@@ -82,6 +122,17 @@ function setRemainingTimeNow(time:string) {
     remainingTimeNow = time;
 }
 
+function addTerminalLine(line:string) {
+    setTerminalLines((prev:JSX.Element[]) => {
+        return [...prev,
+            <tr key={prev.length}>
+                <td className="terminalTableNumber">{prev.length}:</td>
+                <td>{line}</td>
+            </tr>
+        ];
+    });
+}
+
 export default RenderingPage;
 export {
     setLogNumber,
@@ -90,5 +141,6 @@ export {
     setPastTime,
     setRemainingTime,
     setPastTimeNow,
-    setRemainingTimeNow
+    setRemainingTimeNow,
+    addTerminalLine
 };
