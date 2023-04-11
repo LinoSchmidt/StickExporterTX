@@ -210,46 +210,7 @@ const settingList = await fetch(SettingPath).then(function(response) {
     }
 });
 if(fetchFailed !== "") {
-    if(fetchFailed === "fileLoadFailed") {
-        dialog.showMessageBox({
-            type: 'warning',
-            buttons: ['View Settings', 'Continue'],
-            defaultId: 1,
-            title: 'Warning!',
-            message: "Failed to load settings file. Using default settings. if you continue, the settings will be overwritten.",
-        }).then((result) => {
-            if(result.response === 0) {
-                ipcRenderer.send('closeApp');
-                app.quit();
-            }
-        });
-    } else if(fetchFailed === "singleSetting") {
-        dialog.showMessageBox({
-            type: 'warning',
-            buttons: ['View Settings', 'Continue'],
-            defaultId: 1,
-            title: 'Warning!',
-            message: "A setting failed to load. If you continue, the setting will be overwritten.",
-        }).then((result) => {
-            if(result.response === 0) {
-                ipcRenderer.send('closeApp');
-                app.quit();
-            }
-        });
-    } else if(fetchFailed === "multiSetting") {
-        dialog.showMessageBox({
-            type: 'warning',
-            buttons: ['View Settings', 'Continue'],
-            defaultId: 1,
-            title: 'Warning!',
-            message: "Multiple settings failed to load. If you continue, the settings will be overwritten.",
-        }).then((result) => {
-            if(result.response === 0) {
-                ipcRenderer.send('closeApp');
-                app.quit();
-            }
-        });
-    }
+    writeSettings();
 }
 
 function getProfiles() {
