@@ -2,8 +2,6 @@ import {SettingPath, defaultOutputPath, OLDSettingPath} from './paths';
 import {dialog} from '@electron/remote';
 import logger from "./logger";
 import fs from "fs";
-import {app} from 'electron';
-import { ipcRenderer } from "electron";
 
 enum VideoFormat {
     mp4="mp4",
