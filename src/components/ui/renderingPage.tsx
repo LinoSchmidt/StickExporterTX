@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {getInOutSettings} from "../settings";
+import {getInOutSettings, getShowRenderTerminal, setShowRenderTerminal} from "../settings";
 import openFolder from "../openFolder";
 import { blenderCmd, blender } from "../blenderController";
 
@@ -14,7 +14,7 @@ let pastTimeNow = "0m 0s";
 let remainingTimeNow = "calculating...";
 
 function RenderingPage() {
-    const [terminalHidden, setTerminalHidden] = useState("none");
+    const [terminalHidden, setTerminalHidden] = useState(getShowRenderTerminal() ? "block" : "none");
     const [terminalScroll, setTerminalScroll] = useState(true);
     const [scrollButtonText, setScrollButtonText] = useState("pause scroll");
     const [logNumber, setLogNumberInner] = useState("0");
@@ -93,10 +93,12 @@ function RenderingPage() {
             <button id="stopRenderButton" onClick={() => blender(blenderCmd.stopRendering)}>Stop</button>
             <button onClick={() => openFolder(getInOutSettings().output)}>Open Output Folder</button>
             <button onClick={() => {
-                if (terminalHidden === "none") {
-                    setTerminalHidden("block");
-                } else {
+                if (getShowRenderTerminal()) {
                     setTerminalHidden("none");
+                    setShowRenderTerminal(false);
+                } else {
+                    setTerminalHidden("block");
+                    setShowRenderTerminal(true);
                 }
             }} style={{marginLeft:"10px"}}>Details</button>
             <div style={{display: terminalHidden}}>

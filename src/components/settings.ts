@@ -27,6 +27,7 @@ type JSONSettings = {
     profiles: JSONProfile[],
     logs: string[],
     output: string,
+    showRenderTerminal: boolean
 }
 
 const defaultSettings:JSONSettings = {
@@ -42,7 +43,8 @@ const defaultSettings:JSONSettings = {
         }
     ],
     logs: [],
-    output: defaultOutputPath
+    output: defaultOutputPath,
+    showRenderTerminal: false
 };
 
 function catchSetting(tryFunc:()=>string, catchFunc:()=>string) {
@@ -126,7 +128,8 @@ const settingList = await fetch(SettingPath).then(function(response) {
                 output: catchSetting(function() {return getXMLChild(xmlDoc, "output");},function() {
                     fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
                     return defaultSettings.output;
-                })
+                }),
+                showRenderTerminal: defaultSettings.showRenderTerminal
             } as JSONSettings;
         });
     }
@@ -195,7 +198,15 @@ const settingList = await fetch(SettingPath).then(function(response) {
         output: catchSetting(function() {return parsedData.output;},function() {
             fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
             return defaultSettings.output;
-        })
+        }),
+        showRenderTerminal: function() {
+            if(typeof parsedData.showRenderTerminal === "boolean") {
+                return parsedData.showRenderTerminal;
+            } else {
+                fetchFailed === "singleSetting"? fetchFailed = "multiSetting":fetchFailed = "singleSetting";
+                return defaultSettings.showRenderTerminal;
+            }
+        }()
     }
 });
 if(fetchFailed !== "") {
@@ -330,6 +341,14 @@ function setInOutSettings(args:{logs?:string[], output?:string}) {
 }
 function getInOutSettings() {
     return {logs: settingList.logs, output: settingList.output};
+}
+
+function setShowRenderTerminal(show:boolean) {
+    settingList.showRenderTerminal = show;
+    writeSettings();
+}
+function getShowRenderTerminal() {
+    return settingList.showRenderTerminal;
 }
 
 function removeProfile(profileName?:string) {
@@ -498,6 +517,8 @@ export {
     getActiveProfile,
     setInOutSettings,
     getInOutSettings,
+    setShowRenderTerminal,
+    getShowRenderTerminal,
     getLogSize,
     importProfile,
     exportProfile,
