@@ -18,6 +18,13 @@ If you only want to set up logging for one model, go to `model -> special functi
 
 ![special-functions](readme/pictures/special-functions.bmp)
 
+## How to use
+### Importing logs
+1. Connect your RC controller to your computer via USB.
+2. Select `USB Storage (SD)` on the controller.
+3. Open the StickExporterTX app and click on `Add Log(s)`.
+4. Select the log files you want to import. They should be located in the `LOGS` folder on your controller.
+
 ## How to build (for developers)
 The following software is required to build the project:
 - [Node.js](https://nodejs.org/)
