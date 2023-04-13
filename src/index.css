@@ -460,9 +460,10 @@ button:hover {
     background-color: #0d131e;
     color: white;
     font-family: monospace;
-    font-size: 10px;
+    font-size: 12px;
     border-radius: 10px;
     padding: 10px;
+    box-sizing: border-box;
 }
 #outerTerminal p {
     margin: 2px;
