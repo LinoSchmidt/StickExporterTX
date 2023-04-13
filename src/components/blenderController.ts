@@ -2,20 +2,15 @@ import { blenderPath, blenderScriptPath, templatePath, finsishedIconPath, dataPa
 import {spawn} from "child_process";
 import logger from "./logger";
 import { setBlenderLoading, setBlenderStatus } from "./ui/menu";
-import { setLogNumber, setPastTime, setRemainingTime, setRenderDisplayProgress, setStatus, setPastTimeNow, setRemainingTimeNow, addTerminalLine } from "./ui/renderingPage";
+import { setLogNumber, setStatus, addTerminalLine } from "./ui/renderingPage";
 import {imageLoading, imageLoaded} from "./ui/settingsPage";
-import { getLogSize, getInOutSettings, getActiveProfile } from "./settings";
+import { getInOutSettings, getActiveProfile } from "./settings";
 import { pageSetRendering, setProgress, openPage, Page } from "../renderer";
+import { setLog, setRenderProgress, startProgress, stopProgress } from "./progressController";
 import { ipcRenderer } from "electron";
 import path from 'path';
 import fs from "fs";
 // import { getDoNotDisturb } from "electron-notification-state";
-
-export const renderInfo = {
-    time: "0min 0sec",
-    startTime: 0,
-    endTime: 0
-}
 
 const blenderStartString = [
     templatePath,
@@ -31,43 +26,6 @@ let readyToAcceptCommand = false;
 let renderingPicture = false;
 let renderingVideo = false;
 let waitingForRender = false;
-
-let logPortionList:number[] = [];
-let currentLogPortion = 0;
-
-const estimatedRenderPortion = 0.97;
-function setRenderProgress(log:number, init:boolean, frameCount:number, frame:number) {
-    let progress = 0;
-    if(init) {
-        progress = logPortionList[log-1] * (frame / frameCount * (1 - estimatedRenderPortion)) + currentLogPortion;
-    } else {
-        progress = logPortionList[log-1] * (frame / frameCount * estimatedRenderPortion + (1 - estimatedRenderPortion)) + currentLogPortion;
-    }
-    setProgress(progress);
-    setRenderDisplayProgress(parseFloat((progress*100).toFixed(2)));
-    
-    const timeNow = new Date().getTime();
-    const timeDiff = timeNow - renderInfo.startTime;
-    let timeDiffSeconds = timeDiff / 1000;
-    let timeDiffMinutes = 0;
-    while(timeDiffSeconds > 60) {
-        timeDiffMinutes++;
-        timeDiffSeconds -= 60;
-    }
-    renderInfo.time = timeDiffMinutes + "m " + timeDiffSeconds.toFixed(0) + "s";
-    setPastTimeNow(renderInfo.time);
-    
-    if(progress > 0) {
-        const timeRemaining = (timeDiff / progress) * (1 - progress);
-        timeDiffSeconds = timeRemaining / 1000;
-        timeDiffMinutes = 0;
-        while(timeDiffSeconds > 60) {
-            timeDiffMinutes++;
-            timeDiffSeconds -= 60;
-        }
-        setRemainingTimeNow(timeDiffMinutes + "m " + timeDiffSeconds.toFixed(0) + "s");
-    }
-}
 
 function getOutPath(log:string) {
     let fullOutPath = path.join(getInOutSettings().output, log.substring(log.lastIndexOf("\\")).replace(".csv", "."+getActiveProfile().videoFormat));
@@ -153,7 +111,7 @@ function startBlender() {
         }
         if(dataStr.includes("Finished") && renderingVideo) {
             pageSetRendering(false);
-            renderInfo.endTime = new Date().getTime();
+            stopProgress();
             if(lastFrame == frames) {
                 openPage(Page.RenderFinish);
                 ipcRenderer.send("renderFinished");
@@ -175,7 +133,7 @@ function startBlender() {
         if(dataStr.includes("Lognr:") && renderingVideo) {
             log = dataStr.split(":")[1];
             if(log !== "1") {
-                currentLogPortion += logPortionList[parseInt(log)-2];
+                setLog(parseInt(log));
             }
             setLogNumber(log);
         }
@@ -240,23 +198,6 @@ function blender(command:blenderCmd) {
             if(getInOutSettings().logs.length === 0) {
                 logger.warningMSG("No log selected!");
             } else {
-                currentLogPortion = 0;
-                
-                const logSizeList:number[] = [];
-                getInOutSettings().logs.forEach(function (value, index) {
-                    logSizeList.push(getLogSize(index));
-                });
-                
-                let fullLogSize = 0;
-                for(let i = 0; i < logSizeList.length; i++) {
-                    fullLogSize += logSizeList[i];
-                }
-                
-                logPortionList = [];
-                logSizeList.forEach(function (value) {
-                    logPortionList.push(value / fullLogSize);
-                });
-                
                 readyToAcceptCommand = false;
                 renderingVideo = true;
                 pageSetRendering(true);
@@ -264,9 +205,7 @@ function blender(command:blenderCmd) {
                 setBlenderLoading(true);
                 blenderConsole.stdin.write("startRendering -- "+blenderArgs()+"\n");
                 
-                renderInfo.startTime = new Date().getTime();
-                setPastTime("0min 0sec");
-                setRemainingTime("calculating...");
+                startProgress();
             }
         }
     } else if(command === blenderCmd.stopRendering) {

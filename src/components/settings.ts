@@ -362,10 +362,6 @@ function getActiveProfile() {
     return activeProfile;
 }
 
-function getLogSize(index:number) {
-    return fs.statSync(settingList.logs[index]).size;
-}
-
 function importProfile(importSucces:CallableFunction) {
     dialog.showOpenDialog({
         properties: [
@@ -478,7 +474,6 @@ export {
     getInOutSettings,
     setShowRenderTerminal,
     getShowRenderTerminal,
-    getLogSize,
     importProfile,
     exportProfile,
     VideoFormat

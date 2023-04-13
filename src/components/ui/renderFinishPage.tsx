@@ -1,12 +1,13 @@
 import React, { CSSProperties } from "react";
 import {openPage, Page} from "../../renderer";
-import {renderInfo, outputArgs} from "../blenderController";
+import {outputArgs} from "../blenderController";
 import openFolder from "../openFolder";
 import {getInOutSettings, getActiveProfile} from "../settings";
 import VideoPlayer from "./videoPlayer";
 import path from 'path';
 import {VideoJsPlayerOptions} from "video.js";
 import {logList} from "../logReader";
+import {renderInfo} from "../progressController";
 
 const detailsStyle:CSSProperties = {
     display: "flex",
