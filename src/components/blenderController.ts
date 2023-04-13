@@ -105,7 +105,7 @@ function startBlender() {
             setRenderProgress(parseInt(log), true, 0, 0);
         }
         if(dataStr.includes("Fra:") && renderingVideo) {
-            lastFrame = dataStr.split(":")[1].split(" ")[0];
+            lastFrame = dataStr.split("Fra:")[1].split(" ")[0];
             setStatus("Rendering Frame " + lastFrame + "/" + frames);
             setRenderProgress(parseInt(log), false, parseInt(frames), parseInt(lastFrame));
         }
